@@ -121,18 +121,10 @@ const Sidebar = ({ isOpen, isMobile, toggleSidebar }: SidebarProps) => {
               <span className="admin-role">Super Admin</span>
             </div>
           </div>
-          <div className="sidebar-stats">
-            <div className="stat-item">
-              <span className="stat-value">24</span>
-              <span className="stat-label">Properties</span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-value">156</span>
-              <span className="stat-label">Inquiries</span>
-            </div>
+         
           </div>
           <p className="copyright">© 2015-2024 Ananthi Group</p>
-        </div>
+
       </aside>
     </>
   );
