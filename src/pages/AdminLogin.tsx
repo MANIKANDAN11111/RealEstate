@@ -1,9 +1,7 @@
 import { useForm } from "react-hook-form";
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useNavigate } from "react-router-dom";
 import "./AdminLogin.css";
-
-// Add this import at the top
 import agLogo from '../assets/AG_logo.jpeg';
 
 interface LoginForm {
@@ -12,7 +10,7 @@ interface LoginForm {
 }
 
 interface AdminLoginProps {
-  onLogin: () => void; // Add onLogin prop
+  onLogin: () => void;
 }
 
 export default function AdminLogin({ onLogin }: AdminLoginProps) {
@@ -23,22 +21,21 @@ export default function AdminLogin({ onLogin }: AdminLoginProps) {
     watch 
   } = useForm<LoginForm>();
 
-  const navigate = useNavigate(); // Initialize navigate
+  const navigate = useNavigate();
 
-  const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
+  // const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
   const [isMobile, setIsMobile] = useState<boolean>(window.innerWidth < 768);
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [passwordStrength, setPasswordStrength] = useState<number>(0);
   const [logoHover, setLogoHover] = useState<boolean>(false);
   const [logoPulse, setLogoPulse] = useState<boolean>(true);
 
-  // Get the password value from form
   const passwordValue = watch("password");
 
   useEffect(() => {
     const handleResize = () => {
       const width = window.innerWidth;
-      setWindowWidth(width);
+      // setWindowWidth(width);
       setIsMobile(width < 768);
     };
 
@@ -46,7 +43,6 @@ export default function AdminLogin({ onLogin }: AdminLoginProps) {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Update password strength when password changes
   useEffect(() => {
     if (!passwordValue) {
       setPasswordStrength(0);
@@ -63,7 +59,6 @@ export default function AdminLogin({ onLogin }: AdminLoginProps) {
     setPasswordStrength(strength);
   }, [passwordValue]);
 
-  // Logo pulse animation
   useEffect(() => {
     if (logoPulse) {
       const interval = setInterval(() => {
@@ -74,20 +69,15 @@ export default function AdminLogin({ onLogin }: AdminLoginProps) {
   }, [logoPulse]);
 
   const onSubmit = async (data: LoginForm) => {
-    // Validate password strength before submission
     if (passwordStrength < 3) {
       alert("Password must be at least 8 characters with a number and special character");
       return;
     }
     
-    // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1500));
     console.log("Login successful:", data);
     
-    // Call the onLogin function passed from App.js
     onLogin();
-    
-    // Navigate to dashboard
     navigate("/dashboard");
   };
 
@@ -127,91 +117,58 @@ export default function AdminLogin({ onLogin }: AdminLoginProps) {
         
         {/* Elegant Pattern */}
         <div className="elegant-pattern"></div>
-
-        {/* Floating Logo Particles */}
-        <div className="logo-particles">
-          <div className="particle"></div>
-          <div className="particle"></div>
-          <div className="particle"></div>
-          <div className="particle"></div>
-          <div className="particle"></div>
-        </div>
       </div>
 
       {/* Main Login Card */}
       <div className="login-card-wrapper">
         <div className="login-card">
-          {/* Company Header with Innovative Logo */}
+          {/* Company Header */}
           <div className="company-header">
-            <div className="logo-container">
+            <div className="logo-main-container">
               <div 
                 className="logo-main"
                 onMouseEnter={() => setLogoHover(true)}
                 onMouseLeave={() => setLogoHover(false)}
                 onClick={() => setLogoPulse(!logoPulse)}
               >
-                {/* Glass Morphism Container */}
                 <div className={`logo-glass ${logoHover ? 'hover' : ''} ${logoPulse ? 'pulse' : ''}`}>
-                  {/* Animated Border */}
-                  <div className="logo-border-animation"></div>
-                  
-                  {/* Main Logo Image */}
                   <div className="logo-image-container">
                     <img 
                       src={agLogo} 
                       alt="Ananthi Group Logo" 
                       className="company-logo-image"
                     />
-                    
-                    {/* Holographic Overlay */}
-                    <div className="logo-hologram"></div>
-                    
-                    {/* Reflective Glare */}
-                    <div className="logo-glare"></div>
                   </div>
-                  
-                  {/* Floating Elements */}
-                  <div className="logo-orb orb-1"></div>
-                  <div className="logo-orb orb-2"></div>
-                  <div className="logo-orb orb-3"></div>
+                  <div className={`logo-glow-effect ${logoHover ? 'active' : ''}`}></div>
                 </div>
-
-                {/* Glow Effect */}
-                <div className={`logo-glow-effect ${logoHover ? 'active' : ''}`}></div>
-                
-                {/* Interactive Ring */}
-                <div className="logo-interactive-ring"></div>
               </div>
 
-              <div className="logo-text-container">
+              <div className="company-text-container">
                 <h1 className="company-name">
-                  <span className="company-name-text">ANANTHI GROUP</span>
-                  <span className="company-name-glow"></span>
+                  ANANTHI GROUP
                 </h1>
                 <div className="company-subtitle">
-                  <div className="established-badge">
+                  <span className="established-badge">
                     <span className="established-icon">🏗️</span>
                     <span className="company-since">ESTABLISHED 2015</span>
-                  </div>
+                  </span>
                 </div>
                 <div className="company-tagline-wrapper">
                   <span className="company-tagline">BUILDING TOMORROW'S DREAMS</span>
                   <div className="tagline-underline"></div>
                 </div>
 
-                {/* Business Tags with Animation */}
+                {/* Business Tags */}
                 <div className="business-tags-container">
-                  <div className="business-tags-track">
-                    <div className="business-tags">
-                      <span className="business-tag construction">
-                        <span className="tag-icon">🏗️</span>
-                        <span className="tag-text">Construction</span>
-                      </span>
-                      <span className="business-tag real-estate">
-                        <span className="tag-icon">🏢</span>
-                        <span className="tag-text">Real Estate</span>
-                      </span>
-                    </div>
+                  <div className="business-tags">
+                    <span className="business-tag construction">
+                      <span className="tag-icon">🏗️</span>
+                      <span className="tag-text">Construction</span>
+                    </span>
+                    <span className="business-tag real-estate">
+                      <span className="tag-icon">🏢</span>
+                      <span className="tag-text">Real Estate</span>
+                    </span>
                   </div>
                 </div>
               </div>
@@ -255,14 +212,13 @@ export default function AdminLogin({ onLogin }: AdminLoginProps) {
               <label htmlFor="password" className="field-label">
                 <span className="label-icon">🔒</span>
                 <span>Password</span>
-                <span className="password-req">(8+ chars, number, special char)</span>
               </label>
               <div className={`input-container ${errors.password ? 'error' : ''}`}>
                 <input
                   type={showPassword ? "text" : "password"}
                   id="password"
                   {...register("password", passwordValidation)}
-                  placeholder="Min 8 chars with number & special char"
+                  placeholder="Min 8 characters with number & special character"
                   className="form-input"
                 />
                 <div className="input-border"></div>
@@ -270,12 +226,13 @@ export default function AdminLogin({ onLogin }: AdminLoginProps) {
                   type="button" 
                   className="password-toggle"
                   onClick={togglePasswordVisibility}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
                 >
                   {showPassword ? "👁️" : "👁️‍🗨️"}
                 </button>
               </div>
 
-              {/* Password Strength Indicator */}
+              {/* Password Strength */}
               <div className="password-strength">
                 <div className="strength-bars">
                   <div className={`strength-bar ${passwordStrength >= 1 ? 'active' : ''}`}></div>
@@ -343,7 +300,7 @@ export default function AdminLogin({ onLogin }: AdminLoginProps) {
                 <a href="/support">24/7 Support</a>
               </p>
               <p className="version">
-                Secure Portal v2.4.1 • {windowWidth}px
+                Secure Portal v2.4.1
               </p>
             </div>
           </footer>

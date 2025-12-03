@@ -1,4 +1,6 @@
 /* ===== HEADER STYLES ===== */
+
+/* Fix for dropdowns appearing behind header */
 .dashboard-header {
   height: var(--header-height);
   background: var(--card-bg);
@@ -10,6 +12,7 @@
   position: sticky;
   top: 0;
   z-index: 90;
+  overflow: visible !important; /* CRITICAL FIX */
 }
 
 /* Left Section */
@@ -62,6 +65,8 @@
   display: flex;
   align-items: center;
   gap: 20px;
+  position: relative;
+  overflow: visible !important; /* CRITICAL FIX */
 }
 
 /* Search */
@@ -103,9 +108,10 @@
   font-size: 16px;
 }
 
-/* Notifications */
+/* NOTIFICATION DROPDOWN FIX */
 .notification-container {
   position: relative;
+  overflow: visible !important; /* CRITICAL FIX */
 }
 
 .notification-btn {
@@ -118,6 +124,7 @@
   padding: 8px;
   border-radius: var(--radius-md);
   transition: var(--transition);
+  overflow: visible !important; /* CRITICAL FIX */
 }
 
 .notification-btn:hover {
@@ -138,6 +145,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 1;
 }
 
 .notification-dropdown {
@@ -149,7 +157,19 @@
   border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
-  z-index: 1000;
+  z-index: 9999 !important; /* HIGHER THAN HEADER */
+  animation: dropdownSlide 0.2s ease;
+}
+
+@keyframes dropdownSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .notification-header {
@@ -242,9 +262,10 @@
   background: rgba(255, 255, 255, 0.02);
 }
 
-/* Profile */
+/* PROFILE DROPDOWN FIX */
 .profile-container {
   position: relative;
+  overflow: visible !important; /* CRITICAL FIX */
 }
 
 .profile-btn {
@@ -257,6 +278,7 @@
   padding: 4px;
   border-radius: var(--radius-md);
   transition: var(--transition);
+  overflow: visible !important; /* CRITICAL FIX */
 }
 
 .profile-btn:hover {
@@ -307,7 +329,8 @@
   border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
-  z-index: 1000;
+  z-index: 9999 !important; /* HIGHER THAN HEADER */
+  animation: dropdownSlide 0.2s ease;
 }
 
 .dropdown-section {
@@ -379,6 +402,17 @@
   background: rgba(239, 68, 68, 0.1);
 }
 
+/* CLICK OUTSIDE HANDLER (optional but recommended) */
+.dropdown-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: transparent;
+  z-index: 9998;
+}
+
 /* Responsive */
 @media (max-width: 1024px) {
   .search-container {
@@ -405,5 +439,26 @@
   
   .dropdown-arrow {
     display: none;
+  }
+  
+  /* Adjust dropdowns for mobile */
+  .notification-dropdown {
+    position: fixed !important;
+    top: var(--header-height) !important;
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%) !important;
+    width: 90vw !important;
+    max-width: 320px !important;
+  }
+  
+  .profile-dropdown {
+    position: fixed !important;
+    top: var(--header-height) !important;
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%) !important;
+    width: 90vw !important;
+    max-width: 280px !important;
   }
 }

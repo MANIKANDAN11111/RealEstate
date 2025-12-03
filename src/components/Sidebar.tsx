@@ -107,21 +107,7 @@ const Sidebar = ({ isOpen, isMobile, toggleSidebar }: SidebarProps) => {
         </nav>
 
         {/* Footer Section */}
-        <div className="sidebar-footer">
-          <div className="business-tags">
-            <span className="business-tag construction">Construction</span>
-            <span className="business-tag real-estate">Real Estate</span>
-          </div>
-          <div className="admin-info">
-            <div className="admin-avatar">
-              <span>👤</span>
-            </div>
-            <div className="admin-details">
-              <span className="admin-name">Admin User</span>
-              <span className="admin-role">Super Admin</span>
-            </div>
-          </div>
-         
+        <div className="sidebar-footer">         
           </div>
           <p className="copyright">© 2015-2024 Ananthi Group</p>
 

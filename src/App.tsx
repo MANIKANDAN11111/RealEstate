@@ -6,7 +6,7 @@ import './App.css';
 
 function App() {
   // Add state for authentication
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(true);
 
   // Login function to be passed to AdminLogin
   const handleLogin = () => {

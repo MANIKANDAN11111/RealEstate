@@ -129,11 +129,13 @@ const DashboardHome = () => {
                 <h3>Revenue This Month</h3>
                 <p>Monthly revenue trends and projections</p>
               </div>
-              <select className="time-select">
-                <option>Last 30 days</option>
-                <option>Last 90 days</option>
-                <option>This Year</option>
-              </select>
+              <div className="dropdown-container">
+                <select className="time-select">
+                  <option>Last 30 days</option>
+                  <option>Last 90 days</option>
+                  <option>This Year</option>
+                </select>
+              </div>
             </div>
             <div className="card-chart">
               <div className="chart-bars">
