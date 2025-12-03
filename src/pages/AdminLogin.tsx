@@ -1,5 +1,6 @@
 import { useForm } from "react-hook-form";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 import "./AdminLogin.css";
 
 // Add this import at the top
@@ -10,13 +11,19 @@ interface LoginForm {
   password: string;
 }
 
-export default function AdminLogin() {
+interface AdminLoginProps {
+  onLogin: () => void; // Add onLogin prop
+}
+
+export default function AdminLogin({ onLogin }: AdminLoginProps) {
   const { 
     register, 
     handleSubmit, 
     formState: { errors, isSubmitting },
     watch 
   } = useForm<LoginForm>();
+
+  const navigate = useNavigate(); // Initialize navigate
 
   const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
   const [isMobile, setIsMobile] = useState<boolean>(window.innerWidth < 768);
@@ -76,7 +83,12 @@ export default function AdminLogin() {
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1500));
     console.log("Login successful:", data);
-    alert(`Welcome ${data.email}! Login successful.`);
+    
+    // Call the onLogin function passed from App.js
+    onLogin();
+    
+    // Navigate to dashboard
+    navigate("/dashboard");
   };
 
   const togglePasswordVisibility = () => {
