@@ -18,24 +18,26 @@ export default function AdminLogin({ onLogin }: AdminLoginProps) {
     register, 
     handleSubmit, 
     formState: { errors, isSubmitting },
-    watch 
+    watch,
+    setError,
+    clearErrors,
+    setValue
   } = useForm<LoginForm>();
 
   const navigate = useNavigate();
-
-  // const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
   const [isMobile, setIsMobile] = useState<boolean>(window.innerWidth < 768);
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [passwordStrength, setPasswordStrength] = useState<number>(0);
   const [logoHover, setLogoHover] = useState<boolean>(false);
   const [logoPulse, setLogoPulse] = useState<boolean>(true);
+  const [serverError, setServerError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const passwordValue = watch("password");
 
   useEffect(() => {
     const handleResize = () => {
       const width = window.innerWidth;
-      // setWindowWidth(width);
       setIsMobile(width < 768);
     };
 
@@ -60,29 +62,157 @@ export default function AdminLogin({ onLogin }: AdminLoginProps) {
   }, [passwordValue]);
 
   useEffect(() => {
+    let interval: NodeJS.Timeout;
     if (logoPulse) {
-      const interval = setInterval(() => {
+      interval = setInterval(() => {
         setLogoPulse(p => !p);
       }, 3000);
-      return () => clearInterval(interval);
     }
+    return () => clearInterval(interval);
   }, [logoPulse]);
 
   const onSubmit = async (data: LoginForm) => {
+    setServerError(null);
+    clearErrors();
+    setIsLoading(true);
+
     if (passwordStrength < 3) {
-      alert("Password must be at least 8 characters with a number and special character");
+      setError("password", { type: "manual", message: "Password is too weak" });
+      setIsLoading(false);
       return;
     }
-    
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    console.log("Login successful:", data);
-    
-    onLogin();
-    navigate("/dashboard");
+
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+      const res = await fetch("http://localhost:8080/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "text/plain" // We accept text/plain for the raw token response
+        },
+        body: JSON.stringify({
+          email: data.email,
+          password: data.password
+        }),
+        signal: controller.signal,
+        mode: "cors",
+        credentials: "include" 
+      });
+
+      clearTimeout(timeoutId);
+
+      // ----------------------------------------------------------------
+      // Handle HTTP errors (401, 500, etc.)
+      // ----------------------------------------------------------------
+      if (!res.ok) {
+        let errorMessage = `Login failed (${res.status})`;
+        
+        // Try to read the error body, regardless of content type
+        try {
+            const errorText = await res.text();
+            
+            // Try to parse error text as JSON if it looks like it
+            const contentType = res.headers.get("content-type");
+            if (contentType && contentType.includes("application/json")) {
+                const errorData = JSON.parse(errorText);
+                errorMessage = errorData.message || errorData.error || errorText;
+            } else {
+                errorMessage = errorText || errorMessage;
+            }
+        } catch {
+            // Ignore parse errors if the body is empty or malformed
+        }
+        
+        // Handle specific status codes
+        if (res.status === 401) {
+          errorMessage = "Invalid email or password. Please check your credentials.";
+        } else if (res.status === 403) {
+          errorMessage = "Access denied. Contact administrator.";
+        } else if (res.status >= 500) {
+          errorMessage = "Server error. Please try again later.";
+        }
+
+        setServerError(errorMessage);
+        setIsLoading(false);
+        return;
+      }
+
+      // ----------------------------------------------------------------
+      // 🔥 SUCCESS BLOCK: Processing the Raw Token Text Response
+      // ----------------------------------------------------------------
+      let token: string | null = null;
+      let responseText: string = "";
+      
+      try {
+        // Read the entire response body as text
+        responseText = await res.text();
+        
+        // Trim any leading/trailing whitespace (e.g., newlines)
+        const trimmedToken = responseText.trim(); 
+        
+        // Validate that the trimmed response looks like a token
+        // A JWT is typically long and contains at least two dots (.).
+        if (trimmedToken && trimmedToken.length > 20 && trimmedToken.includes('.')) { 
+            token = trimmedToken;
+        } else {
+            setServerError(`Login succeeded, but server returned an empty or invalid token string.`);
+            setIsLoading(false);
+            return;
+        }
+
+      } catch (parseError) {
+        console.error("Failed to read response content:", parseError);
+        setServerError(`Invalid response from server: Failed to read content.`);
+        setIsLoading(false);
+        return;
+      }
+
+      // Successful token extraction and storage
+      if (token) {
+        // Ensure the token doesn't start with "Bearer " (which it shouldn't, but as a safeguard)
+        const cleanToken = token.startsWith("Bearer ") ? token.substring(7) : token;
+        localStorage.setItem("token", cleanToken);
+      }
+      
+      // Store the email from the form data (no user data is available from the server response)
+      localStorage.setItem("authEmail", data.email);
+      
+      // Call parent callback and navigate
+      onLogin();
+      navigate("/dashboard", { replace: true });
+
+    } catch (err: unknown) {
+      setIsLoading(false);
+      
+      if (err instanceof Error && err.name === "AbortError") {
+        setServerError("Request timeout. Please check your connection and try again.");
+        return;
+      }
+
+      console.error("Login error:", err);
+      
+      if (err instanceof TypeError) {
+        if (err.message.includes("Failed to fetch")) {
+          setServerError("Cannot connect to backend. Please ensure:\n1. Backend server is running on http://localhost:8080\n2. CORS is properly configured on backend");
+        } else {
+          setServerError("Network error. Check console for details.");
+        }
+      } else {
+        setServerError("An unexpected error occurred. Please try again.");
+      }
+    }
   };
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
+  };
+
+  const fillTestCredentials = () => {
+    setValue("email", "admin@gmail.com");
+    setValue("password", "Admin@123");
+    setServerError(null);
   };
 
   const passwordValidation = {
@@ -105,17 +235,32 @@ export default function AdminLogin({ onLogin }: AdminLoginProps) {
 
   return (
     <div className="login-container">
+      {/* Debug/Test Button */}
+      <button 
+        onClick={fillTestCredentials}
+        style={{
+          position: 'fixed',
+          top: '10px',
+          right: '10px',
+          padding: '5px 10px',
+          fontSize: '12px',
+          zIndex: 1000,
+          opacity: 0.7,
+          cursor: 'pointer'
+        }}
+      >
+        Fill Admin Credentials
+      </button>
+
       {/* Background Elements */}
       <div className="background-wrapper">
         <div className="bg-grid"></div>
         <div className="bg-dots"></div>
         
-        {/* Dynamic Blobs */}
         <div className={`blob blob1 ${isMobile ? 'mobile' : ''}`}></div>
         <div className={`blob blob2 ${isMobile ? 'mobile' : ''}`}></div>
         <div className={`blob blob3 ${isMobile ? 'mobile' : ''}`}></div>
         
-        {/* Elegant Pattern */}
         <div className="elegant-pattern"></div>
       </div>
 
@@ -158,7 +303,6 @@ export default function AdminLogin({ onLogin }: AdminLoginProps) {
                   <div className="tagline-underline"></div>
                 </div>
 
-                {/* Business Tags */}
                 <div className="business-tags-container">
                   <div className="business-tags">
                     <span className="business-tag construction">
@@ -177,6 +321,19 @@ export default function AdminLogin({ onLogin }: AdminLoginProps) {
 
           {/* Login Form */}
           <form onSubmit={handleSubmit(onSubmit)} className="login-form">
+            
+            {/* Server error area */}
+            {serverError && (
+              <div className="server-error">
+                <div className="server-error-header">⚠️ Login Error</div>
+                <div className="server-error-body">
+                  {serverError.split('\n').map((line, index) => (
+                    <div key={index}>{line}</div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Email Field */}
             <div className="form-field">
               <label htmlFor="email" className="field-label">
@@ -194,12 +351,12 @@ export default function AdminLogin({ onLogin }: AdminLoginProps) {
                       message: "Enter a valid email address"
                     }
                   })}
-                  placeholder="admin@ananthigroup.com"
+                  placeholder="admin@gmail.com"
                   className="form-input"
                 />
                 <div className="input-border"></div>
               </div>
-              {errors.email && (
+              {errors.email && errors.email.message && (
                 <div className="error-message">
                   <span className="error-icon">⚠</span>
                   {errors.email.message}
@@ -218,11 +375,11 @@ export default function AdminLogin({ onLogin }: AdminLoginProps) {
                   type={showPassword ? "text" : "password"}
                   id="password"
                   {...register("password", passwordValidation)}
-                  placeholder="Min 8 characters with number & special character"
+                  placeholder="Enter your password"
                   className="form-input"
                 />
                 <div className="input-border"></div>
-                <button 
+                <button  
                   type="button" 
                   className="password-toggle"
                   onClick={togglePasswordVisibility}
@@ -232,7 +389,6 @@ export default function AdminLogin({ onLogin }: AdminLoginProps) {
                 </button>
               </div>
 
-              {/* Password Strength */}
               <div className="password-strength">
                 <div className="strength-bars">
                   <div className={`strength-bar ${passwordStrength >= 1 ? 'active' : ''}`}></div>
@@ -246,7 +402,7 @@ export default function AdminLogin({ onLogin }: AdminLoginProps) {
                 </div>
               </div>
 
-              {errors.password && (
+              {errors.password && errors.password.message && (
                 <div className="error-message">
                   <span className="error-icon">⚠</span>
                   {errors.password.message}
@@ -254,25 +410,23 @@ export default function AdminLogin({ onLogin }: AdminLoginProps) {
               )}
             </div>
 
-            {/* Form Options */}
             <div className="form-options">
               <label className="checkbox-container">
                 <input type="checkbox" className="checkbox-input" />
                 <span className="checkbox-custom"></span>
-                <span className="checkbox-label">Remember this device</span>
+                <span className="checkbox-label">Remember me</span>
               </label>
               <a href="/forgot-password" className="forgot-link">
                 Forgot Password?
               </a>
             </div>
 
-            {/* Submit Button */}
             <button 
               type="submit" 
               className="submit-button"
-              disabled={isSubmitting}
+              disabled={isSubmitting || isLoading}
             >
-              {isSubmitting ? (
+              {isSubmitting || isLoading ? (
                 <>
                   <span className="button-spinner"></span>
                   <span>Authenticating...</span>
@@ -280,27 +434,19 @@ export default function AdminLogin({ onLogin }: AdminLoginProps) {
               ) : (
                 <>
                   <span className="button-icon">🚀</span>
-                  <span>Access Dashboard</span>
+                  <span>Login</span>
                 </>
               )}
             </button>
           </form>
 
-          {/* Footer */}
           <footer className="login-footer">
             <div className="footer-content">
               <p className="copyright">
-                © 2015-2025 Ananthi Group of Companies • Building Excellence Since 2015
-              </p>
-              <p className="footer-links">
-                <a href="/privacy">Privacy Policy</a>
-                <span className="divider">•</span>
-                <a href="/terms">Terms of Service</a>
-                <span className="divider">•</span>
-                <a href="/support">24/7 Support</a>
+                © 2015-2025 Ananthi Group of Companies
               </p>
               <p className="version">
-                Secure Portal v2.4.1
+                v2.4.2
               </p>
             </div>
           </footer>
