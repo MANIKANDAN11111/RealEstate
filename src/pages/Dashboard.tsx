@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 import DashboardHome from './DashboardHome';
@@ -10,15 +10,85 @@ import AddAdmins from '../components/AddAdmins';
 import AnalysisReports from '../components/AnalysisReports';
 import './Dashboard.css';
 
+interface AdminDetails {
+  id?: string;
+  name?: string | null;
+  email?: string;
+}
+
 const Dashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
+  const [adminName, setAdminName] = useState<string>('Admin');
+  const [isLoadingAdmin, setIsLoadingAdmin] = useState(true);
+  
+  const navigate = useNavigate();
+
+  // Fetch admin details
+  useEffect(() => {
+    const fetchAdminDetails = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        
+        if (!token) {
+          console.error('No token found');
+          navigate('/login');
+          return;
+        }
+
+        const response = await fetch('http://localhost:8080/admin/getadmindetails', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (!response.ok) {
+          if (response.status === 401) {
+            localStorage.removeItem('token');
+            localStorage.removeItem('authEmail');
+            navigate('/login');
+            return;
+          }
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data: AdminDetails = await response.json();
+        console.log('Admin API Response:', data);
+        
+        // Extract name from API response
+        let displayName = 'Admin';
+        
+        if (data.name && data.name.trim() !== '') {
+          displayName = data.name;
+        } else if (data.email) {
+          // Fallback to email username if name is null
+          const emailUsername = data.email.split('@')[0];
+          displayName = emailUsername.charAt(0).toUpperCase() + emailUsername.slice(1);
+        }
+        
+        setAdminName(displayName);
+      } catch (error) {
+        console.error('Error fetching admin details:', error);
+        // Fallback to email from localStorage
+        const email = localStorage.getItem('authEmail');
+        if (email) {
+          const emailUsername = email.split('@')[0];
+          setAdminName(emailUsername.charAt(0).toUpperCase() + emailUsername.slice(1));
+        }
+      } finally {
+        setIsLoadingAdmin(false);
+      }
+    };
+
+    fetchAdminDetails();
+  }, [navigate]);
 
   useEffect(() => {
     const checkMobile = () => {
       const mobile = window.innerWidth < 1024;
       setIsMobile(mobile);
-      // Auto-close sidebar on mobile
       if (mobile) {
         setSidebarOpen(false);
       } else {
@@ -58,7 +128,7 @@ const Dashboard = () => {
         <Header 
           toggleSidebar={toggleSidebar} 
           isMobile={isMobile}
-          userName="Brooklyn Simmons"
+          userName={isLoadingAdmin ? 'Loading...' : adminName}
         />
         
         <div className="dashboard-content-area">
