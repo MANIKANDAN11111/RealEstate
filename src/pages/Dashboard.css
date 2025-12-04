@@ -1,4 +1,4 @@
-/* Dashboard.css */
+/* Dashboard.css - Fixed white space issue */
 :root {
   /* Colors */
   --primary-color: #1a237e;
@@ -55,12 +55,18 @@ body {
   background-color: var(--bg-secondary);
   color: var(--text-primary);
   line-height: 1.5;
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
 }
 
 .dashboard-container {
   display: flex;
-  min-height: 100vh;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
   background-color: var(--bg-secondary);
+  position: relative;
 }
 
 /* Main Content Area */
@@ -68,15 +74,20 @@ body {
   flex: 1;
   display: flex;
   flex-direction: column;
-  transition: margin-left var(--transition-normal);
-  min-height: 100vh;
+  transition: all var(--transition-normal);
+  height: 100vh;
+  width: 100%;
+  position: relative;
 }
 
-.main-content.sidebar-open {
+/* Fix for sidebar open state */
+.sidebar-open {
+  width: calc(100% - 280px);
   margin-left: 280px;
 }
 
-.main-content.sidebar-collapsed {
+.sidebar-collapsed {
+  width: 100%;
   margin-left: 0;
 }
 
@@ -84,40 +95,38 @@ body {
 .dashboard-content-area {
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 0;
   background: var(--bg-secondary);
+  width: 100%;
+  height: calc(100vh - 64px); /* Subtract header height */
+  
+  /* Hide scrollbar but keep functionality */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
 }
 
-/* Header Area will be styled in Header.css */
+.dashboard-content-area::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
 
 /* Responsive Design */
-@media (max-width: 1023px) {
-  .dashboard-content-area {
-    padding: 10px;
+@media (max-width: 1024px) {
+  .sidebar-open {
+    width: 100%;
+    margin-left: 0;
   }
   
-  .main-content {
-    width: 100%;
-    margin-left: 0 !important;
+  .dashboard-content-area {
+    height: calc(100vh - 64px);
+    padding: 0;
   }
 }
-/* Scrollbar Styling */
-.dashboard-content-area::-webkit-scrollbar {
-  width: 8px;
-}
 
-.dashboard-content-area::-webkit-scrollbar-track {
-  background: var(--bg-tertiary);
-  border-radius: var(--radius-full);
-}
-
-.dashboard-content-area::-webkit-scrollbar-thumb {
-  background: var(--text-light);
-  border-radius: var(--radius-full);
-}
-
-.dashboard-content-area::-webkit-scrollbar-thumb:hover {
-  background: var(--text-secondary);
+@media (max-width: 768px) {
+  .dashboard-content-area {
+    height: calc(100vh - 56px); /* Smaller header on mobile */
+  }
 }
 
 /* Loading State */
@@ -307,6 +316,7 @@ body {
 @media print {
   .dashboard-container {
     display: block;
+    overflow: visible;
   }
   
   .sidebar,
@@ -315,10 +325,12 @@ body {
   }
   
   .main-content {
-    margin-left: 0;
+    margin-left: 0 !important;
+    width: 100%;
   }
   
   .dashboard-content-area {
     overflow: visible;
+    height: auto;
   }
 }

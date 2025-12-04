@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './Header.css';
 
 interface HeaderProps {
@@ -10,12 +10,70 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ toggleSidebar, isMobile, userName }) => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  
+  const notificationRef = useRef<HTMLDivElement>(null);
+  const profileRef = useRef<HTMLDivElement>(null);
+  const notificationBtnRef = useRef<HTMLButtonElement>(null);
+  const profileBtnRef = useRef<HTMLButtonElement>(null);
 
   const notifications = [
     { id: 1, text: 'New property listing approved', time: '5 min ago' },
     { id: 2, text: 'Payment received from Alex Johnson', time: '1 hour ago' },
     { id: 3, text: 'System maintenance scheduled', time: '2 hours ago' },
   ];
+
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      // Close notifications dropdown
+      if (
+        showNotifications && 
+        notificationRef.current && 
+        notificationBtnRef.current &&
+        !notificationRef.current.contains(event.target as Node) &&
+        !notificationBtnRef.current.contains(event.target as Node)
+      ) {
+        setShowNotifications(false);
+      }
+      
+      // Close profile dropdown
+      if (
+        showProfileMenu && 
+        profileRef.current && 
+        profileBtnRef.current &&
+        !profileRef.current.contains(event.target as Node) &&
+        !profileBtnRef.current.contains(event.target as Node)
+      ) {
+        setShowProfileMenu(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showNotifications, showProfileMenu]);
+
+  // Close dropdowns when pressing Escape
+  useEffect(() => {
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setShowNotifications(false);
+        setShowProfileMenu(false);
+      }
+    };
+
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, []);
+
+  const handleNotificationClick = () => {
+    setShowNotifications(!showNotifications);
+    setShowProfileMenu(false); // Close profile menu if open
+  };
+
+  const handleProfileClick = () => {
+    setShowProfileMenu(!showProfileMenu);
+    setShowNotifications(false); // Close notifications if open
+  };
 
   return (
     <header className="dashboard-header">
@@ -44,44 +102,62 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar, isMobile, userName }) =>
         </div>
 
         {/* Notifications */}
-        <div className="notification-container">
+        <div className="notification-container" ref={notificationRef}>
           <button 
+            ref={notificationBtnRef}
             className="notification-btn"
-            onClick={() => setShowNotifications(!showNotifications)}
+            onClick={handleNotificationClick}
+            aria-expanded={showNotifications}
+            aria-label="Notifications"
           >
-            🔔
+            <span className="notification-icon">🔔</span>
             <span className="notification-badge">3</span>
           </button>
           
           {showNotifications && (
-            <div className="notification-dropdown">
-              <div className="notification-header">
-                <h4>Notifications</h4>
-                <button className="mark-read">Mark all read</button>
-              </div>
-              <div className="notification-list">
-                {notifications.map(notif => (
-                  <div key={notif.id} className="notification-item">
-                    <div className="notification-content">
-                      <p>{notif.text}</p>
-                      <span className="notification-time">{notif.time}</span>
+            <>
+              {/* Backdrop for mobile */}
+              {isMobile && (
+                <div 
+                  className="dropdown-backdrop" 
+                  onClick={() => setShowNotifications(false)}
+                />
+              )}
+              
+              <div className="notification-dropdown">
+                <div className="notification-header">
+                  <h4>Notifications</h4>
+                  <button className="mark-read" onClick={() => setShowNotifications(false)}>
+                    Mark all read
+                  </button>
+                </div>
+                <div className="notification-list">
+                  {notifications.map(notif => (
+                    <div key={notif.id} className="notification-item">
+                      <div className="notification-content">
+                        <p>{notif.text}</p>
+                        <span className="notification-time">{notif.time}</span>
+                      </div>
+                      <div className="notification-dot"></div>
                     </div>
-                    <div className="notification-dot"></div>
-                  </div>
-                ))}
+                  ))}
+                </div>
+                <button className="view-all-notifications" onClick={() => setShowNotifications(false)}>
+                  View all notifications
+                </button>
               </div>
-              <button className="view-all-notifications">
-                View all notifications
-              </button>
-            </div>
+            </>
           )}
         </div>
 
         {/* User Profile */}
-        <div className="profile-container">
+        <div className="profile-container" ref={profileRef}>
           <button 
+            ref={profileBtnRef}
             className="profile-btn"
-            onClick={() => setShowProfileMenu(!showProfileMenu)}
+            onClick={handleProfileClick}
+            aria-expanded={showProfileMenu}
+            aria-label="Profile menu"
           >
             <div className="profile-avatar">
               {userName.charAt(0)}
@@ -90,44 +166,61 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar, isMobile, userName }) =>
               <span className="profile-name">{userName}</span>
               <span className="profile-role">Admin</span>
             </div>
-            <span className="dropdown-arrow">▼</span>
+            <span className={`dropdown-arrow ${showProfileMenu ? 'rotated' : ''}`}>▼</span>
           </button>
 
           {showProfileMenu && (
-            <div className="profile-dropdown">
-              <div className="dropdown-section">
-                <div className="dropdown-profile-info">
-                  <div className="dropdown-avatar">
-                    {userName.charAt(0)}
-                  </div>
-                  <div>
-                    <p className="dropdown-name">{userName}</p>
-                    <p className="dropdown-email">brooklyn@ananthigroup.com</p>
+            <>
+              {/* Backdrop for mobile */}
+              {isMobile && (
+                <div 
+                  className="dropdown-backdrop" 
+                  onClick={() => setShowProfileMenu(false)}
+                />
+              )}
+              
+              <div className="profile-dropdown">
+                <div className="dropdown-section">
+                  <div className="dropdown-profile-info">
+                    <div className="dropdown-avatar">
+                      {userName.charAt(0)}
+                    </div>
+                    <div>
+                      <p className="dropdown-name">{userName}</p>
+                      <p className="dropdown-email">brooklyn@example.com</p>
+                    </div>
                   </div>
                 </div>
+                
+                <div className="dropdown-divider"></div>
+                
+                <a href="/profile" className="dropdown-item" onClick={() => setShowProfileMenu(false)}>
+                  <span className="dropdown-icon">👤</span>
+                  <span>My Profile</span>
+                </a>
+                <a href="/settings" className="dropdown-item" onClick={() => setShowProfileMenu(false)}>
+                  <span className="dropdown-icon">⚙️</span>
+                  <span>Account Settings</span>
+                </a>
+                
+                <div className="dropdown-divider"></div>
+                
+                <a href="/help" className="dropdown-item" onClick={() => setShowProfileMenu(false)}>
+                  <span className="dropdown-icon">❓</span>
+                  <span>Help & Support</span>
+                </a>
+                
+                <div className="dropdown-divider"></div>
+                
+                <button className="dropdown-item logout" onClick={() => {
+                  setShowProfileMenu(false);
+                  // Add logout logic here
+                }}>
+                  <span className="dropdown-icon">🚪</span>
+                  <span>Logout</span>
+                </button>
               </div>
-              
-              <div className="dropdown-divider"></div>
-              
-              <a href="/profile" className="dropdown-item">
-                👤 My Profile
-              </a>
-              <a href="/settings" className="dropdown-item">
-                ⚙️ Account Settings
-              </a>
-              
-              <div className="dropdown-divider"></div>
-              
-              <a href="/help" className="dropdown-item">
-                ❓ Help & Support
-              </a>
-              
-              <div className="dropdown-divider"></div>
-              
-              <button className="dropdown-item logout">
-                🚪 Logout
-              </button>
-            </div>
+            </>
           )}
         </div>
       </div>

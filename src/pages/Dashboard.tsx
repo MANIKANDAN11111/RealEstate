@@ -38,6 +38,14 @@ const Dashboard = () => {
     setSidebarOpen(!sidebarOpen);
   };
 
+  // Get the correct class based on sidebar state and mobile
+  const getMainContentClass = () => {
+    if (isMobile) {
+      return 'main-content sidebar-collapsed';
+    }
+    return sidebarOpen ? 'main-content sidebar-open' : 'main-content sidebar-collapsed';
+  };
+
   return (
     <div className="dashboard-container">
       <Sidebar 
@@ -46,7 +54,7 @@ const Dashboard = () => {
         toggleSidebar={toggleSidebar} 
       />
       
-      <div className={`main-content ${sidebarOpen ? 'sidebar-open' : 'sidebar-collapsed'}`}>
+      <div className={getMainContentClass()}>
         <Header 
           toggleSidebar={toggleSidebar} 
           isMobile={isMobile}
