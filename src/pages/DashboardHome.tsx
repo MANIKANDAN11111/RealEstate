@@ -153,45 +153,6 @@ const DashboardHome = () => {
     }
   ];
 
-  // Recent Inquiries Data
-  const recentInquiries = [
-    { 
-      property: 'Modern Downtown Loft', 
-      user: 'Alex Johnson', 
-      date: '2023-10-26', 
-      status: 'Pending',
-      statusType: 'pending'
-    },
-    { 
-      property: 'Suburban Family Home', 
-      user: 'Maria Garcia', 
-      date: '2023-10-25', 
-      status: 'Responded',
-      statusType: 'responded'
-    },
-    { 
-      property: 'Cozy Beachside Cottage', 
-      user: 'Chen Wei', 
-      date: '2023-10-24', 
-      status: 'Responded',
-      statusType: 'responded'
-    },
-    { 
-      property: 'Luxury Skyscraper Apt.', 
-      user: 'Fatima Ahmed', 
-      date: '2023-10-23', 
-      status: 'Closed',
-      statusType: 'closed'
-    },
-    { 
-      property: 'Mountain Retreat Cabin', 
-      user: 'David Smith', 
-      date: '2023-10-22', 
-      status: 'Pending',
-      statusType: 'pending'
-    }
-  ];
-
   // Recent Updates Data
   const recentUpdates = [
     { 
@@ -376,7 +337,7 @@ const DashboardHome = () => {
       {/* Main Content Area */}
       <div className="main-content-area">
         <div className="main-grid">
-          {/* Left Column */}
+          {/* Left Column - Main Content */}
           <div className="left-column">
             {/* Revenue Chart Card */}
             <div className="card revenue-card">
@@ -386,11 +347,16 @@ const DashboardHome = () => {
                   <p>Monthly revenue trends</p>
                 </div>
                 <div className="card-actions">
-                  <select className="time-select">
-                    <option>Last 30 days</option>
-                    <option>Last 90 days</option>
-                    <option>This Year</option>
-                  </select>
+                  <div className="time-select-wrapper">
+                    <select className="time-select">
+                      <option>Last 30 days</option>
+                      <option>Last 90 days</option>
+                      <option>This Year</option>
+                      <option>Last Year</option>
+                      <option>Custom Range</option>
+                    </select>
+                    <span className="select-arrow">▼</span>
+                  </div>
                 </div>
               </div>
               <div className="card-content">
@@ -417,11 +383,11 @@ const DashboardHome = () => {
                   <div className="chart-legend">
                     <div className="legend-item">
                       <span className="legend-dot current"></span>
-                      <span>Current Month</span>
+                      <span className="legend-text">Current Month</span>
                     </div>
                     <div className="legend-item">
                       <span className="legend-dot previous"></span>
-                      <span>Previous Month</span>
+                      <span className="legend-text">Previous Month</span>
                     </div>
                   </div>
                 </div>
@@ -442,48 +408,95 @@ const DashboardHome = () => {
               </div>
             </div>
 
-            {/* Recent Inquiries Card */}
-            <div className="card inquiries-card">
+            {/* Quick Actions and System Overview in Same Row */}
+            <div className="combined-cards-row">
+              {/* Quick Actions Card */}
+              <div className="card quick-links-card">
+                <div className="card-header">
+                  <div className="card-title-section">
+                    <h3>Quick Actions</h3>
+                    <p>Access important sections quickly</p>
+                  </div>
+                </div>
+                <div className="card-content">
+                  <div className="quick-links-grid">
+                    {quickLinks.map((link, index) => (
+                      <a key={index} href={link.link} className="quick-link-item">
+                        <div className={`link-icon ${link.color}`}>
+                          <span>{link.icon}</span>
+                        </div>
+                        <div className="link-content">
+                          <span className="link-title">{link.title}</span>
+                          <span className="link-desc">{link.description}</span>
+                        </div>
+                        <span className="link-arrow">→</span>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* System Overview Card */}
+              <div className="card system-card">
+                <div className="card-header">
+                  <div className="card-title-section">
+                    <h3>System Overview</h3>
+                    <p>Performance and health metrics</p>
+                  </div>
+                </div>
+                <div className="card-content">
+                  <div className="system-stats">
+                    {systemStats.map((stat, index) => (
+                      <div key={index} className="system-stat-item">
+                        <div className="stat-label-row">
+                          <span className="stat-label">{stat.label}</span>
+                          <span className="stat-value">{stat.value}</span>
+                        </div>
+                        <div className="progress-bar-container">
+                          <div 
+                            className="progress-bar" 
+                            style={{ width: `${stat.percentage}%` }}
+                            role="progressbar"
+                            aria-valuenow={stat.percentage}
+                            aria-valuemin={0}
+                            aria-valuemax={100}
+                          ></div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Property Status Card - Full Width */}
+            <div className="card property-status-card full-width">
               <div className="card-header">
                 <div className="card-title-section">
-                  <h3>Recent Inquiries</h3>
-                  <p>Latest property inquiries</p>
+                  <h3>Property Status Distribution</h3>
+                  <p>Current status of all properties</p>
                 </div>
                 <button className="btn btn-text">
-                  View All →
+                  View Details →
                 </button>
               </div>
               <div className="card-content">
-                <div className="inquiries-table">
-                  <div className="table-header">
-                    <div className="table-col property">Property</div>
-                    <div className="table-col user">User</div>
-                    <div className="table-col date">Date</div>
-                    <div className="table-col status">Status</div>
-                    <div className="table-col actions">Actions</div>
-                  </div>
-                  <div className="table-body">
-                    {recentInquiries.map((inquiry, index) => (
-                      <div key={index} className="table-row">
-                        <div className="table-col property">
-                          <div className="property-info">
-                            <span className="property-name">{inquiry.property}</span>
+                <div className="property-status-container">
+                  <div className="property-status-grid">
+                    {propertyStatus.map((property, index) => (
+                      <div key={index} className="property-status-item">
+                        <div className="property-icon-wrapper">
+                          <div className={`property-icon ${property.color}`}>
+                            <span>{property.icon}</span>
                           </div>
                         </div>
-                        <div className="table-col user">
-                          <span className="user-name">{inquiry.user}</span>
+                        <div className="property-info">
+                          <span className="property-title">{property.title}</span>
+                          <span className="property-count">{property.count} Properties</span>
                         </div>
-                        <div className="table-col date">
-                          <span className="inquiry-date">{inquiry.date}</span>
-                        </div>
-                        <div className="table-col status">
-                          <span className={`status-badge ${inquiry.statusType}`}>
-                            {inquiry.status}
-                          </span>
-                        </div>
-                        <div className="table-col actions">
-                          <button className="action-btn view-btn">View</button>
-                        </div>
+                        <span className={`property-trend ${property.trendType}`}>
+                          {property.trend}
+                        </span>
                       </div>
                     ))}
                   </div>
@@ -494,32 +507,6 @@ const DashboardHome = () => {
 
           {/* Right Column */}
           <div className="right-column">
-            {/* Quick Links Card */}
-            <div className="card quick-links-card">
-              <div className="card-header">
-                <div className="card-title-section">
-                  <h3>Quick Actions</h3>
-                  <p>Access important sections quickly</p>
-                </div>
-              </div>
-              <div className="card-content">
-                <div className="quick-links-grid">
-                  {quickLinks.map((link, index) => (
-                    <a key={index} href={link.link} className="quick-link-item">
-                      <div className={`link-icon ${link.color}`}>
-                        <span>{link.icon}</span>
-                      </div>
-                      <div className="link-content">
-                        <span className="link-title">{link.title}</span>
-                        <span className="link-desc">{link.description}</span>
-                      </div>
-                      <span className="link-arrow">→</span>
-                    </a>
-                  ))}
-                </div>
-              </div>
-            </div>
-
             {/* Recent Updates Card */}
             <div className="card updates-card">
               <div className="card-header">
@@ -546,103 +533,35 @@ const DashboardHome = () => {
               </div>
             </div>
 
-            {/* System Overview Card */}
-            <div className="card system-card">
+            {/* Top Performers Card */}
+            <div className="card performers-card">
               <div className="card-header">
                 <div className="card-title-section">
-                  <h3>System Overview</h3>
-                  <p>Performance and health metrics</p>
+                  <h3>Top Performers</h3>
+                  <p>Best performing properties</p>
                 </div>
+                <button className="btn btn-text">
+                  See All →
+                </button>
               </div>
               <div className="card-content">
-                <div className="system-stats">
-                  {systemStats.map((stat, index) => (
-                    <div key={index} className="system-stat-item">
-                      <div className="stat-label-row">
-                        <span className="stat-label">{stat.label}</span>
-                        <span className="stat-value">{stat.value}</span>
+                <div className="performers-list">
+                  {topPerformers.map((performer, index) => (
+                    <div key={index} className="performer-item">
+                      <div className="performer-rank">
+                        <span>#{index + 1}</span>
                       </div>
-                      <div className="progress-bar-container">
-                        <div 
-                          className="progress-bar" 
-                          style={{ width: `${stat.percentage}%` }}
-                          role="progressbar"
-                          aria-valuenow={stat.percentage}
-                          aria-valuemin={0}
-                          aria-valuemax={100}
-                        ></div>
+                      <div className="performer-info">
+                        <span className="performer-name">{performer.name}</span>
+                        <span className="performer-type">{performer.type}</span>
+                      </div>
+                      <div className="performer-stats">
+                        <span className="performer-price">{performer.price}</span>
+                        <span className="performer-growth positive">{performer.growth}</span>
                       </div>
                     </div>
                   ))}
                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Bottom Row - Full Width */}
-        <div className="bottom-row">
-          {/* Property Status Card */}
-          <div className="card property-status-card">
-            <div className="card-header">
-              <div className="card-title-section">
-                <h3>Property Status Distribution</h3>
-                <p>Current status of all properties</p>
-              </div>
-              <button className="btn btn-text">
-                View Details →
-              </button>
-            </div>
-            <div className="card-content">
-              <div className="property-status-grid">
-                {propertyStatus.map((property, index) => (
-                  <div key={index} className="property-status-item">
-                    <div className="property-icon-wrapper">
-                      <div className={`property-icon ${property.color}`}>
-                        <span>{property.icon}</span>
-                      </div>
-                    </div>
-                    <div className="property-info">
-                      <span className="property-title">{property.title}</span>
-                      <span className="property-count">{property.count} Properties</span>
-                    </div>
-                    <span className={`property-trend ${property.trendType}`}>
-                      {property.trend}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Top Performers Card */}
-          <div className="card performers-card">
-            <div className="card-header">
-              <div className="card-title-section">
-                <h3>Top Performers</h3>
-                <p>Best performing properties</p>
-              </div>
-              <button className="btn btn-text">
-                See All →
-              </button>
-            </div>
-            <div className="card-content">
-              <div className="performers-list">
-                {topPerformers.map((performer, index) => (
-                  <div key={index} className="performer-item">
-                    <div className="performer-rank">
-                      <span>#{index + 1}</span>
-                    </div>
-                    <div className="performer-info">
-                      <span className="performer-name">{performer.name}</span>
-                      <span className="performer-type">{performer.type}</span>
-                    </div>
-                    <div className="performer-stats">
-                      <span className="performer-price">{performer.price}</span>
-                      <span className="performer-growth positive">{performer.growth}</span>
-                    </div>
-                  </div>
-                ))}
               </div>
             </div>
           </div>
