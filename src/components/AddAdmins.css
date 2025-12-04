@@ -196,6 +196,11 @@
   transition: all 0.2s ease;
 }
 
+.form-input.error {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.2);
+}
+
 .form-input:focus,
 .form-select:focus {
   outline: none;
@@ -207,26 +212,25 @@
   color: #94a3b8;
 }
 
-/* Phone Input */
-.phone-input-group {
+/* Error Messages */
+.error-message {
+  color: #ef4444;
+  font-size: 12px;
+  margin-top: 6px;
   display: flex;
   align-items: center;
+  gap: 4px;
 }
 
-.country-code {
-  padding: 12px 16px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid #475569;
-  border-radius: 8px 0 0 8px;
-  color: #94a3b8;
-  font-weight: 600;
-  min-width: 60px;
-  text-align: center;
+.error-message::before {
+  content: "⚠";
+  font-size: 14px;
 }
 
-.phone-input-group .form-input {
-  border-radius: 0 8px 8px 0;
-  border-left: none;
+.input-hint {
+  color: #64748b;
+  font-size: 12px;
+  margin-top: 6px;
 }
 
 /* Permissions Grid */

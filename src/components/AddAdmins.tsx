@@ -65,6 +65,11 @@ const AddAdmins = () => {
     sendInvite: true
   });
 
+  const [errors, setErrors] = useState({
+    email: '',
+    phone: ''
+  });
+
   const [activeTab, setActiveTab] = useState('add');
 
   const permissionOptions = [
@@ -78,9 +83,30 @@ const AddAdmins = () => {
     { id: 'support', label: 'Customer Support' }
   ];
 
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email) return 'Email is required';
+    if (!emailRegex.test(email)) return 'Please enter a valid email address';
+    if (!email.endsWith('@ananthigroup.com')) return 'Email must be @ananthigroup.com domain';
+    return '';
+  };
+
+  const validatePhone = (phone: string) => {
+    const phoneRegex = /^\d{10}$/;
+    if (phone && !phoneRegex.test(phone)) return 'Please enter a valid 10-digit mobile number';
+    return '';
+  };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    
+    // Validate on change
+    if (name === 'email') {
+      setErrors(prev => ({ ...prev, email: validateEmail(value) }));
+    } else if (name === 'phone') {
+      setErrors(prev => ({ ...prev, phone: validatePhone(value) }));
+    }
   };
 
   const handlePermissionToggle = (permissionId: string) => {
@@ -94,6 +120,18 @@ const AddAdmins = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate all fields before submission
+    const emailError = validateEmail(formData.email);
+    const phoneError = validatePhone(formData.phone);
+    
+    if (emailError || phoneError) {
+      setErrors({
+        email: emailError,
+        phone: phoneError
+      });
+      return;
+    }
     
     // Generate avatar from name
     const avatar = formData.name.split(' ').map(n => n[0]).join('').toUpperCase();
@@ -123,6 +161,7 @@ const AddAdmins = () => {
       permissions: [],
       sendInvite: true
     });
+    setErrors({ email: '', phone: '' });
     
     alert('New admin added successfully! Invitation email sent.');
   };
@@ -240,26 +279,28 @@ const AddAdmins = () => {
                         name="email"
                         value={formData.email}
                         onChange={handleInputChange}
-                        className="form-input"
+                        className={`form-input ${errors.email ? 'error' : ''}`}
                         placeholder="admin@ananthigroup.com"
                         required
                       />
+                      {errors.email && <div className="error-message">{errors.email}</div>}
+                      <div className="input-hint">Must be @ananthigroup.com domain</div>
                     </div>
 
                     <div className="form-group">
-                      <label className="form-label">Phone Number</label>
-                      <div className="phone-input-group">
-                        <span className="country-code">+91</span>
-                        <input
-                          type="tel"
-                          name="phone"
-                          value={formData.phone}
-                          onChange={handleInputChange}
-                          className="form-input"
-                          placeholder="Enter 10-digit number"
-                          maxLength={10}
-                        />
-                      </div>
+                      <label className="form-label">Mobile Number</label>
+                      <input
+                        type="tel"
+                        name="phone"
+                        value={formData.phone}
+                        onChange={handleInputChange}
+                        className={`form-input ${errors.phone ? 'error' : ''}`}
+                        placeholder="Enter 10-digit mobile number"
+                        maxLength={10}
+                        pattern="\d{10}"
+                      />
+                      {errors.phone && <div className="error-message">{errors.phone}</div>}
+                      <div className="input-hint">Optional - 10 digits only</div>
                     </div>
                   </div>
 
@@ -359,7 +400,18 @@ const AddAdmins = () => {
                 </div>
 
                 <div className="form-actions">
-                  <button type="button" className="cancel-btn">Cancel</button>
+                  <button type="button" className="cancel-btn" onClick={() => {
+                    setFormData({
+                      name: '',
+                      email: '',
+                      phone: '',
+                      role: 'support',
+                      department: '',
+                      permissions: [],
+                      sendInvite: true
+                    });
+                    setErrors({ email: '', phone: '' });
+                  }}>Cancel</button>
                   <button type="submit" className="submit-btn">Add Admin & Send Invite</button>
                 </div>
               </form>

@@ -26,6 +26,11 @@ const DashboardHome = () => {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  // Apply dark theme on mount
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', 'dark');
+  }, []);
+
   // Stats Data
   const statsData = [
     {
@@ -308,7 +313,7 @@ const DashboardHome = () => {
         ))}
       </div>
 
-      {/* Main Content Area - NO SCROLL WRAPPER */}
+      {/* Main Content Area */}
       <div className="main-content-area">
         <div className="main-grid">
           {/* Left Column */}
