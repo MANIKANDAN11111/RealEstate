@@ -4,12 +4,23 @@ import './Header.css';
 interface HeaderProps {
   toggleSidebar: () => void;
   isMobile: boolean;
-  userName: string;
+  userName?: string; // Made optional since we'll fetch it if not provided
 }
 
-const Header: React.FC<HeaderProps> = ({ toggleSidebar, isMobile, userName }) => {
+interface AdminDetails {
+  name?: string;
+  fullName?: string;
+  firstName?: string;
+  adminName?: string;
+  username?: string;
+  email?: string;
+}
+
+const Header: React.FC<HeaderProps> = ({ toggleSidebar, isMobile, userName: userNameProp }) => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [adminDetails, setAdminDetails] = useState<AdminDetails | null>(null);
+  const [isLoadingAdmin, setIsLoadingAdmin] = useState(true);
   
   const notificationRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
@@ -21,6 +32,87 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar, isMobile, userName }) =>
     { id: 2, text: 'Payment received from Alex Johnson', time: '1 hour ago' },
     { id: 3, text: 'System maintenance scheduled', time: '2 hours ago' },
   ];
+
+  // Fetch admin details on component mount
+  useEffect(() => {
+    const fetchAdminDetails = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        
+        if (!token) {
+          console.error('No token found in localStorage');
+          setIsLoadingAdmin(false);
+          return;
+        }
+
+        const response = await fetch('http://localhost:8080/admin/getadmindetails', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (!response.ok) {
+          if (response.status === 401) {
+            // Token expired or invalid - redirect to login
+            localStorage.removeItem('token');
+            localStorage.removeItem('authEmail');
+            window.location.href = '/login';
+            return;
+          }
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data: AdminDetails = await response.json();
+        console.log('Admin API Response:', data); // Debug log to see actual response
+        setAdminDetails(data);
+      } catch (error) {
+        console.error('Error fetching admin details:', error);
+        // Fallback to email from localStorage
+        const email = localStorage.getItem('authEmail');
+        if (email) {
+          setAdminDetails({ email });
+        }
+      } finally {
+        setIsLoadingAdmin(false);
+      }
+    };
+
+    fetchAdminDetails();
+  }, []);
+
+  // Get display name from admin details or props
+  const getDisplayName = (): string => {
+    if (userNameProp) return userNameProp;
+    if (!adminDetails) return 'Admin';
+    
+    // If name exists and is not null, use it
+    if (adminDetails.name && adminDetails.name.trim() !== '') {
+      return adminDetails.name;
+    }
+    
+    // Otherwise, create a display name from email
+    if (adminDetails.email) {
+      const emailUsername = adminDetails.email.split('@')[0];
+      // Capitalize first letter: admin -> Admin
+      return emailUsername.charAt(0).toUpperCase() + emailUsername.slice(1);
+    }
+    
+    return 'Admin';
+  };
+
+  // Get admin email
+  const getAdminEmail = (): string => {
+    if (adminDetails?.email) return adminDetails.email;
+    return localStorage.getItem('authEmail') || 'admin@example.com';
+  };
+
+  // Get avatar initial
+  const getAvatarInitial = (): string => {
+    const displayName = getDisplayName();
+    return displayName.charAt(0).toUpperCase();
+  };
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -72,6 +164,22 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar, isMobile, userName }) =>
     setShowProfileMenu(!showProfileMenu);
     setShowNotifications(false);
   };
+
+  const handleLogout = () => {
+    // Clear all stored data
+    localStorage.removeItem('token');
+    localStorage.removeItem('authEmail');
+    
+    // Close dropdown
+    setShowProfileMenu(false);
+    
+    // Redirect to login
+    window.location.href = '/login';
+  };
+
+  const displayName = getDisplayName();
+  const adminEmail = getAdminEmail();
+  const avatarInitial = getAvatarInitial();
 
   return (
     <header className="dashboard-header">
@@ -152,10 +260,12 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar, isMobile, userName }) =>
             aria-label="Profile menu"
           >
             <div className="profile-avatar">
-              {userName.charAt(0)}
+              {isLoadingAdmin ? '...' : avatarInitial}
             </div>
             <div className="profile-info">
-              <span className="profile-name">{userName}</span>
+              <span className="profile-name">
+                {isLoadingAdmin ? 'Loading...' : displayName}
+              </span>
               <span className="profile-role">Admin</span>
             </div>
             <span className={`dropdown-arrow ${showProfileMenu ? 'rotated' : ''}`}>▼</span>
@@ -174,11 +284,11 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar, isMobile, userName }) =>
                 <div className="dropdown-section">
                   <div className="dropdown-profile-info">
                     <div className="dropdown-avatar">
-                      {userName.charAt(0)}
+                      {avatarInitial}
                     </div>
                     <div>
-                      <p className="dropdown-name">{userName}</p>
-                      <p className="dropdown-email">brooklyn@example.com</p>
+                      <p className="dropdown-name">{displayName}</p>
+                      <p className="dropdown-email">{adminEmail}</p>
                     </div>
                   </div>
                 </div>
@@ -203,9 +313,7 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar, isMobile, userName }) =>
                 
                 <div className="dropdown-divider"></div>
                 
-                <button className="dropdown-item logout" onClick={() => {
-                  setShowProfileMenu(false);
-                }}>
+                <button className="dropdown-item logout" onClick={handleLogout}>
                   <span className="dropdown-icon">🚪</span>
                   <span>Logout</span>
                 </button>

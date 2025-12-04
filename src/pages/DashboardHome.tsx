@@ -4,6 +4,55 @@ import './DashboardHome.css';
 const DashboardHome = () => {
   const [isMobile, setIsMobile] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [adminName, setAdminName] = useState('Admin'); // Default fallback
+  const [isLoadingAdmin, setIsLoadingAdmin] = useState(true);
+
+  // Fetch admin details on component mount
+  useEffect(() => {
+    const fetchAdminDetails = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        
+        if (!token) {
+          console.error('No token found in localStorage');
+          setIsLoadingAdmin(false);
+          return;
+        }
+
+        const response = await fetch('http://localhost:8080/admin/getadmindetails', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const adminData = await response.json();
+        
+        // Adjust these property names based on your actual API response
+        // Common variations: name, fullName, firstName, adminName, username
+        const name = adminData.name || adminData.fullName || adminData.firstName || adminData.adminName || adminData.username || 'Admin';
+        
+        setAdminName(name);
+      } catch (error) {
+        console.error('Error fetching admin details:', error);
+        // Fallback to email from localStorage if API fails
+        const email = localStorage.getItem('authEmail');
+        if (email) {
+          const nameFromEmail = email.split('@')[0];
+          setAdminName(nameFromEmail.charAt(0).toUpperCase() + nameFromEmail.slice(1));
+        }
+      } finally {
+        setIsLoadingAdmin(false);
+      }
+    };
+
+    fetchAdminDetails();
+  }, []);
 
   // Update time every second
   useEffect(() => {
@@ -31,13 +80,18 @@ const DashboardHome = () => {
     document.documentElement.setAttribute('data-theme', 'dark');
   }, []);
 
+  // Get first letter of admin name for avatar
+  const getAvatarInitial = () => {
+    return adminName.charAt(0).toUpperCase();
+  };
+
   // Stats Data
   const statsData = [
     {
       title: 'Total Properties',
       value: '156',
       change: '+5.4%',
-      changeType: 'positive' as const,
+      changeType: 'positive',
       icon: '🏢',
       description: 'Total properties listed'
     },
@@ -45,7 +99,7 @@ const DashboardHome = () => {
       title: 'Active Listings',
       value: '870',
       change: '+2.1%',
-      changeType: 'positive' as const,
+      changeType: 'positive',
       icon: '📊',
       description: 'Currently active listings'
     },
@@ -53,7 +107,7 @@ const DashboardHome = () => {
       title: 'New Users',
       value: '316',
       change: '+12.5%',
-      changeType: 'positive' as const,
+      changeType: 'positive',
       icon: '👥',
       description: 'New users this month'
     },
@@ -61,7 +115,7 @@ const DashboardHome = () => {
       title: 'Pending Inquiries',
       value: '42',
       change: '-3.0%',
-      changeType: 'negative' as const,
+      changeType: 'negative',
       icon: '📨',
       description: 'Inquiries pending response'
     }
@@ -72,28 +126,28 @@ const DashboardHome = () => {
     { 
       title: 'Manage Properties', 
       icon: '🏢', 
-      color: 'blue' as const, 
+      color: 'blue', 
       description: 'View and manage all properties',
       link: '/properties'
     },
     { 
       title: 'Approve Users', 
       icon: '👥', 
-      color: 'green' as const, 
+      color: 'green', 
       description: 'Approve new user registrations',
       link: '/users/approve'
     },
     { 
       title: 'View Reports', 
       icon: '📊', 
-      color: 'purple' as const, 
+      color: 'purple', 
       description: 'Generate and view reports',
       link: '/reports'
     },
     { 
       title: 'System Health', 
       icon: '⚡', 
-      color: 'orange' as const, 
+      color: 'orange', 
       description: 'Monitor system performance',
       link: '/system'
     }
@@ -106,35 +160,35 @@ const DashboardHome = () => {
       user: 'Alex Johnson', 
       date: '2023-10-26', 
       status: 'Pending',
-      statusType: 'pending' as const
+      statusType: 'pending'
     },
     { 
       property: 'Suburban Family Home', 
       user: 'Maria Garcia', 
       date: '2023-10-25', 
       status: 'Responded',
-      statusType: 'responded' as const
+      statusType: 'responded'
     },
     { 
       property: 'Cozy Beachside Cottage', 
       user: 'Chen Wei', 
       date: '2023-10-24', 
       status: 'Responded',
-      statusType: 'responded' as const
+      statusType: 'responded'
     },
     { 
       property: 'Luxury Skyscraper Apt.', 
       user: 'Fatima Ahmed', 
       date: '2023-10-23', 
       status: 'Closed',
-      statusType: 'closed' as const
+      statusType: 'closed'
     },
     { 
       property: 'Mountain Retreat Cabin', 
       user: 'David Smith', 
       date: '2023-10-22', 
       status: 'Pending',
-      statusType: 'pending' as const
+      statusType: 'pending'
     }
   ];
 
@@ -142,35 +196,35 @@ const DashboardHome = () => {
   const recentUpdates = [
     { 
       id: 1,
-      type: 'success' as const, 
+      type: 'success', 
       message: 'New property "Luxury Villa" approved', 
       time: '2 mins ago',
       icon: '✓'
     },
     { 
       id: 2,
-      type: 'warning' as const, 
+      type: 'warning', 
       message: 'System maintenance at 2:00 AM', 
       time: '30 mins ago',
       icon: '!'
     },
     { 
       id: 3,
-      type: 'info' as const, 
+      type: 'info', 
       message: 'Monthly report generated successfully', 
       time: '2 hours ago',
       icon: 'i'
     },
     { 
       id: 4,
-      type: 'success' as const, 
+      type: 'success', 
       message: 'Backup completed successfully', 
       time: '1 day ago',
       icon: '✓'
     },
     { 
       id: 5,
-      type: 'info' as const, 
+      type: 'info', 
       message: 'New user registration from John Doe', 
       time: '1 day ago',
       icon: '👤'
@@ -183,49 +237,49 @@ const DashboardHome = () => {
       title: 'Active Listings',
       count: '87',
       trend: '+12%',
-      trendType: 'up' as const,
+      trendType: 'up',
       icon: '🏢',
-      color: 'green' as const
+      color: 'green'
     },
     {
       title: 'Pending Approval',
       count: '12',
       trend: '-5%',
-      trendType: 'down' as const,
+      trendType: 'down',
       icon: '⏳',
-      color: 'yellow' as const
+      color: 'yellow'
     },
     {
       title: 'Recently Sold',
       count: '5',
       trend: '+8%',
-      trendType: 'up' as const,
+      trendType: 'up',
       icon: '💰',
-      color: 'blue' as const
+      color: 'blue'
     },
     {
       title: 'Rented Out',
       count: '23',
       trend: '+15%',
-      trendType: 'up' as const,
+      trendType: 'up',
       icon: '🏠',
-      color: 'purple' as const
+      color: 'purple'
     },
     {
       title: 'Under Maintenance',
       count: '7',
       trend: '0%',
-      trendType: 'neutral' as const,
+      trendType: 'neutral',
       icon: '🔧',
-      color: 'orange' as const
+      color: 'orange'
     },
     {
       title: 'Vacant',
       count: '19',
       trend: '-3%',
-      trendType: 'down' as const,
+      trendType: 'down',
       icon: '🚫',
-      color: 'gray' as const
+      color: 'gray'
     }
   ];
 
@@ -258,10 +312,16 @@ const DashboardHome = () => {
       <div className="dashboard-header-section">
         <div className="welcome-section">
           <div className="user-avatar-large">
-            <span>B</span>
+            <span>{isLoadingAdmin ? '...' : getAvatarInitial()}</span>
           </div>
           <div className="welcome-text">
-            <h1>Welcome back, Brooklyn!</h1>
+            <h1>
+              {isLoadingAdmin ? (
+                'Loading...'
+              ) : (
+                `Welcome back, ${adminName}!`
+              )}
+            </h1>
             <p>Here's what's happening with your properties today.</p>
           </div>
         </div>
