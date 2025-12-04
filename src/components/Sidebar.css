@@ -1,4 +1,4 @@
-/* Sidebar.css - Final Complete Fix */
+/* Sidebar.css - Fixed Active State */
 
 :root {
   --sidebar-width: 280px;
@@ -204,7 +204,7 @@
   overflow: hidden;
 }
 
-.menu-item:hover {
+.menu-item:hover:not(.active) {
   background: var(--sidebar-hover);
   transform: translateX(4px);
 }
@@ -308,8 +308,7 @@
   background: transparent;
 }
 
-.sidebar-nav::-webkit-scrollbar-thumb 
-{
+.sidebar-nav::-webkit-scrollbar-thumb {
   background: var(--sidebar-border);
   border-radius: 2px;
 }
@@ -319,15 +318,12 @@
 }
 
 /* Responsive Design */
-@media (max-width: 767px) 
-{
-  .sidebar 
-  {
+@media (max-width: 767px) {
+  .sidebar {
     width: 280px;
   }
   
-  .sidebar-logo 
-  {
+  .sidebar-logo {
     padding: 20px 16px;
   }
   
