@@ -25,7 +25,6 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar, isMobile, userName }) =>
   // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      // Close notifications dropdown
       if (
         showNotifications && 
         notificationRef.current && 
@@ -36,7 +35,6 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar, isMobile, userName }) =>
         setShowNotifications(false);
       }
       
-      // Close profile dropdown
       if (
         showProfileMenu && 
         profileRef.current && 
@@ -67,20 +65,19 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar, isMobile, userName }) =>
 
   const handleNotificationClick = () => {
     setShowNotifications(!showNotifications);
-    setShowProfileMenu(false); // Close profile menu if open
+    setShowProfileMenu(false);
   };
 
   const handleProfileClick = () => {
     setShowProfileMenu(!showProfileMenu);
-    setShowNotifications(false); // Close notifications if open
+    setShowNotifications(false);
   };
 
   return (
     <header className="dashboard-header">
-      {/* Left Section */}
       <div className="header-left">
-        <button className="menu-toggle" onClick={toggleSidebar}>
-          {isMobile ? '☰' : '☰'}
+        <button className="menu-toggle" onClick={toggleSidebar} aria-label="Toggle sidebar">
+          ☰
         </button>
         <div className="breadcrumb">
           <span>Dashboard</span>
@@ -89,19 +86,16 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar, isMobile, userName }) =>
         </div>
       </div>
 
-      {/* Right Section */}
       <div className="header-right">
-        {/* Search */}
         <div className="search-container">
+          <button className="search-btn" aria-label="Search">🔍</button>
           <input 
             type="text" 
             placeholder="Search properties, users..." 
             className="search-input"
           />
-          <button className="search-btn">🔍</button>
         </div>
 
-        {/* Notifications */}
         <div className="notification-container" ref={notificationRef}>
           <button 
             ref={notificationBtnRef}
@@ -116,7 +110,6 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar, isMobile, userName }) =>
           
           {showNotifications && (
             <>
-              {/* Backdrop for mobile */}
               {isMobile && (
                 <div 
                   className="dropdown-backdrop" 
@@ -150,7 +143,6 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar, isMobile, userName }) =>
           )}
         </div>
 
-        {/* User Profile */}
         <div className="profile-container" ref={profileRef}>
           <button 
             ref={profileBtnRef}
@@ -171,7 +163,6 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar, isMobile, userName }) =>
 
           {showProfileMenu && (
             <>
-              {/* Backdrop for mobile */}
               {isMobile && (
                 <div 
                   className="dropdown-backdrop" 
@@ -214,7 +205,6 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar, isMobile, userName }) =>
                 
                 <button className="dropdown-item logout" onClick={() => {
                   setShowProfileMenu(false);
-                  // Add logout logic here
                 }}>
                   <span className="dropdown-icon">🚪</span>
                   <span>Logout</span>

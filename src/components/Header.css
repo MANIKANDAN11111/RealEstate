@@ -1,54 +1,42 @@
-/* Header.css - Updated for black text in search */
+/* Header.css - Complete Fixed Version for Dark Theme */
 
-/* ===== CSS VARIABLES ===== */
 :root {
-  --header-height: 64px;
-  --card-bg: #ffffff;
-  --border-color: #e5e7eb;
-  --text-primary: #111827;
-  --text-secondary: #6b7280;
-  --text-tertiary: #9ca3af;
+  --header-height: 70px;
+  --header-bg: #1e293b;
+  --header-border: #334155;
+  --text-primary: #f1f5f9;
+  --text-secondary: #cbd5e1;
+  --text-tertiary: #94a3b8;
   --accent-blue: #3b82f6;
   --accent-red: #ef4444;
   --accent-purple: #8b5cf6;
-  --accent-green: #10b981;
   --radius-sm: 4px;
   --radius-md: 8px;
   --radius-lg: 12px;
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
   --transition: all 0.2s ease;
 }
 
-/* ===== DARK THEME VARIABLES ===== */
-[data-theme="dark"] {
-  --card-bg: #1f2937;
-  --border-color: #374151;
-  --text-primary: #f9fafb;
-  --text-secondary: #d1d5db;
-  --text-tertiary: #9ca3af;
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
-}
-
-/* ===== HEADER STYLES ===== */
+/* Header - Fixed positioning */
 .dashboard-header {
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
   height: var(--header-height);
-  background: var(--card-bg);
-  border-bottom: 1px solid var(--border-color);
+  background: var(--header-bg);
+  border-bottom: 1px solid var(--header-border);
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 24px;
-  position: sticky;
-  top: 0;
-  z-index: 1000;
+  z-index: 900;
   box-shadow: var(--shadow-sm);
+  flex-shrink: 0;
 }
 
-/* Backdrop for mobile dropdowns */
 .dropdown-backdrop {
   position: fixed;
   top: var(--header-height);
@@ -56,7 +44,7 @@
   right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.5);
-  z-index: 999;
+  z-index: 899;
   backdrop-filter: blur(2px);
 }
 
@@ -68,8 +56,8 @@
 }
 
 .menu-toggle {
-  background: none;
-  border: none;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--header-border);
   color: var(--text-secondary);
   font-size: 20px;
   cursor: pointer;
@@ -79,18 +67,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   line-height: 1;
 }
 
 .menu-toggle:hover {
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(255, 255, 255, 0.1);
   color: var(--text-primary);
-}
-
-[data-theme="dark"] .menu-toggle:hover {
-  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--accent-blue);
 }
 
 .breadcrumb {
@@ -119,7 +104,7 @@
   gap: 20px;
 }
 
-/* Search - IMPORTANT: Fixed text color issue */
+/* Search */
 .search-container {
   position: relative;
   width: 300px;
@@ -128,62 +113,24 @@
 .search-input {
   width: 100%;
   padding: 10px 16px 10px 40px;
-  background: var(--card-bg);
-  border: 1px solid var(--border-color);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--header-border);
   border-radius: var(--radius-md);
-  color: #000000 !important; /* Force black text */
+  color: var(--text-primary);
   font-size: 14px;
   font-weight: 400;
   transition: var(--transition);
   outline: none;
-  -webkit-text-fill-color: #000000 !important; /* For Safari/Chrome */
-  opacity: 1 !important; /* Ensure full opacity */
 }
-
-/* Special rule for dark mode to ensure contrast */
-[data-theme="dark"] .search-input {
-  background-color: #ffffff !important; /* White background in dark mode */
-  border-color: #cbd5e1 !important;
-  color: #000000 !important;
-  -webkit-text-fill-color: #000000 !important;
-}
-
-/* If you want to keep the original background in dark mode, use this instead: */
-/*
-[data-theme="dark"] .search-input {
-  background-color: #f9fafb !important; 
-  border-color: #d1d5db !important;
-  color: #000000 !important;
-  -webkit-text-fill-color: #000000 !important;
-}
-*/
 
 .search-input:focus {
   border-color: var(--accent-blue);
+  background: rgba(255, 255, 255, 0.08);
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 .search-input::placeholder {
   color: var(--text-tertiary);
-  -webkit-text-fill-color: var(--text-tertiary) !important;
-  opacity: 1 !important;
-}
-
-/* Fix for autofill styles */
-.search-input:-webkit-autofill,
-.search-input:-webkit-autofill:hover, 
-.search-input:-webkit-autofill:focus {
-  -webkit-text-fill-color: #000000 !important;
-  -webkit-box-shadow: 0 0 0px 1000px var(--card-bg) inset !important;
-  box-shadow: 0 0 0px 1000px var(--card-bg) inset !important;
-}
-
-[data-theme="dark"] .search-input:-webkit-autofill,
-[data-theme="dark"] .search-input:-webkit-autofill:hover, 
-[data-theme="dark"] .search-input:-webkit-autofill:focus {
-  -webkit-text-fill-color: #000000 !important;
-  -webkit-box-shadow: 0 0 0px 1000px #ffffff inset !important;
-  box-shadow: 0 0 0px 1000px #ffffff inset !important;
 }
 
 .search-btn {
@@ -208,8 +155,8 @@
 
 .notification-btn {
   position: relative;
-  background: none;
-  border: none;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--header-border);
   color: var(--text-secondary);
   font-size: 20px;
   cursor: pointer;
@@ -225,12 +172,9 @@
 }
 
 .notification-btn:hover {
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(255, 255, 255, 0.1);
   color: var(--text-primary);
-}
-
-[data-theme="dark"] .notification-btn:hover {
-  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--accent-blue);
 }
 
 .notification-icon {
@@ -240,8 +184,8 @@
 
 .notification-badge {
   position: absolute;
-  top: 6px;
-  right: 6px;
+  top: 4px;
+  right: 4px;
   background: var(--accent-red);
   color: white;
   font-size: 10px;
@@ -252,7 +196,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid var(--card-bg);
+  border: 2px solid var(--header-bg);
 }
 
 /* Notification Dropdown */
@@ -261,11 +205,11 @@
   top: calc(100% + 10px);
   right: 0;
   width: 320px;
-  background: var(--card-bg);
-  border: 1px solid var(--border-color);
+  background: var(--header-bg);
+  border: 1px solid var(--header-border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
-  z-index: 1100;
+  z-index: 1000;
   animation: dropdownSlide 0.2s ease;
   overflow: hidden;
 }
@@ -283,7 +227,7 @@
 
 .notification-header {
   padding: 16px;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--header-border);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -317,7 +261,6 @@
   overflow-y: auto;
 }
 
-/* Scrollbar styling for notification list */
 .notification-list::-webkit-scrollbar {
   width: 6px;
 }
@@ -327,13 +270,13 @@
 }
 
 .notification-list::-webkit-scrollbar-thumb {
-  background: var(--border-color);
+  background: var(--header-border);
   border-radius: 3px;
 }
 
 .notification-item {
   padding: 12px 16px;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--header-border);
   display: flex;
   align-items: flex-start;
   gap: 12px;
@@ -342,11 +285,7 @@
 }
 
 .notification-item:hover {
-  background: rgba(0, 0, 0, 0.02);
-}
-
-[data-theme="dark"] .notification-item:hover {
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .notification-item:last-child {
@@ -382,14 +321,11 @@
 }
 
 @keyframes pulse {
-  0% {
+  0%, 100% {
     opacity: 1;
   }
   50% {
     opacity: 0.5;
-  }
-  100% {
-    opacity: 1;
   }
 }
 
@@ -398,7 +334,7 @@
   padding: 12px;
   background: none;
   border: none;
-  border-top: 1px solid var(--border-color);
+  border-top: 1px solid var(--header-border);
   color: var(--accent-blue);
   font-size: 14px;
   font-weight: 500;
@@ -408,11 +344,7 @@
 }
 
 .view-all-notifications:hover {
-  background: rgba(0, 0, 0, 0.02);
-}
-
-[data-theme="dark"] .view-all-notifications:hover {
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(255, 255, 255, 0.05);
 }
 
 /* Profile Container */
@@ -424,21 +356,18 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  background: none;
-  border: none;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--header-border);
   cursor: pointer;
-  padding: 4px 8px;
+  padding: 6px 12px;
   border-radius: var(--radius-md);
   transition: var(--transition);
   color: var(--text-primary);
 }
 
 .profile-btn:hover {
-  background: rgba(0, 0, 0, 0.05);
-}
-
-[data-theme="dark"] .profile-btn:hover {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--accent-blue);
 }
 
 .profile-avatar {
@@ -499,11 +428,11 @@
   top: calc(100% + 10px);
   right: 0;
   width: 280px;
-  background: var(--card-bg);
-  border: 1px solid var(--border-color);
+  background: var(--header-bg);
+  border: 1px solid var(--header-border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
-  z-index: 1100;
+  z-index: 1000;
   animation: dropdownSlide 0.2s ease;
   overflow: hidden;
 }
@@ -547,7 +476,7 @@
 
 .dropdown-divider {
   height: 1px;
-  background: var(--border-color);
+  background: var(--header-border);
   margin: 8px 0;
 }
 
@@ -569,12 +498,8 @@
 }
 
 .dropdown-item:hover {
-  background: rgba(0, 0, 0, 0.02);
+  background: rgba(255, 255, 255, 0.05);
   color: var(--text-primary);
-}
-
-[data-theme="dark"] .dropdown-item:hover {
-  background: rgba(255, 255, 255, 0.02);
 }
 
 .dropdown-icon {
@@ -605,6 +530,14 @@
 }
 
 @media (max-width: 768px) {
+  :root {
+    --header-height: 60px;
+  }
+  
+  .dashboard-header {
+    height: 60px;
+  }
+  
   .header-left .breadcrumb {
     display: none;
   }
@@ -618,17 +551,17 @@
   }
   
   .profile-btn {
-    padding: 4px;
+    padding: 6px;
   }
   
   .dropdown-arrow {
     display: none;
   }
   
-  /* Mobile dropdowns */
-  .notification-dropdown {
+  .notification-dropdown,
+  .profile-dropdown {
     position: fixed !important;
-    top: var(--header-height) !important;
+    top: 60px !important;
     left: 50% !important;
     right: auto !important;
     transform: translateX(-50%) !important;
@@ -638,14 +571,7 @@
   }
   
   .profile-dropdown {
-    position: fixed !important;
-    top: var(--header-height) !important;
-    left: 50% !important;
-    right: auto !important;
-    transform: translateX(-50%) !important;
-    width: calc(100vw - 32px) !important;
     max-width: 280px !important;
-    margin: 0 auto;
   }
 }
 
@@ -658,55 +584,18 @@
     gap: 8px;
   }
   
-  .menu-toggle {
-    width: 32px;
-    height: 32px;
-  }
-  
-  .notification-btn,
-  .profile-avatar {
+  .menu-toggle,
+  .notification-btn {
     width: 36px;
     height: 36px;
   }
   
-  .notification-badge {
-    top: 4px;
-    right: 4px;
-    width: 16px;
-    height: 16px;
-    font-size: 9px;
+  .profile-avatar {
+    width: 32px;
+    height: 32px;
   }
 }
 
-/* Prevent conflicts with other components */
-.dashboard-header * {
-  box-sizing: border-box;
-}
-
-/* Ensure no interference with other dropdowns */
-.dashboard-header .notification-dropdown,
-.dashboard-header .profile-dropdown {
-  isolation: isolate;
-}
-
-/* Fix for touch devices */
-@media (hover: none) and (pointer: coarse) {
-  .menu-toggle,
-  .notification-btn,
-  .profile-btn,
-  .dropdown-item,
-  .mark-read,
-  .view-all-notifications {
-    min-height: 44px;
-    min-width: 44px;
-  }
-  
-  .notification-item {
-    padding: 16px;
-  }
-}
-
-/* Print styles */
 @media print {
   .dashboard-header {
     display: none !important;

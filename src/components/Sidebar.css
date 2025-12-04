@@ -1,7 +1,7 @@
-/* ===== SIDEBAR VARIABLES ===== */
+/* Sidebar.css - Final Complete Fix */
+
 :root {
   --sidebar-width: 280px;
-  --sidebar-collapsed: 70px;
   --sidebar-bg: #0f172a;
   --sidebar-active: #1e293b;
   --sidebar-hover: rgba(255, 255, 255, 0.05);
@@ -10,11 +10,9 @@
   --sidebar-border: #334155;
   --accent-primary: #3b82f6;
   --accent-secondary: #10b981;
-  --construction-color: #f59e0b;
-  --realestate-color: #14b8a6;
 }
 
-/* ===== SIDEBAR CONTAINER ===== */
+/* Sidebar Container - FIXED POSITIONING */
 .sidebar {
   position: fixed;
   left: 0;
@@ -26,21 +24,31 @@
   display: flex;
   flex-direction: column;
   z-index: 1000;
-  transition: all 0.3s ease;
+  transition: transform 0.3s ease;
   overflow-y: auto;
   overflow-x: hidden;
 }
 
-.sidebar.collapsed {
-  width: var(--sidebar-collapsed);
+/* Desktop - Always show when open */
+@media (min-width: 1024px) {
+  .sidebar.open {
+    transform: translateX(0);
+  }
+  
+  .sidebar.collapsed {
+    transform: translateX(-100%);
+  }
 }
 
-.sidebar.mobile {
-  transform: translateX(-100%);
-}
-
-.sidebar.mobile.open {
-  transform: translateX(0);
+/* Mobile - Overlay mode */
+@media (max-width: 1023px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+  
+  .sidebar.mobile.open {
+    transform: translateX(0);
+  }
 }
 
 .sidebar-overlay {
@@ -54,11 +62,11 @@
   display: none;
 }
 
-.sidebar.mobile.open + .sidebar-overlay {
+.sidebar.mobile.open ~ .sidebar-overlay {
   display: block;
 }
 
-/* ===== LOGO SECTION ===== */
+/* Logo Section */
 .sidebar-logo {
   padding: 24px 20px;
   border-bottom: 1px solid var(--sidebar-border);
@@ -68,6 +76,7 @@
   cursor: pointer;
   transition: all 0.3s ease;
   position: relative;
+  flex-shrink: 0;
 }
 
 .sidebar-logo:hover {
@@ -104,7 +113,6 @@
   color: white;
   font-size: 20px;
   font-weight: 900;
-  transform: rotate(0deg);
   transition: transform 0.3s ease;
 }
 
@@ -115,7 +123,6 @@
 .logo-text {
   flex: 1;
   min-width: 0;
-  transition: opacity 0.3s ease;
 }
 
 .logo-text h2 {
@@ -155,12 +162,7 @@
   display: block;
 }
 
-.sidebar.collapsed .logo-text {
-  opacity: 0;
-  pointer-events: none;
-}
-
-/* ===== NAVIGATION MENU ===== */
+/* Navigation Menu */
 .sidebar-nav {
   flex: 1;
   padding: 24px 16px;
@@ -180,16 +182,12 @@
   margin-bottom: 16px;
   display: block;
   padding: 0 8px;
-  transition: opacity 0.3s ease;
-}
-
-.sidebar.collapsed .section-label {
-  opacity: 0;
-  pointer-events: none;
 }
 
 .menu-list {
   list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
 .menu-item {
@@ -247,7 +245,6 @@
 .menu-text {
   flex: 1;
   min-width: 0;
-  transition: opacity 0.3s ease;
 }
 
 .menu-label {
@@ -279,162 +276,30 @@
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
 }
 
-.sidebar.collapsed .menu-text {
-  opacity: 0;
-  pointer-events: none;
-}
-
-.sidebar.collapsed .menu-item {
-  justify-content: center;
-  padding: 14px;
-}
-
-.sidebar.collapsed .menu-icon {
-  font-size: 22px;
-  width: auto;
-}
-
-/* ===== FOOTER SECTION ===== */
+/* Footer Section */
 .sidebar-footer {
   padding: 20px;
   border-top: 1px solid var(--sidebar-border);
   background: rgba(0, 0, 0, 0.2);
-  transition: opacity 0.3s ease;
-}
-
-.sidebar.collapsed .sidebar-footer {
-  opacity: 0;
-  pointer-events: none;
-}
-
-.business-tags {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
-}
-
-.business-tag {
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.business-tag.construction {
-  background: rgba(245, 158, 11, 0.15);
-  color: var(--construction-color);
-  border: 1px solid rgba(245, 158, 11, 0.3);
-}
-
-.business-tag.real-estate {
-  background: rgba(20, 184, 166, 0.15);
-  color: var(--realestate-color);
-  border: 1px solid rgba(20, 184, 166, 0.3);
-}
-
-.admin-info {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 20px;
-  padding: 12px;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 10px;
-  transition: all 0.2s ease;
-}
-
-.admin-info:hover {
-  background: rgba(255, 255, 255, 0.08);
-  transform: translateY(-2px);
-}
-
-.admin-avatar {
-  width: 36px;
-  height: 36px;
-  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-}
-
-.admin-details {
-  flex: 1;
-  min-width: 0;
-}
-
-.admin-name {
-  display: block;
-  font-size: 14px;
-  font-weight: 600;
-  color: white;
-  margin-bottom: 2px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.admin-role {
-  display: block;
-  font-size: 11px;
-  color: var(--sidebar-text-secondary);
-  font-weight: 500;
-}
-
-.sidebar-stats {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin-bottom: 20px;
-}
-
-.stat-item {
-  padding: 10px;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 8px;
-  text-align: center;
-  transition: all 0.2s ease;
-}
-
-.stat-item:hover {
-  background: rgba(255, 255, 255, 0.08);
-  transform: translateY(-2px);
-}
-
-.stat-value {
-  display: block;
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--accent-primary);
-  margin-bottom: 2px;
-}
-
-.stat-label {
-  display: block;
-  font-size: 10px;
-  color: var(--sidebar-text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  font-weight: 500;
+  flex-shrink: 0;
 }
 
 .copyright {
   font-size: 10px;
   color: var(--sidebar-text-secondary);
   text-align: center;
-  margin-top: 16px;
   opacity: 0.7;
 }
 
-/* ===== CUSTOM SCROLLBAR ===== */
+/* Custom Scrollbar */
 .sidebar-nav::-webkit-scrollbar {
   width: 4px;
 }
@@ -443,7 +308,8 @@
   background: transparent;
 }
 
-.sidebar-nav::-webkit-scrollbar-thumb {
+.sidebar-nav::-webkit-scrollbar-thumb 
+{
   background: var(--sidebar-border);
   border-radius: 2px;
 }
@@ -452,23 +318,16 @@
   background: var(--accent-primary);
 }
 
-/* ===== RESPONSIVE DESIGN ===== */
-@media (max-width: 1023px) {
-  .sidebar {
-    width: 300px;
-  }
-  
-  .sidebar.collapsed {
-    transform: translateX(-100%);
-  }
-}
-
-@media (max-width: 767px) {
-  .sidebar {
+/* Responsive Design */
+@media (max-width: 767px) 
+{
+  .sidebar 
+  {
     width: 280px;
   }
   
-  .sidebar-logo {
+  .sidebar-logo 
+  {
     padding: 20px 16px;
   }
   

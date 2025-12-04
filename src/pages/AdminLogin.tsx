@@ -62,8 +62,9 @@ export default function AdminLogin({ onLogin }: AdminLoginProps) {
   }, [passwordValue]);
 
   useEffect(() => {
-    let interval: NodeJS.Timeout;
-    
+    let interval: ReturnType<typeof setInterval>;
+
+
     if (logoPulse) {
       interval = setInterval(() => {
         setLogoPulse(p => !p);
