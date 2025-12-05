@@ -23,20 +23,20 @@ public class AuthController {
     @Autowired
     private JwtUtil jwtUtil;
     
-    @GetMapping("auth/test")
+    @GetMapping("/auth/test")
     public String test()
     {
     	return "This is the test endpoint";
     }
 
-    @PostMapping("auth/register")
+    @PostMapping("/auth/register")
     public ResponseEntity<?> register(@RequestBody Admin admin)
     {
         Admin saved = adminService.register(admin);
         return ResponseEntity.ok("Registered Successfull\n"+saved);
     }
 
-    @PostMapping("auth/login")
+    @PostMapping("/auth/login")
     public ResponseEntity<?> login(@RequestBody Admin admin) 
     {
         Admin storedAdmin = adminService.findByEmail(admin.getEmail())
