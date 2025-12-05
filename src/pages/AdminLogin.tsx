@@ -88,7 +88,7 @@ export default function AdminLogin({ onLogin }: AdminLoginProps) {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10000);
 
-      const res = await fetch("http://localhost:8080/auth/login", {
+      const res = await fetch("https://realestatebackend-production-1e29.up.railway.app/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

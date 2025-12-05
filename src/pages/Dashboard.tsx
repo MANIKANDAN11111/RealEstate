@@ -36,7 +36,7 @@ const Dashboard = () => {
           return;
         }
 
-        const response = await fetch('http://localhost:8080/admin/getadmindetails', {
+        const response = await fetch('https://realestatebackend-production-1e29.up.railway.app/admin/getadmindetails', {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
