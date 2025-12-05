@@ -22,6 +22,12 @@ public class AuthController {
 
     @Autowired
     private JwtUtil jwtUtil;
+    
+    @GetMapping("test")
+    public String test()
+    {
+    	return "This is the test endpoint";
+    }
 
     @PostMapping("auth/register")
     public ResponseEntity<?> register(@RequestBody Admin admin)
