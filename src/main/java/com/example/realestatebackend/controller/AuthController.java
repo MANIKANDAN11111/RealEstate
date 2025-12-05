@@ -23,7 +23,7 @@ public class AuthController {
     @Autowired
     private JwtUtil jwtUtil;
     
-    @GetMapping("test")
+    @GetMapping("auth/test")
     public String test()
     {
     	return "This is the test endpoint";
