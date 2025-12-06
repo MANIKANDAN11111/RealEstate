@@ -19,7 +19,7 @@ const DashboardHome = () => {
           return;
         }
 
-        const response = await fetch('http://localhost:8080/admin/getadmindetails', {
+        const response = await fetch('https://realestatebackend-8adg.onrender.com/admin/getadmindetails', {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -90,7 +90,6 @@ const DashboardHome = () => {
     {
       title: 'Total Properties',
       value: '156',
-      change: '+5.4%',
       changeType: 'positive',
       icon: '🏢',
       description: 'Total properties listed'
@@ -98,7 +97,6 @@ const DashboardHome = () => {
     {
       title: 'Active Listings',
       value: '870',
-      change: '+2.1%',
       changeType: 'positive',
       icon: '📊',
       description: 'Currently active listings'
@@ -106,7 +104,6 @@ const DashboardHome = () => {
     {
       title: 'New Users',
       value: '316',
-      change: '+12.5%',
       changeType: 'positive',
       icon: '👥',
       description: 'New users this month'
@@ -114,7 +111,6 @@ const DashboardHome = () => {
     {
       title: 'Pending Inquiries',
       value: '42',
-      change: '-3.0%',
       changeType: 'negative',
       icon: '📨',
       description: 'Inquiries pending response'
@@ -323,9 +319,6 @@ const DashboardHome = () => {
             <div className="stat-content">
               <div className="stat-main">
                 <span className="stat-value">{stat.value}</span>
-                <span className={`stat-change ${stat.changeType}`}>
-                  {stat.change}
-                </span>
               </div>
               <span className="stat-title">{stat.title}</span>
               <span className="stat-desc">{stat.description}</span>
@@ -336,232 +329,227 @@ const DashboardHome = () => {
 
       {/* Main Content Area */}
       <div className="main-content-area">
-        <div className="main-grid">
-          {/* Left Column - Main Content */}
-          <div className="left-column">
-            {/* Revenue Chart Card */}
-            <div className="card revenue-card">
-              <div className="card-header">
-                <div className="card-title-section">
-                  <h3>Revenue Overview</h3>
-                  <p>Monthly revenue trends</p>
-                </div>
-                <div className="card-actions">
-                  <div className="time-select-wrapper">
-                    <select className="time-select">
-                      <option>Last 30 days</option>
-                      <option>Last 90 days</option>
-                      <option>This Year</option>
-                      <option>Last Year</option>
-                      <option>Custom Range</option>
-                    </select>
-                    <span className="select-arrow">▼</span>
-                  </div>
-                </div>
+        {/* Revenue Chart Card */}
+        <div className="card revenue-card full-width">
+          <div className="card-header">
+            <div className="card-title-section">
+              <h3>Revenue Overview</h3>
+              <p>Monthly revenue trends</p>
+            </div>
+            <div className="card-actions">
+              <div className="time-select-wrapper">
+                <select className="time-select">
+                  <option>Last 30 days</option>
+                  <option>Last 90 days</option>
+                  <option>This Year</option>
+                  <option>Last Year</option>
+                  <option>Custom Range</option>
+                </select>
+                <span className="select-arrow">▼</span>
               </div>
-              <div className="card-content">
-                <div className="revenue-chart">
-                  <div className="chart-bars">
-                    {revenueData.current.map((value, index) => (
-                      <div key={index} className="chart-bar-group">
-                        <div className="bar-container">
-                          <div 
-                            className="bar previous" 
-                            style={{ height: `${revenueData.previous[index]}%` }}
-                            title={`Previous: $${revenueData.previous[index]}k`}
-                          ></div>
-                          <div 
-                            className="bar current" 
-                            style={{ height: `${value}%` }}
-                            title={`Current: $${value}k`}
-                          ></div>
-                        </div>
-                        <span className="bar-label">{revenueData.labels[index]}</span>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="chart-legend">
-                    <div className="legend-item">
-                      <span className="legend-dot current"></span>
-                      <span className="legend-text">Current Month</span>
+            </div>
+          </div>
+          <div className="card-content">
+            <div className="revenue-chart">
+              <div className="chart-bars">
+                {revenueData.current.map((value, index) => (
+                  <div key={index} className="chart-bar-group">
+                    <div className="bar-container">
+                      <div 
+                        className="bar previous" 
+                        style={{ height: `${revenueData.previous[index]}%` }}
+                        title={`Previous: $${revenueData.previous[index]}k`}
+                      ></div>
+                      <div 
+                        className="bar current" 
+                        style={{ height: `${value}%` }}
+                        title={`Current: $${value}k`}
+                      ></div>
                     </div>
-                    <div className="legend-item">
-                      <span className="legend-dot previous"></span>
-                      <span className="legend-text">Previous Month</span>
-                    </div>
+                    <span className="bar-label">{revenueData.labels[index]}</span>
                   </div>
+                ))}
+              </div>
+              <div className="chart-legend">
+                <div className="legend-item">
+                  <span className="legend-dot current"></span>
+                  <span className="legend-text">Current Month</span>
                 </div>
-                <div className="revenue-summary">
-                  <div className="summary-item">
-                    <span className="summary-label">Total Revenue</span>
-                    <span className="summary-value">$845,250</span>
-                  </div>
-                  <div className="summary-item">
-                    <span className="summary-label">Growth Rate</span>
-                    <span className="summary-value positive">+12.8%</span>
-                  </div>
-                  <div className="summary-item">
-                    <span className="summary-label">Avg. Monthly</span>
-                    <span className="summary-value">$70,438</span>
-                  </div>
+                <div className="legend-item">
+                  <span className="legend-dot previous"></span>
+                  <span className="legend-text">Previous Month</span>
                 </div>
               </div>
             </div>
-
-            {/* Quick Actions and System Overview in Same Row */}
-            <div className="combined-cards-row">
-              {/* Quick Actions Card */}
-              <div className="card quick-links-card">
-                <div className="card-header">
-                  <div className="card-title-section">
-                    <h3>Quick Actions</h3>
-                    <p>Access important sections quickly</p>
-                  </div>
-                </div>
-                <div className="card-content">
-                  <div className="quick-links-grid">
-                    {quickLinks.map((link, index) => (
-                      <a key={index} href={link.link} className="quick-link-item">
-                        <div className={`link-icon ${link.color}`}>
-                          <span>{link.icon}</span>
-                        </div>
-                        <div className="link-content">
-                          <span className="link-title">{link.title}</span>
-                          <span className="link-desc">{link.description}</span>
-                        </div>
-                        <span className="link-arrow">→</span>
-                      </a>
-                    ))}
-                  </div>
-                </div>
+            <div className="revenue-summary">
+              <div className="summary-item">
+                <span className="summary-label">Total Revenue</span>
+                <span className="summary-value">$845,250</span>
               </div>
-
-              {/* System Overview Card */}
-              <div className="card system-card">
-                <div className="card-header">
-                  <div className="card-title-section">
-                    <h3>System Overview</h3>
-                    <p>Performance and health metrics</p>
-                  </div>
-                </div>
-                <div className="card-content">
-                  <div className="system-stats">
-                    {systemStats.map((stat, index) => (
-                      <div key={index} className="system-stat-item">
-                        <div className="stat-label-row">
-                          <span className="stat-label">{stat.label}</span>
-                          <span className="stat-value">{stat.value}</span>
-                        </div>
-                        <div className="progress-bar-container">
-                          <div 
-                            className="progress-bar" 
-                            style={{ width: `${stat.percentage}%` }}
-                            role="progressbar"
-                            aria-valuenow={stat.percentage}
-                            aria-valuemin={0}
-                            aria-valuemax={100}
-                          ></div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+              <div className="summary-item">
+                <span className="summary-label">Growth Rate</span>
+                <span className="summary-value positive">+12.8%</span>
+              </div>
+              <div className="summary-item">
+                <span className="summary-label">Avg. Monthly</span>
+                <span className="summary-value">$70,438</span>
               </div>
             </div>
+          </div>
+        </div>
 
-            {/* Property Status Card - Full Width */}
-            <div className="card property-status-card full-width">
-              <div className="card-header">
-                <div className="card-title-section">
-                  <h3>Property Status Distribution</h3>
-                  <p>Current status of all properties</p>
-                </div>
-                <button className="btn btn-text">
-                  View Details →
-                </button>
+        {/* First Row: Quick Links and System Overview */}
+        <div className="combined-cards-row">
+          {/* Quick Actions Card */}
+          <div className="card quick-links-card">
+            <div className="card-header">
+              <div className="card-title-section">
+                <h3>Quick Actions</h3>
+                <p>Access important sections quickly</p>
               </div>
-              <div className="card-content">
-                <div className="property-status-container">
-                  <div className="property-status-grid">
-                    {propertyStatus.map((property, index) => (
-                      <div key={index} className="property-status-item">
-                        <div className="property-icon-wrapper">
-                          <div className={`property-icon ${property.color}`}>
-                            <span>{property.icon}</span>
-                          </div>
-                        </div>
-                        <div className="property-info">
-                          <span className="property-title">{property.title}</span>
-                          <span className="property-count">{property.count} Properties</span>
-                        </div>
-                        <span className={`property-trend ${property.trendType}`}>
-                          {property.trend}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+            </div>
+            <div className="card-content">
+              <div className="quick-links-grid">
+                {quickLinks.map((link, index) => (
+                  <a key={index} href={link.link} className="quick-link-item">
+                    <div className={`link-icon ${link.color}`}>
+                      <span>{link.icon}</span>
+                    </div>
+                    <div className="link-content">
+                      <span className="link-title">{link.title}</span>
+                      <span className="link-desc">{link.description}</span>
+                    </div>
+                    <span className="link-arrow">→</span>
+                  </a>
+                ))}
               </div>
             </div>
           </div>
 
-          {/* Right Column */}
-          <div className="right-column">
-            {/* Recent Updates Card */}
-            <div className="card updates-card">
-              <div className="card-header">
-                <div className="card-title-section">
-                  <h3>Recent Updates</h3>
-                  <p>System activities and notifications</p>
-                </div>
-                <span className="updates-badge">5 New</span>
-              </div>
-              <div className="card-content">
-                <div className="updates-list">
-                  {recentUpdates.map((update) => (
-                    <div key={update.id} className="update-item">
-                      <div className={`update-icon ${update.type}`}>
-                        <span>{update.icon}</span>
-                      </div>
-                      <div className="update-content">
-                        <p className="update-message">{update.message}</p>
-                        <span className="update-time">{update.time}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+          {/* System Overview Card */}
+          <div className="card system-card">
+            <div className="card-header">
+              <div className="card-title-section">
+                <h3>System Overview</h3>
+                <p>Performance and health metrics</p>
               </div>
             </div>
-
-            {/* Top Performers Card */}
-            <div className="card performers-card">
-              <div className="card-header">
-                <div className="card-title-section">
-                  <h3>Top Performers</h3>
-                  <p>Best performing properties</p>
-                </div>
-                <button className="btn btn-text">
-                  See All →
-                </button>
+            <div className="card-content">
+              <div className="system-stats">
+                {systemStats.map((stat, index) => (
+                  <div key={index} className="system-stat-item">
+                    <div className="stat-label-row">
+                      <span className="stat-label">{stat.label}</span>
+                      <span className="stat-value">{stat.value}</span>
+                    </div>
+                    <div className="progress-bar-container">
+                      <div 
+                        className="progress-bar" 
+                        style={{ width: `${stat.percentage}%` }}
+                        role="progressbar"
+                        aria-valuenow={stat.percentage}
+                        aria-valuemin={0}
+                        aria-valuemax={100}
+                      ></div>
+                    </div>
+                  </div>
+                ))}
               </div>
-              <div className="card-content">
-                <div className="performers-list">
-                  {topPerformers.map((performer, index) => (
-                    <div key={index} className="performer-item">
-                      <div className="performer-rank">
-                        <span>#{index + 1}</span>
-                      </div>
-                      <div className="performer-info">
-                        <span className="performer-name">{performer.name}</span>
-                        <span className="performer-type">{performer.type}</span>
-                      </div>
-                      <div className="performer-stats">
-                        <span className="performer-price">{performer.price}</span>
-                        <span className="performer-growth positive">{performer.growth}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Property Status Card - Full Width */}
+        <div className="card property-status-card full-width">
+          <div className="card-header">
+            <div className="card-title-section">
+              <h3>Property Status Distribution</h3>
+              <p>Current status of all properties</p>
+            </div>
+            <button className="btn btn-text">
+              View Details →
+            </button>
+          </div>
+          <div className="card-content">
+            <div className="property-status-container">
+              <div className="property-status-grid">
+                {propertyStatus.map((property, index) => (
+                  <div key={index} className="property-status-item">
+                    <div className="property-icon-wrapper">
+                      <div className={`property-icon ${property.color}`}>
+                        <span>{property.icon}</span>
                       </div>
                     </div>
-                  ))}
-                </div>
+                    <div className="property-info">
+                      <span className="property-title">{property.title}</span>
+                      <span className="property-count">{property.count} Properties</span>
+                    </div>
+                    <span className={`property-trend ${property.trendType}`}>
+                      {property.trend}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Second Row: Recent Updates and Top Performers */}
+        <div className="updates-performers-row">
+          {/* Recent Updates Card */}
+          <div className="card updates-card">
+            <div className="card-header">
+              <div className="card-title-section">
+                <h3>Recent Updates</h3>
+                <p>System activities and notifications</p>
+              </div>
+              <span className="updates-badge">5 New</span>
+            </div>
+            <div className="card-content">
+              <div className="updates-list">
+                {recentUpdates.map((update) => (
+                  <div key={update.id} className="update-item">
+                    <div className={`update-icon ${update.type}`}>
+                      <span>{update.icon}</span>
+                    </div>
+                    <div className="update-content">
+                      <p className="update-message">{update.message}</p>
+                      <span className="update-time">{update.time}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Top Performers Card */}
+          <div className="card performers-card">
+            <div className="card-header">
+              <div className="card-title-section">
+                <h3>Top Performers</h3>
+                <p>Best performing properties</p>
+              </div>
+              <button className="btn btn-text">
+                See All →
+              </button>
+            </div>
+            <div className="card-content">
+              <div className="performers-list">
+                {topPerformers.map((performer, index) => (
+                  <div key={index} className="performer-item">
+                    <div className="performer-rank">
+                      <span>#{index + 1}</span>
+                    </div>
+                    <div className="performer-info">
+                      <span className="performer-name">{performer.name}</span>
+                      <span className="performer-type">{performer.type}</span>
+                    </div>
+                    <div className="performer-stats">
+                      <span className="performer-price">{performer.price}</span>
+                      <span className="performer-growth positive">{performer.growth}</span>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>

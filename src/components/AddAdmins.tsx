@@ -1,99 +1,136 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './AddAdmins.css';
 
 const AddAdmins = () => {
-  const [admins, setAdmins] = useState([
-    {
-      id: 1,
-      name: 'Rajesh Kumar',
-      email: 'rajesh@ananthigroup.com',
-      role: 'Super Admin',
-      status: 'Active',
-      lastActive: '2 hours ago',
-      permissions: ['All'],
-      avatar: 'RK'
-    },
-    {
-      id: 2,
-      name: 'Priya Sharma',
-      email: 'priya@ananthigroup.com',
-      role: 'Content Manager',
-      status: 'Active',
-      lastActive: '1 day ago',
-      permissions: ['Properties', 'Content'],
-      avatar: 'PS'
-    },
-    {
-      id: 3,
-      name: 'Arun Patel',
-      email: 'arun@ananthigroup.com',
-      role: 'Support Admin',
-      status: 'Inactive',
-      lastActive: '3 days ago',
-      permissions: ['Support', 'Users'],
-      avatar: 'AP'
-    },
-    {
-      id: 4,
-      name: 'Meera Gupta',
-      email: 'meera@ananthigroup.com',
-      role: 'Finance Admin',
-      status: 'Active',
-      lastActive: '5 hours ago',
-      permissions: ['Finance', 'Reports'],
-      avatar: 'MG'
-    },
-    {
-      id: 5,
-      name: 'Sanjay Verma',
-      email: 'sanjay@ananthigroup.com',
-      role: 'View Only',
-      status: 'Pending',
-      lastActive: 'Never',
-      permissions: ['View Only'],
-      avatar: 'SV'
-    }
-  ]);
+  const [admins, setAdmins] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [apiLoading, setApiLoading] = useState(false);
+  const [fetchError, setFetchError] = useState('');
 
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    phone: '',
-    role: 'support',
-    department: '',
-    permissions: [] as string[],
+    mobileNumber: '',
+    password: '',
     sendInvite: true
   });
 
   const [errors, setErrors] = useState({
     email: '',
-    phone: ''
+    mobileNumber: '',
+    password: ''
   });
+
+  const [apiMessage, setApiMessage] = useState({ type: '', text: '' });
 
   const [activeTab, setActiveTab] = useState('add');
 
-  const permissionOptions = [
-    { id: 'dashboard', label: 'Dashboard Access' },
-    { id: 'properties', label: 'Manage Properties' },
-    { id: 'users', label: 'Manage Users' },
-    { id: 'finance', label: 'Financial Access' },
-    { id: 'reports', label: 'View Reports' },
-    { id: 'settings', label: 'System Settings' },
-    { id: 'content', label: 'Content Management' },
-    { id: 'support', label: 'Customer Support' }
-  ];
+  // Fetch admins from API
+  useEffect(() => {
+    fetchAdmins();
+  }, []);
 
+  const fetchAdmins = async () => {
+    try {
+      setLoading(true);
+      setFetchError('');
+      console.log('Fetching admins from API...');
+      const token = localStorage.getItem('token');
+      
+      // First check if we can even reach the endpoint
+      console.log('Testing connection to:', 'https://realestatebackend-8adg.onrender.com/getalladmin');
+      
+      const response = await fetch('https://realestatebackend-8adg.onrender.com/getalladmin', {
+        method: 'GET',
+        headers: {
+           'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        mode: 'cors', // Explicitly set CORS mode
+        credentials: 'omit' // Don't send credentials unless needed
+      });
+      
+      console.log('Response status:', response.status);
+      console.log('Response status text:', response.statusText);
+      
+      if (!response.ok) {
+        // Try to get error details
+        const errorText = await response.text();
+        console.error('Server error response:', errorText);
+        throw new Error(`HTTP error! status: ${response.status} - ${response.statusText || 'Unknown error'}`);
+      }
+      
+      const data = await response.json();
+      console.log('API Response data:', data);
+      
+      if (!data) {
+        throw new Error('No data received from server');
+      }
+      
+      if (!Array.isArray(data)) {
+        console.error('Response is not an array:', data);
+        // If it's not an array but an object, try to extract an array from it
+        if (data.data && Array.isArray(data.data)) {
+          data = data.data;
+        } else if (data.admins && Array.isArray(data.admins)) {
+          data = data.admins;
+        } else {
+          throw new Error('API response is not an array');
+        }
+      }
+      
+      // Transform API data to match our component structure
+      const formattedAdmins = data.map((admin: any, index: number) => ({
+        id: admin.id || admin._id || `admin-${index + 1}`,
+        name: admin.name || 'Unknown',
+        email: admin.email || 'No email',
+        role: 'Admin', // Default role since API doesn't provide it
+        status: admin.status === 'Active' ? 'Active' : (admin.status === 'Inactive' ? 'Inactive' : 'Active'),
+        lastActive: 'Recently', // API doesn't provide this, so we use default
+        avatar: admin.name 
+          ? admin.name.split(' ').map((n: string) => n[0]).join('').toUpperCase().substring(0, 2)
+          : 'AD',
+        mobileNumber: admin.mobileNumber || admin.phone || admin.mobileNumber || 'Not provided',
+        password: admin.password || '' // Store password if needed
+      }));
+      
+      console.log('Formatted admins:', formattedAdmins);
+      setAdmins(formattedAdmins);
+      setFetchError('');
+      
+    } catch (error: any) {
+      console.error('Error fetching admins:', error);
+      const errorMessage = error.message || 'Failed to fetch admins';
+      setFetchError(`Failed to load admins: ${errorMessage}`);
+      setAdmins([]);
+      
+      // For debugging - log more details
+      if (error.name === 'TypeError') {
+        console.error('Network error or CORS issue. Details:', error);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Rest of your existing functions remain the same...
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!email) return 'Email is required';
     if (!emailRegex.test(email)) return 'Please enter a valid email address';
-    if (!email.endsWith('@ananthigroup.com')) return 'Email must be @ananthigroup.com domain';
     return '';
   };
 
-  const validatePhone = (phone: string) => {
-    const phoneRegex = /^\d{10}$/;
-    if (phone && !phoneRegex.test(phone)) return 'Please enter a valid 10-digit mobile number';
+  const validateMobileNumber = (mobileNumber: string) => {
+    const mobileRegex = /^\d{10}$/;
+    if (mobileNumber && !mobileRegex.test(mobileNumber)) return 'Please enter a valid 10-digit mobile number';
+    return '';
+  };
+
+  const validatePassword = (password: string) => {
+    if (!password) return 'Password is required';
+    if (password.length < 8) return 'Password must be at least 8 characters long';
     return '';
   };
 
@@ -101,82 +138,165 @@ const AddAdmins = () => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
     
-    // Validate on change
+    if (apiMessage.text) {
+      setApiMessage({ type: '', text: '' });
+    }
+    
     if (name === 'email') {
       setErrors(prev => ({ ...prev, email: validateEmail(value) }));
-    } else if (name === 'phone') {
-      setErrors(prev => ({ ...prev, phone: validatePhone(value) }));
+    } else if (name === 'mobileNumber') {
+      setErrors(prev => ({ ...prev, mobileNumber: validateMobileNumber(value) }));
+    } else if (name === 'password') {
+      setErrors(prev => ({ ...prev, password: validatePassword(value) }));
     }
   };
 
-  const handlePermissionToggle = (permissionId: string) => {
-    setFormData(prev => ({
-      ...prev,
-      permissions: prev.permissions.includes(permissionId)
-        ? prev.permissions.filter(p => p !== permissionId)
-        : [...prev.permissions, permissionId]
-    }));
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validate all fields before submission
     const emailError = validateEmail(formData.email);
-    const phoneError = validatePhone(formData.phone);
+    const mobileNumberError = validateMobileNumber(formData.mobileNumber);
+    const passwordError = validatePassword(formData.password);
     
-    if (emailError || phoneError) {
+    if (emailError || mobileNumberError || passwordError) {
       setErrors({
         email: emailError,
-        phone: phoneError
+        mobileNumber: mobileNumberError,
+        password: passwordError
       });
       return;
     }
-    
-    // Generate avatar from name
-    const avatar = formData.name.split(' ').map(n => n[0]).join('').toUpperCase();
-    
-    const newAdmin = {
-      id: admins.length + 1,
+
+    const apiData = {
       name: formData.name,
       email: formData.email,
-      role: formData.role === 'super' ? 'Super Admin' : 
-            formData.role === 'content' ? 'Content Manager' :
-            formData.role === 'finance' ? 'Finance Admin' : 'Support Admin',
-      status: 'Pending',
-      lastActive: 'Never',
-      permissions: formData.permissions.map(p => 
-        permissionOptions.find(opt => opt.id === p)?.label || p
-      ),
-      avatar: avatar || 'AD'
+      mobileNumber: formData.mobileNumber || "0",
+      password: formData.password
     };
 
-    setAdmins([...admins, newAdmin]);
-    setFormData({
-      name: '',
-      email: '',
-      phone: '',
-      role: 'support',
-      department: '',
-      permissions: [],
-      sendInvite: true
-    });
-    setErrors({ email: '', phone: '' });
-    
-    alert('New admin added successfully! Invitation email sent.');
+    console.log('Submitting data:', apiData);
+
+    setApiLoading(true);
+    setApiMessage({ type: '', text: '' });
+
+    try {
+      const response = await fetch('https://realestatebackend-8adg.onrender.com/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(apiData)
+      });
+
+      // Try to parse as JSON first
+      let data;
+      const responseText = await response.text();
+      console.log('Raw response:', responseText);
+      
+      try {
+        data = JSON.parse(responseText);
+      } catch (jsonError) {
+        // If not JSON, check if it contains success message
+        console.log('Response is not JSON, treating as text');
+        data = { message: responseText };
+      }
+
+      console.log('Processed response:', data);
+
+      // Check if response contains success indicator
+      const isSuccess = response.ok || 
+                        responseText.includes('Success') || 
+                        responseText.includes('Registered') ||
+                        (data && (data.message && data.message.includes('Success') || 
+                                 data.message && data.message.includes('Registered')));
+
+      if (isSuccess) {
+        const successMessage = 'Admin added successfully!';
+        
+        // Show success alert
+        alert(successMessage);
+        
+        // Show API message in form
+        setApiMessage({ type: 'success', text: successMessage });
+        
+        // Refresh the admin list
+        await fetchAdmins();
+        
+        // Reset form to empty
+        setFormData({
+          name: '',
+          email: '',
+          mobileNumber: '',
+          password: '',
+          sendInvite: true
+        });
+        setErrors({ email: '', mobileNumber: '', password: '' });
+      } else {
+        // API returned an error
+        const errorMessage = data.message || data.error || responseText || 'Failed to add admin. Please try again.';
+        setApiMessage({ type: 'error', text: errorMessage });
+        alert(`Error: ${errorMessage}`);
+      }
+    } catch (error) {
+      console.error('Error adding admin:', error);
+      
+      // Check if the error message contains success indicator
+      const errorMessage = error.toString();
+      if (errorMessage.includes('Success') || errorMessage.includes('Registered')) {
+        // This is actually a success but network error occurred
+        const successMessage = 'Admin added successfully! (Network issue occurred)';
+        alert(successMessage);
+        setApiMessage({ type: 'success', text: successMessage });
+        
+        // Refresh the admin list
+        await fetchAdmins();
+        
+        // Reset form to empty
+        setFormData({
+          name: '',
+          email: '',
+          mobileNumber: '',
+          password: '',
+          sendInvite: true
+        });
+        setErrors({ email: '', mobileNumber: '', password: '' });
+      } else {
+        const networkErrorMessage = 'Network error. Please check your connection and try again.';
+        setApiMessage({ type: 'error', text: networkErrorMessage });
+        alert(`Error: ${networkErrorMessage}`);
+      }
+    } finally {
+      setApiLoading(false);
+    }
   };
 
-  const toggleAdminStatus = (id: number) => {
-    setAdmins(admins.map(admin => 
-      admin.id === id 
-        ? { ...admin, status: admin.status === 'Active' ? 'Inactive' : 'Active' }
-        : admin
-    ));
+  const toggleAdminStatus = async (id: string) => {
+    if (window.confirm('Are you sure you want to change this admin\'s status?')) {
+      try {
+        setAdmins(admins.map((admin: any) => 
+          admin.id === id 
+            ? { ...admin, status: admin.status === 'Active' ? 'Inactive' : 'Active' }
+            : admin
+        ));
+        
+        const admin = admins.find((a: any) => a.id === id);
+        alert(`Admin ${admin?.name} status changed to ${admin?.status === 'Active' ? 'Inactive' : 'Active'}`);
+      } catch (error) {
+        console.error('Error updating admin status:', error);
+        alert('Failed to update admin status');
+      }
+    }
   };
 
-  const deleteAdmin = (id: number) => {
+  const deleteAdmin = async (id: string) => {
     if (window.confirm('Are you sure you want to remove this admin?')) {
-      setAdmins(admins.filter(admin => admin.id !== id));
+      try {
+        setAdmins(admins.filter((admin: any) => admin.id !== id));
+        alert('Admin removed successfully!');
+      } catch (error) {
+        console.error('Error deleting admin:', error);
+        alert('Failed to delete admin');
+      }
     }
   };
 
@@ -191,22 +311,27 @@ const AddAdmins = () => {
           <h1>Admin Management</h1>
           <p className="subtitle">Add and manage administrator accounts</p>
         </div>
+        
         <div className="header-stats">
+          {/* <div className="stat-card">
+            <span className="stat-number">{loading ? '...' : admins.length}</span>
+            <span className="stat-label">Total Admins</span>
+          </div> */}
           <div className="stat-card">
-            <span className="stat-number">{admins.length}</span>
+            <span className="stat-number">{loading ? '...' : admins.length}</span>
             <span className="stat-label">Total Admins</span>
           </div>
           <div className="stat-card">
-            <span className="stat-number">{admins.filter(a => a.status === 'Active').length}</span>
+            <span className="stat-number">
+              {loading ? '...' : admins.filter((a: any) => a.status === 'Active').length}
+            </span>
             <span className="stat-label">Active</span>
           </div>
           <div className="stat-card">
-            <span className="stat-number">{admins.filter(a => a.status === 'Pending').length}</span>
-            <span className="stat-label">Pending</span>
-          </div>
-          <div className="stat-card">
-            <span className="stat-number">4</span>
-            <span className="stat-label">Admin Roles</span>
+            <span className="stat-number">
+              {loading ? '...' : admins.filter((a: any) => a.status === 'Inactive').length}
+            </span>
+            <span className="stat-label">InActive</span>
           </div>
         </div>
       </div>
@@ -251,10 +376,17 @@ const AddAdmins = () => {
                 <p className="form-subtitle">Fill in the details to create a new admin account</p>
               </div>
 
+              {/* API Response Message */}
+              {apiMessage.text && (
+                <div className={`api-message ${apiMessage.type}`}>
+                  {apiMessage.text}
+                </div>
+              )}
+
               <form onSubmit={handleSubmit}>
-                <div className="form-grid">
-                  <div className="form-section">
-                    <h3>Basic Information</h3>
+                <div className="basic-info-section">
+                  <h3>Basic Information</h3>
+                  <div className="form-grid-simple">
                     <div className="form-group">
                       <label className="form-label">
                         Full Name <span className="required">*</span>
@@ -267,6 +399,7 @@ const AddAdmins = () => {
                         className="form-input"
                         placeholder="Enter full name"
                         required
+                        disabled={apiLoading}
                       />
                     </div>
 
@@ -280,139 +413,84 @@ const AddAdmins = () => {
                         value={formData.email}
                         onChange={handleInputChange}
                         className={`form-input ${errors.email ? 'error' : ''}`}
-                        placeholder="admin@ananthigroup.com"
+                        placeholder="admin@example.com"
                         required
+                        disabled={apiLoading}
                       />
                       {errors.email && <div className="error-message">{errors.email}</div>}
-                      <div className="input-hint">Must be @ananthigroup.com domain</div>
+                      <div className="input-hint">Enter valid email address</div>
                     </div>
 
                     <div className="form-group">
                       <label className="form-label">Mobile Number</label>
                       <input
                         type="tel"
-                        name="phone"
-                        value={formData.phone}
+                        name="mobileNumber"
+                        value={formData.mobileNumber}
                         onChange={handleInputChange}
-                        className={`form-input ${errors.phone ? 'error' : ''}`}
+                        className={`form-input ${errors.mobileNumber ? 'error' : ''}`}
                         placeholder="Enter 10-digit mobile number"
                         maxLength={10}
                         pattern="\d{10}"
+                        disabled={apiLoading}
                       />
-                      {errors.phone && <div className="error-message">{errors.phone}</div>}
+                      {errors.mobileNumber && <div className="error-message">{errors.mobileNumber}</div>}
                       <div className="input-hint">Optional - 10 digits only</div>
                     </div>
-                  </div>
 
-                  <div className="form-section">
-                    <h3>Admin Role & Permissions</h3>
                     <div className="form-group">
                       <label className="form-label">
-                        Admin Role <span className="required">*</span>
+                        Password <span className="required">*</span>
                       </label>
-                      <select
-                        name="role"
-                        value={formData.role}
+                      <input
+                        type="password"
+                        name="password"
+                        value={formData.password}
                         onChange={handleInputChange}
-                        className="form-select"
+                        className={`form-input ${errors.password ? 'error' : ''}`}
+                        placeholder="Enter password (min. 8 characters)"
                         required
-                      >
-                        <option value="super">Super Admin</option>
-                        <option value="content">Content Manager</option>
-                        <option value="finance">Finance Admin</option>
-                        <option value="support">Support Admin</option>
-                        <option value="custom">Custom Role</option>
-                      </select>
-                    </div>
-
-                    <div className="form-group">
-                      <label className="form-label">Department</label>
-                      <input
-                        type="text"
-                        name="department"
-                        value={formData.department}
-                        onChange={handleInputChange}
-                        className="form-input"
-                        placeholder="e.g., Sales, Support, Finance"
+                        disabled={apiLoading}
                       />
-                    </div>
-
-                    <div className="permissions-section">
-                      <label className="form-label">Permissions</label>
-                      <div className="permissions-grid">
-                        {permissionOptions.map((permission) => (
-                          <label key={permission.id} className="permission-checkbox">
-                            <input
-                              type="checkbox"
-                              checked={formData.permissions.includes(permission.id)}
-                              onChange={() => handlePermissionToggle(permission.id)}
-                              className="checkbox-input"
-                            />
-                            <span className="checkbox-custom"></span>
-                            <span className="checkbox-label">{permission.label}</span>
-                          </label>
-                        ))}
-                      </div>
+                      {errors.password && <div className="error-message">{errors.password}</div>}
+                      <div className="input-hint">Minimum 8 characters required</div>
                     </div>
                   </div>
                 </div>
 
-                <div className="form-section">
-                  <h3>Invitation Settings</h3>
-                  <div className="invitation-settings">
-                    <label className="checkbox-label large">
-                      <input
-                        type="checkbox"
-                        name="sendInvite"
-                        checked={formData.sendInvite}
-                        onChange={(e) => setFormData(prev => ({ ...prev, sendInvite: e.target.checked }))}
-                        className="checkbox-input"
-                      />
-                      <span className="checkbox-custom"></span>
-                      <div className="checkbox-content">
-                        <span className="checkbox-title">Send invitation email</span>
-                        <span className="checkbox-description">
-                          Admin will receive an email with login credentials
-                        </span>
-                      </div>
-                    </label>
-
-                    <div className="setting-options">
-                      <div className="setting-option">
-                        <label className="option-label">Access Expiry</label>
-                        <select className="option-select">
-                          <option value="never">Never</option>
-                          <option value="7">7 Days</option>
-                          <option value="30">30 Days</option>
-                          <option value="90">90 Days</option>
-                        </select>
-                      </div>
-                      <div className="setting-option">
-                        <label className="option-label">Two-Factor Auth</label>
-                        <select className="option-select">
-                          <option value="optional">Optional</option>
-                          <option value="required">Required</option>
-                          <option value="disabled">Disabled</option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="form-actions">
-                  <button type="button" className="cancel-btn" onClick={() => {
-                    setFormData({
-                      name: '',
-                      email: '',
-                      phone: '',
-                      role: 'support',
-                      department: '',
-                      permissions: [],
-                      sendInvite: true
-                    });
-                    setErrors({ email: '', phone: '' });
-                  }}>Cancel</button>
-                  <button type="submit" className="submit-btn">Add Admin & Send Invite</button>
+                <div className="form-actions-centered">
+                  <button 
+                    type="button" 
+                    className="cancel-btn" 
+                    onClick={() => {
+                      setFormData({
+                        name: '',
+                        email: '',
+                        mobileNumber: '',
+                        password: '',
+                        sendInvite: true
+                      });
+                      setErrors({ email: '', mobileNumber: '', password: '' });
+                      setApiMessage({ type: '', text: '' });
+                    }}
+                    disabled={apiLoading}
+                  >
+                    Cancel
+                  </button>
+                  <button 
+                    type="submit" 
+                    className="submit-btn"
+                    disabled={apiLoading}
+                  >
+                    {apiLoading ? (
+                      <>
+                        <span className="loading-spinner"></span>
+                        Adding Admin...
+                      </>
+                    ) : (
+                      'Add Admin'
+                    )}
+                  </button>
                 </div>
               </form>
             </div>
@@ -423,9 +501,9 @@ const AddAdmins = () => {
               <div className="manage-header">
                 <h2>Admin Accounts</h2>
                 <div className="header-actions">
-                  <button className="export-btn">
-                    <span className="icon">📥</span>
-                    Export List
+                  <button className="export-btn" onClick={fetchAdmins} disabled={loading}>
+                    <span className="icon">🔄</span>
+                    {loading ? 'Refreshing...' : 'Refresh'}
                   </button>
                   <button className="bulk-action-btn">
                     <span className="icon">⚡</span>
@@ -435,95 +513,115 @@ const AddAdmins = () => {
               </div>
 
               <div className="admins-table-container">
-                <table className="admins-table">
-                  <thead>
-                    <tr>
-                      <th>Admin</th>
-                      <th>Role</th>
-                      <th>Status</th>
-                      <th>Last Active</th>
-                      <th>Permissions</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {admins.map((admin) => (
-                      <tr key={admin.id}>
-                        <td className="admin-cell">
-                          <div className="admin-info">
-                            <div className="admin-avatar">
-                              {admin.avatar}
-                            </div>
-                            <div className="admin-details">
-                              <span className="admin-name">{admin.name}</span>
+                {loading ? (
+                  <div className="loading-container">
+                    <div className="loading-spinner"></div>
+                    <p>Loading admins...</p>
+                    <p className="loading-hint">Fetching from: https://realestatebackend-8adg.onrender.com/getalladmin</p>
+                  </div>
+                ) : fetchError ? (
+                  <div className="no-data error">
+                    <p style={{ color: '#ef4444' }}>{fetchError}</p>
+                    <button className="refresh-btn" onClick={fetchAdmins} style={{marginTop: '10px'}}>
+                      Try Again
+                    </button>
+                    <p style={{marginTop: '10px', fontSize: '12px', color: '#666'}}>
+                      If this persists, check:
+                      <br />1. Your internet connection
+                      <br />2. CORS settings on the backend
+                      <br />3. API endpoint accessibility
+                    </p>
+                  </div>
+                ) : admins.length === 0 ? (
+                  <div className="no-data">
+                    <p>No admin accounts found.</p>
+                    <button className="refresh-btn" onClick={fetchAdmins} style={{marginTop: '10px'}}>
+                      Refresh List
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <div className="table-info">
+                      <p>Showing {admins.length} admin(s)</p>
+                    </div>
+                    <table className="admins-table">
+                      <thead>
+                        <tr>
+                          <th>Admin</th>
+                          <th>Name</th>
+                          <th>Role</th>
+                          <th>Status</th>
+                          <th>Email</th>
+                          <th>Mobile Number</th>
+                          <th>Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {admins.map((admin: any) => (
+                          <tr key={admin.id}>
+                            {/* <td className="admin-id">
+                              <span className="id-text">{admin.id.substring(0, 8)}...</span>
+                            </td> */}
+                            <td className="admin-cell">
+                              <div className="admin-info">
+                                <div className="admin-avatar">
+                                  {admin.avatar}
+                                </div>
+                                <div className="admin-details">
+                                  <span className="admin-name">{admin.name}</span>
+                                </div>
+                              </div>
+                            </td>
+                            <td>
+                              <span className={`role-badge ${admin.role.toLowerCase().replace(' ', '-')}`}>
+                                {admin.role}
+                              </span>
+                            </td>
+                            <td>
+                              <span className={`status-badge ${admin.status.toLowerCase()}`}>
+                                {admin.status}
+                              </span>
+                            </td>
+                            <td>
                               <span className="admin-email">{admin.email}</span>
-                            </div>
-                          </div>
-                        </td>
-                        <td>
-                          <span className={`role-badge ${admin.role.toLowerCase().replace(' ', '-')}`}>
-                            {admin.role}
-                          </span>
-                        </td>
-                        <td>
-                          <span className={`status-badge ${admin.status.toLowerCase()}`}>
-                            {admin.status}
-                          </span>
-                        </td>
-                        <td>
-                          <span className="last-active">{admin.lastActive}</span>
-                        </td>
-                        <td>
-                          <div className="permissions-cell">
-                            {admin.permissions.slice(0, 2).map((perm, index) => (
-                              <span key={index} className="permission-tag">
-                                {perm}
+                            </td>
+                            <td>
+                              <span className="mobile-number">
+                                {admin.mobileNumber === "0" || admin.mobileNumber === "Not provided" 
+                                  ? "Not provided" 
+                                  : admin.mobileNumber}
                               </span>
-                            ))}
-                            {admin.permissions.length > 2 && (
-                              <span className="more-permissions">
-                                +{admin.permissions.length - 2} more
-                              </span>
-                            )}
-                          </div>
-                        </td>
-                        <td>
-                          <div className="action-buttons">
-                            {admin.status === 'Pending' && (
-                              <button 
-                                className="action-btn resend-btn"
-                                onClick={() => resendInvite(admin.email)}
-                                title="Resend Invite"
-                              >
-                                🔄
-                              </button>
-                            )}
-                            <button 
-                              className="action-btn edit-btn"
-                              title="Edit Admin"
-                            >
-                              ✏️
-                            </button>
-                            <button 
-                              className={`action-btn ${admin.status === 'Active' ? 'deactivate-btn' : 'activate-btn'}`}
-                              onClick={() => toggleAdminStatus(admin.id)}
-                              title={admin.status === 'Active' ? 'Deactivate' : 'Activate'}
-                            >
-                              {admin.status === 'Active' ? '⏸️' : '▶️'}
-                            </button>
-                            <button 
-                              className="action-btn delete-btn"
-                              onClick={() => deleteAdmin(admin.id)}
-                              title="Remove Admin"
-                            >
-                              🗑️
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                            </td>
+                            <td>
+                              <div className="action-buttons">
+                                <button 
+                                  className="action-btn edit-btn"
+                                  title="Edit Admin"
+                                >
+                                  ✏️
+                                </button>
+                                <button 
+                                  className={`action-btn ${admin.status === 'Active' ? 'deactivate-btn' : 'activate-btn'}`}
+                                  onClick={() => toggleAdminStatus(admin.id)}
+                                  title={admin.status === 'Active' ? 'Deactivate' : 'Activate'}
+                                >
+                                  {admin.status === 'Active' ? '⏸️' : '▶️'}
+                                </button>
+                                <button 
+                                  className="action-btn delete-btn"
+                                  onClick={() => deleteAdmin(admin.id)}
+                                  title="Remove Admin"
+                                >
+                                  🗑️
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </>
+                )}
               </div>
 
               <div className="recent-activity">
@@ -532,22 +630,15 @@ const AddAdmins = () => {
                   <div className="activity-item">
                     <div className="activity-icon success">✓</div>
                     <div className="activity-content">
-                      <p>Rajesh Kumar logged in from new device</p>
-                      <span className="activity-time">2 hours ago</span>
-                    </div>
-                  </div>
-                  <div className="activity-item">
-                    <div className="activity-icon warning">!</div>
-                    <div className="activity-content">
-                      <p>Failed login attempt for Priya Sharma</p>
-                      <span className="activity-time">4 hours ago</span>
+                      <p>Admin list refreshed</p>
+                      <span className="activity-time">Just now</span>
                     </div>
                   </div>
                   <div className="activity-item">
                     <div className="activity-icon info">i</div>
                     <div className="activity-content">
-                      <p>New admin account created for Sanjay Verma</p>
-                      <span className="activity-time">1 day ago</span>
+                      <p>Total {admins.length} admin(s) loaded</p>
+                      <span className="activity-time">Recently</span>
                     </div>
                   </div>
                 </div>
@@ -682,7 +773,7 @@ const AddAdmins = () => {
                   <tbody>
                     <tr>
                       <td className="log-time">Today, 14:30</td>
-                      <td className="log-admin">Rajesh Kumar</td>
+                      <td className="log-admin">Manikandan</td>
                       <td className="log-action">Login</td>
                       <td className="log-details">Successful login from Chrome</td>
                       <td className="log-ip">192.168.1.100</td>
@@ -690,34 +781,10 @@ const AddAdmins = () => {
                     </tr>
                     <tr>
                       <td className="log-time">Today, 11:15</td>
-                      <td className="log-admin">Priya Sharma</td>
+                      <td className="log-admin">Sriram</td>
                       <td className="log-action">Property Added</td>
                       <td className="log-details">Added new property "Luxury Villa"</td>
                       <td className="log-ip">192.168.1.101</td>
-                      <td><span className="log-status success">Success</span></td>
-                    </tr>
-                    <tr>
-                      <td className="log-time">Yesterday, 16:45</td>
-                      <td className="log-admin">Arun Patel</td>
-                      <td className="log-action">User Modified</td>
-                      <td className="log-details">Updated user profile details</td>
-                      <td className="log-ip">192.168.1.102</td>
-                      <td><span className="log-status success">Success</span></td>
-                    </tr>
-                    <tr>
-                      <td className="log-time">2 days ago, 09:30</td>
-                      <td className="log-admin">System</td>
-                      <td className="log-action">Security Alert</td>
-                      <td className="log-details">Multiple failed login attempts</td>
-                      <td className="log-ip">203.0.113.5</td>
-                      <td><span className="log-status warning">Warning</span></td>
-                    </tr>
-                    <tr>
-                      <td className="log-time">3 days ago, 14:20</td>
-                      <td className="log-admin">Meera Gupta</td>
-                      <td className="log-action">Report Generated</td>
-                      <td className="log-details">Monthly financial report</td>
-                      <td className="log-ip">192.168.1.103</td>
                       <td><span className="log-status success">Success</span></td>
                     </tr>
                   </tbody>

@@ -45,7 +45,7 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar, isMobile, userName: user
           return;
         }
 
-        const response = await fetch('http://localhost:8080/admin/getadmindetails', {
+        const response = await fetch('https://realestatebackend-8adg.onrender.com/admin/getadmindetails', {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
