@@ -108,10 +108,10 @@ const ManageProperties = () => {
             <span className="stat-number">{properties.length}</span>
             <span className="stat-label">Total Properties</span>
           </div>
-          <div className="stat-card">
+          {/* <div className="stat-card">
             <span className="stat-number">{properties.filter(p => p.status === 'Active').length}</span>
             <span className="stat-label">Active Listings</span>
-          </div>
+          </div> */}
           <div className="stat-card">
             <span className="stat-number">₹12.5 Cr</span>
             <span className="stat-label">Total Value</span>
@@ -286,7 +286,7 @@ const ManageProperties = () => {
         </table>
       </div>
 
-      <div className="bulk-actions">
+      {/* <div className="bulk-actions">
         <div className="selected-count">
           <input type="checkbox" id="select-all" />
           <label htmlFor="select-all">Select All</label>
@@ -310,7 +310,7 @@ const ManageProperties = () => {
             Delete Selected
           </button>
         </div>
-      </div>
+      </div> */}
 
       <div className="summary-section">
         <div className="summary-card">
@@ -335,7 +335,7 @@ const ManageProperties = () => {
           </div>
         </div>
 
-        <div className="summary-card">
+        {/* <div className="summary-card">
           <h3>Performance Metrics</h3>
           <div className="metrics-grid">
             <div className="metric-item">
@@ -359,7 +359,7 @@ const ManageProperties = () => {
               <span className="metric-change positive">↓ 0.8 hrs</span>
             </div>
           </div>
-        </div>
+        </div> */}
 
         <div className="summary-card">
           <h3>Quick Actions</h3>
@@ -372,10 +372,10 @@ const ManageProperties = () => {
               <span className="icon">📧</span>
               Email Property List
             </button>
-            <button className="quick-action-btn">
+            {/* <button className="quick-action-btn">
               <span className="icon">📱</span>
               Update Mobile App
-            </button>
+            </button> */}
             <button className="quick-action-btn">
               <span className="icon">⚙️</span>
               Settings & Preferences

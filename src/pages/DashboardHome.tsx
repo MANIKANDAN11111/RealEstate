@@ -89,17 +89,24 @@ const DashboardHome = () => {
   const statsData = [
     {
       title: 'Total Properties',
-      value: '156',
+      value: '200',
       changeType: 'positive',
       icon: '🏢',
       description: 'Total properties listed'
     },
     {
-      title: 'Active Listings',
-      value: '870',
+      title: 'Total Lands',
+      value: '100',
       changeType: 'positive',
       icon: '📊',
-      description: 'Currently active listings'
+      description: 'Number of Lands listed'
+    },
+    {
+      title: 'Total Houses',
+      value: '100',
+      changeType: 'positive',
+      icon: '📊',
+      description: 'Number of Houses listed'
     },
     {
       title: 'New Users',
@@ -296,7 +303,7 @@ const DashboardHome = () => {
               minute: '2-digit' 
             })}</span>
           </div>
-          <div className="action-buttons">
+          {/* <div className="action-buttons">
             <button className="btn btn-primary">
               <span className="btn-icon">📊</span>
               <span className="btn-text">Generate Report</span>
@@ -305,7 +312,7 @@ const DashboardHome = () => {
               <span className="btn-icon">📥</span>
               <span className="btn-text">Export Data</span>
             </button>
-          </div>
+          </div> */}
         </div>
       </div>
 
@@ -336,7 +343,7 @@ const DashboardHome = () => {
               <h3>Revenue Overview</h3>
               <p>Monthly revenue trends</p>
             </div>
-            <div className="card-actions">
+            {/* <div className="card-actions">
               <div className="time-select-wrapper">
                 <select className="time-select">
                   <option>Last 30 days</option>
@@ -347,7 +354,7 @@ const DashboardHome = () => {
                 </select>
                 <span className="select-arrow">▼</span>
               </div>
-            </div>
+            </div> */}
           </div>
           <div className="card-content">
             <div className="revenue-chart">
@@ -452,41 +459,6 @@ const DashboardHome = () => {
                         aria-valuemax={100}
                       ></div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Property Status Card - Full Width */}
-        <div className="card property-status-card full-width">
-          <div className="card-header">
-            <div className="card-title-section">
-              <h3>Property Status Distribution</h3>
-              <p>Current status of all properties</p>
-            </div>
-            <button className="btn btn-text">
-              View Details →
-            </button>
-          </div>
-          <div className="card-content">
-            <div className="property-status-container">
-              <div className="property-status-grid">
-                {propertyStatus.map((property, index) => (
-                  <div key={index} className="property-status-item">
-                    <div className="property-icon-wrapper">
-                      <div className={`property-icon ${property.color}`}>
-                        <span>{property.icon}</span>
-                      </div>
-                    </div>
-                    <div className="property-info">
-                      <span className="property-title">{property.title}</span>
-                      <span className="property-count">{property.count} Properties</span>
-                    </div>
-                    <span className={`property-trend ${property.trendType}`}>
-                      {property.trend}
-                    </span>
                   </div>
                 ))}
               </div>
