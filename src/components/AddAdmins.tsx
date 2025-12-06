@@ -37,7 +37,6 @@ const AddAdmins = () => {
       console.log('Fetching admins from API...');
       const token = localStorage.getItem('token');
       
-      // First check if we can even reach the endpoint
       console.log('Testing connection to:', 'https://realestatebackend-8adg.onrender.com/getalladmin');
       
       const response = await fetch('https://realestatebackend-8adg.onrender.com/getalladmin', {
@@ -47,21 +46,20 @@ const AddAdmins = () => {
           'Content-Type': 'application/json',
           'Accept': 'application/json'
         },
-        mode: 'cors', // Explicitly set CORS mode
-        credentials: 'omit' // Don't send credentials unless needed
+        mode: 'cors',
+        credentials: 'omit'
       });
       
       console.log('Response status:', response.status);
       console.log('Response status text:', response.statusText);
       
       if (!response.ok) {
-        // Try to get error details
         const errorText = await response.text();
         console.error('Server error response:', errorText);
         throw new Error(`HTTP error! status: ${response.status} - ${response.statusText || 'Unknown error'}`);
       }
       
-      const data = await response.json();
+      let data = await response.json();
       console.log('API Response data:', data);
       
       if (!data) {
@@ -70,7 +68,6 @@ const AddAdmins = () => {
       
       if (!Array.isArray(data)) {
         console.error('Response is not an array:', data);
-        // If it's not an array but an object, try to extract an array from it
         if (data.data && Array.isArray(data.data)) {
           data = data.data;
         } else if (data.admins && Array.isArray(data.admins)) {
@@ -80,19 +77,18 @@ const AddAdmins = () => {
         }
       }
       
-      // Transform API data to match our component structure
       const formattedAdmins = data.map((admin: any, index: number) => ({
         id: admin.id || admin._id || `admin-${index + 1}`,
         name: admin.name || 'Unknown',
         email: admin.email || 'No email',
-        role: 'Admin', // Default role since API doesn't provide it
+        role: 'Admin',
         status: admin.status === 'Active' ? 'Active' : (admin.status === 'Inactive' ? 'Inactive' : 'Active'),
-        lastActive: 'Recently', // API doesn't provide this, so we use default
+        lastActive: 'Recently',
         avatar: admin.name 
           ? admin.name.split(' ').map((n: string) => n[0]).join('').toUpperCase().substring(0, 2)
           : 'AD',
-        mobileNumber: admin.mobileNumber || admin.phone || admin.mobileNumber || 'Not provided',
-        password: admin.password || '' // Store password if needed
+        mobileNumber: admin.mobileNumber || admin.phone || 'Not provided',
+        password: admin.password || ''
       }));
       
       console.log('Formatted admins:', formattedAdmins);
@@ -105,7 +101,6 @@ const AddAdmins = () => {
       setFetchError(`Failed to load admins: ${errorMessage}`);
       setAdmins([]);
       
-      // For debugging - log more details
       if (error.name === 'TypeError') {
         console.error('Network error or CORS issue. Details:', error);
       }
@@ -114,7 +109,6 @@ const AddAdmins = () => {
     }
   };
 
-  // Rest of your existing functions remain the same...
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!email) return 'Email is required';
@@ -188,7 +182,6 @@ const AddAdmins = () => {
         body: JSON.stringify(apiData)
       });
 
-      // Try to parse as JSON first
       let data;
       const responseText = await response.text();
       console.log('Raw response:', responseText);
@@ -196,14 +189,12 @@ const AddAdmins = () => {
       try {
         data = JSON.parse(responseText);
       } catch (jsonError) {
-        // If not JSON, check if it contains success message
         console.log('Response is not JSON, treating as text');
         data = { message: responseText };
       }
 
       console.log('Processed response:', data);
 
-      // Check if response contains success indicator
       const isSuccess = response.ok || 
                         responseText.includes('Success') || 
                         responseText.includes('Registered') ||
@@ -213,16 +204,12 @@ const AddAdmins = () => {
       if (isSuccess) {
         const successMessage = 'Admin added successfully!';
         
-        // Show success alert
         alert(successMessage);
         
-        // Show API message in form
         setApiMessage({ type: 'success', text: successMessage });
         
-        // Refresh the admin list
         await fetchAdmins();
         
-        // Reset form to empty
         setFormData({
           name: '',
           email: '',
@@ -232,7 +219,6 @@ const AddAdmins = () => {
         });
         setErrors({ email: '', mobileNumber: '', password: '' });
       } else {
-        // API returned an error
         const errorMessage = data.message || data.error || responseText || 'Failed to add admin. Please try again.';
         setApiMessage({ type: 'error', text: errorMessage });
         alert(`Error: ${errorMessage}`);
@@ -240,18 +226,14 @@ const AddAdmins = () => {
     } catch (error) {
       console.error('Error adding admin:', error);
       
-      // Check if the error message contains success indicator
       const errorMessage = error.toString();
       if (errorMessage.includes('Success') || errorMessage.includes('Registered')) {
-        // This is actually a success but network error occurred
         const successMessage = 'Admin added successfully! (Network issue occurred)';
         alert(successMessage);
         setApiMessage({ type: 'success', text: successMessage });
         
-        // Refresh the admin list
         await fetchAdmins();
         
-        // Reset form to empty
         setFormData({
           name: '',
           email: '',
@@ -313,11 +295,7 @@ const AddAdmins = () => {
         </div>
         
         <div className="header-stats">
-          {/* <div className="stat-card">
-            <span className="stat-number">{loading ? '...' : admins.length}</span>
-            <span className="stat-label">Total Admins</span>
-          </div> */}
-          <div className="stat-card">
+          <div className="stat-card large">
             <span className="stat-number">{loading ? '...' : admins.length}</span>
             <span className="stat-label">Total Admins</span>
           </div>
@@ -331,7 +309,7 @@ const AddAdmins = () => {
             <span className="stat-number">
               {loading ? '...' : admins.filter((a: any) => a.status === 'Inactive').length}
             </span>
-            <span className="stat-label">InActive</span>
+            <span className="stat-label">Inactive</span>
           </div>
         </div>
       </div>
@@ -376,7 +354,6 @@ const AddAdmins = () => {
                 <p className="form-subtitle">Fill in the details to create a new admin account</p>
               </div>
 
-              {/* API Response Message */}
               {apiMessage.text && (
                 <div className={`api-message ${apiMessage.type}`}>
                   {apiMessage.text}
@@ -547,30 +524,27 @@ const AddAdmins = () => {
                     <table className="admins-table">
                       <thead>
                         <tr>
-                          <th>Admin</th>
-                          <th>Name</th>
-                          <th>Role</th>
-                          <th>Status</th>
-                          <th>Email</th>
-                          <th>Mobile Number</th>
-                          <th>Actions</th>
+                          <th>ADMIN</th>
+                          <th>NAME</th>
+                          <th>ROLE</th>
+                          <th>STATUS</th>
+                          <th>EMAIL</th>
+                          <th>MOBILE NUMBER</th>
+                          <th>ACTIONS</th>
                         </tr>
                       </thead>
                       <tbody>
                         {admins.map((admin: any) => (
                           <tr key={admin.id}>
-                            {/* <td className="admin-id">
-                              <span className="id-text">{admin.id.substring(0, 8)}...</span>
-                            </td> */}
                             <td className="admin-cell">
                               <div className="admin-info">
                                 <div className="admin-avatar">
                                   {admin.avatar}
                                 </div>
-                                <div className="admin-details">
-                                  <span className="admin-name">{admin.name}</span>
-                                </div>
                               </div>
+                            </td>
+                            <td>
+                              <span className="admin-name-text">{admin.name}</span>
                             </td>
                             <td>
                               <span className={`role-badge ${admin.role.toLowerCase().replace(' ', '-')}`}>
