@@ -295,7 +295,7 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar, isMobile, userName: user
                 
                 <div className="dropdown-divider"></div>
                 
-                <a href="/profile" className="dropdown-item" onClick={() => setShowProfileMenu(false)}>
+                {/* <a href="/profile" className="dropdown-item" onClick={() => setShowProfileMenu(false)}>
                   <span className="dropdown-icon">👤</span>
                   <span>My Profile</span>
                 </a>
@@ -309,9 +309,9 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar, isMobile, userName: user
                 <a href="/help" className="dropdown-item" onClick={() => setShowProfileMenu(false)}>
                   <span className="dropdown-icon">❓</span>
                   <span>Help & Support</span>
-                </a>
+                </a> */}
                 
-                <div className="dropdown-divider"></div>
+                {/* <div className="dropdown-divider"></div> */}
                 
                 <button className="dropdown-item logout" onClick={handleLogout}>
                   <span className="dropdown-icon">🚪</span>

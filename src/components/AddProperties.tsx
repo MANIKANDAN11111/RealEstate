@@ -231,7 +231,7 @@ const AddProperties = () => {
       <div className="page-header">
         <div className="header-content">
           <h1>Add New Property</h1>
-          <p className="subtitle">Add new properties to your portfolio</p>
+          {/* <p className="subtitle">Add new properties to your portfolio</p> */}
         </div>
         <div className="header-actions">
           <button className="save-draft-btn">Save as Draft</button>
