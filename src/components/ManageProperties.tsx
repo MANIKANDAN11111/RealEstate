@@ -268,13 +268,7 @@ const ManageProperties = () => {
                     >
                       ✏️
                     </button>
-                    <button 
-                      className={`action-btn ${property.status === 'Active' ? 'deactivate-btn' : 'activate-btn'}`}
-                      onClick={() => toggleStatus(property.id)}
-                      title={property.status === 'Active' ? 'Deactivate' : 'Activate'}
-                    >
-                      {property.status === 'Active' ? '⏸️' : '▶️'}
-                    </button>
+                   
                     <button 
                       className="action-btn view-btn"
                       title="View Details"
