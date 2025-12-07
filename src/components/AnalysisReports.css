@@ -430,6 +430,7 @@
   margin-top: 24px;
   padding-top: 24px;
   border-top: 1px solid #334155;
+  padding-left: 250px;
 }
 
 .chart-summary {
@@ -458,6 +459,7 @@
   color: #94a3b8;
   margin-bottom: 8px;
   font-weight: 500;
+  
 }
 
 .summary-value {

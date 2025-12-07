@@ -142,7 +142,6 @@ const ManageProperties = () => {
 
         <div className="filter-controls">
           <div className="filter-group">
-            <label className="filter-label">Filter by Status:</label>
             <div className="filter-buttons">
               <button 
                 className={`filter-btn ${filter === 'all' ? 'active' : ''}`}

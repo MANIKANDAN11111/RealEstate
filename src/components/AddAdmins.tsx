@@ -444,7 +444,7 @@ const AddAdmins = () => {
                         disabled={apiLoading}
                       />
                       {errors.mobileNumber && <div className="error-message">{errors.mobileNumber}</div>}
-                      <div className="input-hint">Optional - 10 digits only</div>
+                      <div className="input-hint">Optional </div>
                     </div>
 
                     <div className="form-group">
