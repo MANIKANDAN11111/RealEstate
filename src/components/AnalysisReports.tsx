@@ -80,16 +80,6 @@ const AnalysisReports = () => {
     { label: 'Properties Sold', value: '89', change: '+12.2%', trend: 'up' },
     { label: 'New Users', value: '1,245', change: '+24.7%', trend: 'up' },
     { label: 'Avg. Days on Market', value: '32', change: '-8.3%', trend: 'down' },
-    { label: 'Conversion Rate', value: '4.8%', change: '+1.2%', trend: 'up' },
-    { label: 'Customer Satisfaction', value: '92%', change: '+3.5%', trend: 'up' },
-  ];
-
-  const topPerforming = [
-    { location: 'Mumbai', revenue: '₹1.2 Cr', growth: '+22%' },
-    { location: 'Bangalore', revenue: '₹98 L', growth: '+18%' },
-    { location: 'Delhi', revenue: '₹85 L', growth: '+15%' },
-    { location: 'Hyderabad', revenue: '₹72 L', growth: '+28%' },
-    { location: 'Pune', revenue: '₹65 L', growth: '+12%' },
   ];
 
   const formatIndianCurrency = (amount: number) => {
@@ -125,62 +115,6 @@ const AnalysisReports = () => {
       </div>
 
       <div className="reports-container">
-        <div className="reports-sidebar">
-          <div className="sidebar-header">
-            <h3>Available Reports</h3>
-            <span className="reports-count">{reports.length} reports</span>
-          </div>
-
-          <div className="reports-list">
-            {reports.map((report) => (
-              <div 
-                key={report.id}
-                className={`report-item ${selectedReport === report.id ? 'selected' : ''}`}
-                onClick={() => setSelectedReport(report.id)}
-              >
-                <div className="report-icon">{report.icon}</div>
-                <div className="report-details">
-                  <h4>{report.title}</h4>
-                  <p className="report-description">{report.description}</p>
-                  <div className="report-meta">
-                    <span className="meta-item">Updated: {report.updated}</span>
-                    <span className="meta-divider">•</span>
-                    <span className="meta-item">Frequency: {report.frequency}</span>
-                  </div>
-                </div>
-                <div className="report-arrow">→</div>
-              </div>
-            ))}
-          </div>
-
-          <div className="sidebar-footer">
-            <h4>Quick Insights</h4>
-            <div className="insights-list">
-              <div className="insight-item positive">
-                <span className="insight-icon">📈</span>
-                <div className="insight-content">
-                  <span className="insight-text">Revenue growth trend</span>
-                  <span className="insight-value">+18.5%</span>
-                </div>
-              </div>
-              <div className="insight-item warning">
-                <span className="insight-icon">⚠️</span>
-                <div className="insight-content">
-                  <span className="insight-text">Properties pending approval</span>
-                  <span className="insight-value">12</span>
-                </div>
-              </div>
-              <div className="insight-item info">
-                <span className="insight-icon">📅</span>
-                <div className="insight-content">
-                  <span className="insight-text">Monthly report due</span>
-                  <span className="insight-value">3 days</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
         <div className="reports-content">
           <div className="content-header">
             <div className="header-left">
@@ -322,150 +256,59 @@ const AnalysisReports = () => {
           </div>
 
           <div className="tables-section">
-            <div className="table-card">
-              <div className="table-header">
-                <h3>Top Performing Locations</h3>
-                <button className="view-all-btn">View All</button>
-              </div>
-              <table className="performance-table">
-                <thead>
-                  <tr>
-                    <th>Location</th>
-                    <th>Revenue</th>
-                    <th>Growth</th>
-                    <th>Properties</th>
-                    <th>Trend</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {topPerforming.map((location, index) => (
-                    <tr key={index}>
-                      <td className="location-cell">
-                        <span className="location-icon">📍</span>
-                        <span>{location.location}</span>
-                      </td>
-                      <td className="revenue-cell">{location.revenue}</td>
-                      <td>
-                        <span className={`growth-badge ${location.growth.includes('+') ? 'positive' : 'negative'}`}>
-                          {location.growth}
-                        </span>
-                      </td>
-                      <td>
-                        <span className="property-count">{Math.floor(Math.random() * 50) + 20}</span>
-                      </td>
-                      <td>
-                        <div className="trend-indicator">
-                          <div className="trend-line">
-                            {[30, 45, 60, 75, 90].map((val, i) => (
-                              <div 
-                                key={i} 
-                                className="trend-point"
-                                style={{ height: `${val}%` }}
-                              ></div>
-                            ))}
-                          </div>
-                          <span className="trend-arrow">↗</span>
+            <div className="reports-list-section">
+              <div className="reports-sidebar">
+                <div className="sidebar-header">
+                  <h3>Available Reports</h3>
+                  <span className="reports-count">{reports.length} reports</span>
+                </div>
+
+                <div className="reports-list">
+                  {reports.map((report) => (
+                    <div 
+                      key={report.id}
+                      className={`report-item ${selectedReport === report.id ? 'selected' : ''}`}
+                      onClick={() => setSelectedReport(report.id)}
+                    >
+                      <div className="report-icon">{report.icon}</div>
+                      <div className="report-details">
+                        <h4>{report.title}</h4>
+                        <p className="report-description">{report.description}</p>
+                        <div className="report-meta">
+                          <span className="meta-item">Updated: {report.updated}</span>
+                          <span className="meta-divider">•</span>
+                          <span className="meta-item">Frequency: {report.frequency}</span>
                         </div>
-                      </td>
-                    </tr>
+                      </div>
+                      <div className="report-arrow">→</div>
+                    </div>
                   ))}
-                </tbody>
-              </table>
-            </div>
+                </div>
 
-            <div className="table-card">
-              <div className="table-header">
-                <h3>Key Performance Indicators</h3>
-                <div className="kpi-filters">
-                  <select className="kpi-select">
-                    <option>This Month</option>
-                    <option>Last Month</option>
-                    <option>Quarter to Date</option>
-                  </select>
-                </div>
-              </div>
-              <div className="kpi-grid">
-                <div className="kpi-item">
-                  <span className="kpi-icon">🎯</span>
-                  <div className="kpi-content">
-                    <span className="kpi-label">Lead Conversion</span>
-                    <span className="kpi-value">12.4%</span>
-                    <span className="kpi-change positive">+2.1%</span>
-                  </div>
-                </div>
-                <div className="kpi-item">
-                  <span className="kpi-icon">⏱️</span>
-                  <div className="kpi-content">
-                    <span className="kpi-label">Avg. Response Time</span>
-                    <span className="kpi-value">2.4 hrs</span>
-                    <span className="kpi-change positive">-0.8 hrs</span>
-                  </div>
-                </div>
-                <div className="kpi-item">
-                  <span className="kpi-icon">💰</span>
-                  <div className="kpi-content">
-                    <span className="kpi-label">Avg. Property Value</span>
-                    <span className="kpi-value">₹82 L</span>
-                    <span className="kpi-change positive">+8.5%</span>
-                  </div>
-                </div>
-                <div className="kpi-item">
-                  <span className="kpi-icon">📱</span>
-                  <div className="kpi-content">
-                    <span className="kpi-label">Mobile Engagement</span>
-                    <span className="kpi-value">68%</span>
-                    <span className="kpi-change positive">+12%</span>
-                  </div>
-                </div>
-                <div className="kpi-item">
-                  <span className="kpi-icon">🔄</span>
-                  <div className="kpi-content">
-                    <span className="kpi-label">Repeat Customers</span>
-                    <span className="kpi-value">24%</span>
-                    <span className="kpi-change positive">+5.2%</span>
-                  </div>
-                </div>
-                <div className="kpi-item">
-                  <span className="kpi-icon">⭐</span>
-                  <div className="kpi-content">
-                    <span className="kpi-label">Customer Satisfaction</span>
-                    <span className="kpi-value">4.7/5</span>
-                    <span className="kpi-change positive">+0.3</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="insights-section">
-            <div className="insights-card">
-              <div className="insights-header">
-                <h3>Actionable Insights</h3>
-                <span className="insights-badge">3 Recommendations</span>
-              </div>
-              <div className="insights-list">
-                <div className="insight-item critical">
-                  <div className="insight-icon">🚨</div>
-                  <div className="insight-content">
-                    <h4>Inventory Alert</h4>
-                    <p>Low inventory in Bangalore region. Consider adding new properties.</p>
-                    <button className="insight-action">Take Action</button>
-                  </div>
-                </div>
-                <div className="insight-item opportunity">
-                  <div className="insight-icon">🎯</div>
-                  <div className="insight-content">
-                    <h4>Growth Opportunity</h4>
-                    <p>High demand for 3 BHK apartments in Mumbai. Focus marketing efforts.</p>
-                    <button className="insight-action">View Details</button>
-                  </div>
-                </div>
-                <div className="insight-item improvement">
-                  <div className="insight-icon">📊</div>
-                  <div className="insight-content">
-                    <h4>Performance Improvement</h4>
-                    <p>Response time increased by 15%. Review support team performance.</p>
-                    <button className="insight-action">Analyze</button>
+                <div className="sidebar-footer">
+                  <h4>Quick Insights</h4>
+                  <div className="insights-list">
+                    <div className="insight-item positive">
+                      <span className="insight-icon">📈</span>
+                      <div className="insight-content">
+                        <span className="insight-text">Revenue growth trend</span>
+                        <span className="insight-value">+18.5%</span>
+                      </div>
+                    </div>
+                    <div className="insight-item warning">
+                      <span className="insight-icon">⚠️</span>
+                      <div className="insight-content">
+                        <span className="insight-text">Properties pending approval</span>
+                        <span className="insight-value">12</span>
+                      </div>
+                    </div>
+                    <div className="insight-item info">
+                      <span className="insight-icon">📅</span>
+                      <div className="insight-content">
+                        <span className="insight-text">Monthly report due</span>
+                        <span className="insight-value">3 days</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
