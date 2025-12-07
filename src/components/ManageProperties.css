@@ -1,5 +1,8 @@
+/* Main Container */
 .manage-properties {
   padding: 24px;
+  background: #0f172a;
+  min-height: 100vh;
 }
 
 /* Page Header */
@@ -466,7 +469,8 @@
   transform: scale(1.1);
 }
 
-/* Bulk Actions */
+/* Bulk Actions Section (Commented in TSX) */
+/*
 .bulk-actions {
   background: #1e293b;
   border-radius: 16px;
@@ -553,6 +557,7 @@
   color: #ef4444;
   border-color: #ef4444;
 }
+*/
 
 /* Summary Section */
 .summary-section {
@@ -579,6 +584,7 @@
   border-radius: 16px;
   padding: 24px;
   border: 1px solid #334155;
+  height: 100%;
 }
 
 .summary-card h3 {
@@ -588,43 +594,118 @@
   margin-bottom: 20px;
 }
 
-/* Distribution Chart */
-.distribution-chart {
-  display: flex;
-  align-items: flex-end;
-  gap: 16px;
-  height: 200px;
-  padding: 20px 0;
-}
-
-.chart-item {
-  flex: 1;
+/* Pie Chart */
+.pie-chart-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: 24px;
 }
 
-.chart-bar {
+@media (min-width: 768px) {
+  .pie-chart-container {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+.pie-chart {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: conic-gradient(
+    #4f46e5 0% 25%,
+    #10b981 25% 50%,
+    #f59e0b 50% 75%,
+    #ef4444 75% 100%
+  );
+  flex-shrink: 0;
+}
+
+.pie-segment {
+  position: absolute;
   width: 100%;
-  border-radius: 8px 8px 0 0;
-  transition: height 0.5s ease;
-  animation: growBar 1s ease-out forwards;
-  transform-origin: bottom;
+  height: 100%;
+  border-radius: 50%;
+  clip-path: polygon(50% 50%, 50% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 50%);
 }
 
-@keyframes growBar {
-  from { transform: scaleY(0); }
-  to { transform: scaleY(1); }
+.pie-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80px;
+  height: 80px;
+  background: #1e293b;
+  border-radius: 50%;
+  border: 4px solid #0f172a;
 }
 
-.chart-label {
+.pie-legend {
+  flex: 1;
+  min-width: 0;
+}
+
+.legend-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  border: 1px solid #334155;
+}
+
+.legend-color {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  margin-right: 12px;
+}
+
+.legend-color.segment-1 { background-color: #4f46e5; }
+.legend-color.segment-2 { background-color: #10b981; }
+.legend-color.segment-3 { background-color: #f59e0b; }
+.legend-color.segment-4 { background-color: #ef4444; }
+
+.legend-text {
+  flex: 1;
+  font-weight: 500;
+  color: #e2e8f0;
+  font-size: 14px;
+}
+
+.legend-value {
+  margin: 0 20px;
+  font-weight: 600;
+  color: white;
+  font-size: 14px;
+}
+
+.legend-growth {
+  font-weight: 600;
   font-size: 12px;
-  color: #94a3b8;
-  text-align: center;
+  padding: 2px 8px;
+  border-radius: 12px;
 }
 
-/* Metrics Grid */
+.legend-growth.positive {
+  background: rgba(34, 197, 94, 0.1);
+  color: #10b981;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.legend-growth.negative {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+/* Performance Metrics (Commented in TSX) */
+/*
 .metrics-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -667,6 +748,7 @@
 .metric-change.negative {
   color: #ef4444;
 }
+*/
 
 /* Quick Actions */
 .quick-actions-list {
@@ -690,15 +772,19 @@
   align-items: center;
   gap: 8px;
   text-align: center;
+  min-height: 80px;
+  justify-content: center;
 }
 
 .quick-action-btn:hover {
   background: rgba(255, 255, 255, 0.06);
   transform: translateY(-2px);
+  border-color: #475569;
 }
 
 .quick-action-btn .icon {
   font-size: 20px;
+  margin-bottom: 4px;
 }
 
 /* Responsive Design */
@@ -720,21 +806,35 @@
     justify-content: center;
   }
   
-  .bulk-actions {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  
-  .bulk-buttons {
+  .pie-chart-container {
     flex-direction: column;
   }
   
-  .bulk-btn {
-    width: 100%;
-    justify-content: center;
+  .pie-chart {
+    width: 150px;
+    height: 150px;
+  }
+  
+  .pie-center {
+    width: 60px;
+    height: 60px;
   }
   
   .quick-actions-list {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 1024px) {
+  .properties-table-container {
+    margin-left: -16px;
+    margin-right: -16px;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+  }
+  
+  .summary-card {
+    padding: 20px;
   }
 }
