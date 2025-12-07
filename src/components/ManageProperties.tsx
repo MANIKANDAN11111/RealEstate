@@ -1,10 +1,12 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './ManageProperties.css';
+import './AddProperties';
 
 const ManageProperties = () => {
   const [properties, setProperties] = useState([
     {
-      id: 1,
+      id: 1,       
       title: 'Luxury 3 BHK Apartment in Bandra',
       type: 'Apartment',
       location: 'Mumbai',
@@ -74,6 +76,16 @@ const ManageProperties = () => {
   const [filter, setFilter] = useState('all');
   const [search, setSearch] = useState('');
 
+  const navigate = useNavigate(); 
+
+  // Property distribution data for pie chart
+  const propertyData = [
+    { type: "Apartments", count: 2, growth: "+12%" },
+    { type: "Villas", count: 2, growth: "+5%" },
+    { type: "Commercial", count: 2, growth: "-2%" },
+    { type: "Plots", count: 0, growth: "+8%" }
+  ];
+
   const filteredProperties = properties.filter(property => {
     const matchesFilter = filter === 'all' || property.status.toLowerCase() === filter;
     const matchesSearch = property.title.toLowerCase().includes(search.toLowerCase()) ||
@@ -101,17 +113,18 @@ const ManageProperties = () => {
       <div className="page-header">
         <div className="header-content">
           <h1>Manage Properties</h1>
-          <p className="subtitle">Modify and manage your property portfolio</p>
         </div>
         <div className="header-stats">
           <div className="stat-card">
             <span className="stat-number">{properties.length}</span>
             <span className="stat-label">Total Properties</span>
           </div>
+          {/* Uncomment to show active listings count
           <div className="stat-card">
             <span className="stat-number">{properties.filter(p => p.status === 'Active').length}</span>
             <span className="stat-label">Active Listings</span>
           </div>
+          */}
           <div className="stat-card">
             <span className="stat-number">₹12.5 Cr</span>
             <span className="stat-label">Total Value</span>
@@ -173,8 +186,9 @@ const ManageProperties = () => {
               <span className="icon">📊</span>
               Export Data
             </button>
-            <button className="add-btn">
-              <span className="icon">➕</span>
+            <button className="add-btn"
+            onClick={() => navigate('/AddProperties')}>
+               <span className="icon">➕</span>
               Add New Property
             </button>
           </div>
@@ -286,6 +300,7 @@ const ManageProperties = () => {
         </table>
       </div>
 
+      {/* Bulk Actions Section (Commented)
       <div className="bulk-actions">
         <div className="selected-count">
           <input type="checkbox" id="select-all" />
@@ -311,30 +326,35 @@ const ManageProperties = () => {
           </button>
         </div>
       </div>
+      */}
 
       <div className="summary-section">
         <div className="summary-card">
           <h3>Property Distribution</h3>
-          <div className="distribution-chart">
-            <div className="chart-item">
-              <div className="chart-bar" style={{height: '80%', background: '#3b82f6'}}></div>
-              <span className="chart-label">Apartments</span>
+          <div className="pie-chart-container">
+            <div className="pie-chart">
+              <div className="pie-segment segment-1"></div>
+              <div className="pie-segment segment-2"></div>
+              <div className="pie-segment segment-3"></div>
+              <div className="pie-segment segment-4"></div>
+              <div className="pie-center"></div>
             </div>
-            <div className="chart-item">
-              <div className="chart-bar" style={{height: '60%', background: '#10b981'}}></div>
-              <span className="chart-label">Villas</span>
-            </div>
-            <div className="chart-item">
-              <div className="chart-bar" style={{height: '40%', background: '#f59e0b'}}></div>
-              <span className="chart-label">Commercial</span>
-            </div>
-            <div className="chart-item">
-              <div className="chart-bar" style={{height: '30%', background: '#8b5cf6'}}></div>
-              <span className="chart-label">Plots</span>
+            <div className="pie-legend">
+              {propertyData.map((data, index) => (
+                <div key={index} className="legend-row">
+                  <span className={`legend-color segment-${index + 1}`}></span>
+                  <span className="legend-text">{data.type}</span>
+                  <span className="legend-value">{data.count}</span>
+                  <span className={`legend-growth ${data.growth.includes('+') ? 'positive' : 'negative'}`}>
+                    {data.growth}
+                  </span>
+                </div>
+              ))}
             </div>
           </div>
         </div>
 
+        {/* Performance Metrics Card (Commented)
         <div className="summary-card">
           <h3>Performance Metrics</h3>
           <div className="metrics-grid">
@@ -360,6 +380,7 @@ const ManageProperties = () => {
             </div>
           </div>
         </div>
+        */}
 
         <div className="summary-card">
           <h3>Quick Actions</h3>
@@ -372,10 +393,12 @@ const ManageProperties = () => {
               <span className="icon">📧</span>
               Email Property List
             </button>
+            {/* Uncomment for additional actions
             <button className="quick-action-btn">
               <span className="icon">📱</span>
               Update Mobile App
             </button>
+            */}
             <button className="quick-action-btn">
               <span className="icon">⚙️</span>
               Settings & Preferences

@@ -1,13 +1,45 @@
 import { useState, useEffect } from 'react';
 import './AddAdmins.css';
 
+// Define TypeScript interfaces
+interface Admin {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  status: 'Active' | 'Inactive';
+  lastActive: string;
+  avatar: string;
+  mobileNumber: string;
+  password: string;
+}
+
+interface FormData {
+  name: string;
+  email: string;
+  mobileNumber: string;
+  password: string;
+  sendInvite: boolean;
+}
+
+interface Errors {
+  email: string;
+  mobileNumber: string;
+  password: string;
+}
+
+interface ApiMessage {
+  type: 'success' | 'error' | '';
+  text: string;
+}
+
 const AddAdmins = () => {
-  const [admins, setAdmins] = useState([]);
+  const [admins, setAdmins] = useState<Admin[]>([]);
   const [loading, setLoading] = useState(true);
   const [apiLoading, setApiLoading] = useState(false);
   const [fetchError, setFetchError] = useState('');
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     name: '',
     email: '',
     mobileNumber: '',
@@ -15,13 +47,13 @@ const AddAdmins = () => {
     sendInvite: true
   });
 
-  const [errors, setErrors] = useState({
+  const [errors, setErrors] = useState<Errors>({
     email: '',
     mobileNumber: '',
     password: ''
   });
 
-  const [apiMessage, setApiMessage] = useState({ type: '', text: '' });
+  const [apiMessage, setApiMessage] = useState<ApiMessage>({ type: '', text: '' });
 
   const [activeTab, setActiveTab] = useState('add');
 
@@ -77,7 +109,7 @@ const AddAdmins = () => {
         }
       }
       
-      const formattedAdmins = data.map((admin: any, index: number) => ({
+      const formattedAdmins: Admin[] = data.map((admin: any, index: number) => ({
         id: admin.id || admin._id || `admin-${index + 1}`,
         name: admin.name || 'Unknown',
         email: admin.email || 'No email',
@@ -223,7 +255,7 @@ const AddAdmins = () => {
         setApiMessage({ type: 'error', text: errorMessage });
         alert(`Error: ${errorMessage}`);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error adding admin:', error);
       
       const errorMessage = error.toString();
@@ -255,13 +287,13 @@ const AddAdmins = () => {
   const toggleAdminStatus = async (id: string) => {
     if (window.confirm('Are you sure you want to change this admin\'s status?')) {
       try {
-        setAdmins(admins.map((admin: any) => 
+        setAdmins(prevAdmins => prevAdmins.map(admin => 
           admin.id === id 
             ? { ...admin, status: admin.status === 'Active' ? 'Inactive' : 'Active' }
             : admin
         ));
         
-        const admin = admins.find((a: any) => a.id === id);
+        const admin = admins.find(a => a.id === id);
         alert(`Admin ${admin?.name} status changed to ${admin?.status === 'Active' ? 'Inactive' : 'Active'}`);
       } catch (error) {
         console.error('Error updating admin status:', error);
@@ -273,7 +305,7 @@ const AddAdmins = () => {
   const deleteAdmin = async (id: string) => {
     if (window.confirm('Are you sure you want to remove this admin?')) {
       try {
-        setAdmins(admins.filter((admin: any) => admin.id !== id));
+        setAdmins(prevAdmins => prevAdmins.filter(admin => admin.id !== id));
         alert('Admin removed successfully!');
       } catch (error) {
         console.error('Error deleting admin:', error);
@@ -301,13 +333,13 @@ const AddAdmins = () => {
           </div>
           <div className="stat-card">
             <span className="stat-number">
-              {loading ? '...' : admins.filter((a: any) => a.status === 'Active').length}
+              {loading ? '...' : admins.filter(a => a.status === 'Active').length}
             </span>
             <span className="stat-label">Active</span>
           </div>
           <div className="stat-card">
             <span className="stat-number">
-              {loading ? '...' : admins.filter((a: any) => a.status === 'Inactive').length}
+              {loading ? '...' : admins.filter(a => a.status === 'Inactive').length}
             </span>
             <span className="stat-label">Inactive</span>
           </div>
@@ -534,7 +566,7 @@ const AddAdmins = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {admins.map((admin: any) => (
+                        {admins.map((admin) => (
                           <tr key={admin.id}>
                             <td className="admin-cell">
                               <div className="admin-info">
