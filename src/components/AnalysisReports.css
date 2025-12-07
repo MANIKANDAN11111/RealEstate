@@ -426,16 +426,21 @@
   to { height: var(--height); }
 }
 
-.chart-footer {
+.chart-footer 
+{
+  display: grid;
+  padding-left: 250px;
   margin-top: 24px;
   padding-top: 24px;
   border-top: 1px solid #334155;
 }
 
-.chart-summary {
+.chart-summary 
+{
   display: grid;
   grid-template-columns: repeat(1, 1fr);
   gap: 20px;
+  align-items: center;
 }
 
 @media (min-width: 640px) {
@@ -446,7 +451,7 @@
 
 .summary-item {
   text-align: center;
-  padding: 16px;
+  padding: 25px;
   background: rgba(255, 255, 255, 0.03);
   border-radius: 12px;
   border: 1px solid #334155;
