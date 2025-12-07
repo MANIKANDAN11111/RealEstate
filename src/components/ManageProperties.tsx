@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './ManageProperties.css';
-import './AddProperties';
 
 const ManageProperties = () => {
   const [properties, setProperties] = useState([
@@ -111,23 +110,19 @@ const ManageProperties = () => {
   return (
     <div className="manage-properties">
       <div className="page-header">
-        <div className="header-content">
-          <h1>Manage Properties</h1>
-        </div>
-        <div className="header-stats">
-          <div className="stat-card">
-            <span className="stat-number">{properties.length}</span>
-            <span className="stat-label">Total Properties</span>
+        <div className="header-top">
+          <div className="header-content">
+            <h1>Manage Properties</h1>
           </div>
-          {/* Uncomment to show active listings count
-          <div className="stat-card">
-            <span className="stat-number">{properties.filter(p => p.status === 'Active').length}</span>
-            <span className="stat-label">Active Listings</span>
-          </div>
-          */}
-          <div className="stat-card">
-            <span className="stat-number">₹12.5 Cr</span>
-            <span className="stat-label">Total Value</span>
+          <div className="header-stats-corner">
+            <div className="stat-card-corner">
+              <span className="stat-number">{properties.length}</span>
+              <span className="stat-label">Total Properties</span>
+            </div>
+            <div className="stat-card-corner">
+              <span className="stat-number">₹12.5 Cr</span>
+              <span className="stat-label">Total Value</span>
+            </div>
           </div>
         </div>
       </div>
@@ -300,7 +295,8 @@ const ManageProperties = () => {
         </table>
       </div>
 
-      {/* Bulk Actions Section (Commented)
+      {/* Bulk Actions Section (Commented) */}
+      {/*
       <div className="bulk-actions">
         <div className="selected-count">
           <input type="checkbox" id="select-all" />
@@ -328,8 +324,8 @@ const ManageProperties = () => {
       </div>
       */}
 
-      <div className="summary-section">
-        <div className="summary-card">
+      <div className="summary-section-two-col">
+        <div className="summary-card-full">
           <h3>Property Distribution</h3>
           <div className="pie-chart-container">
             <div className="pie-chart">
@@ -354,37 +350,9 @@ const ManageProperties = () => {
           </div>
         </div>
 
-        {/* Performance Metrics Card (Commented)
-        <div className="summary-card">
-          <h3>Performance Metrics</h3>
-          <div className="metrics-grid">
-            <div className="metric-item">
-              <span className="metric-label">Avg. Views/Property</span>
-              <span className="metric-value">1,075</span>
-              <span className="metric-change positive">↑ 12.5%</span>
-            </div>
-            <div className="metric-item">
-              <span className="metric-label">Conversion Rate</span>
-              <span className="metric-value">4.8%</span>
-              <span className="metric-change positive">↑ 3.2%</span>
-            </div>
-            <div className="metric-item">
-              <span className="metric-label">Avg. Days to Sell</span>
-              <span className="metric-value">45</span>
-              <span className="metric-change negative">↑ 5 days</span>
-            </div>
-            <div className="metric-item">
-              <span className="metric-label">Inquiry Response Time</span>
-              <span className="metric-value">2.4 hrs</span>
-              <span className="metric-change positive">↓ 0.8 hrs</span>
-            </div>
-          </div>
-        </div>
-        */}
-
-        <div className="summary-card">
+        <div className="summary-card-full">
           <h3>Quick Actions</h3>
-          <div className="quick-actions-list">
+          <div className="quick-actions-grid">
             <button className="quick-action-btn">
               <span className="icon">📊</span>
               Generate Report
@@ -393,15 +361,13 @@ const ManageProperties = () => {
               <span className="icon">📧</span>
               Email Property List
             </button>
-            {/* Uncomment for additional actions
-            <button className="quick-action-btn">
-              <span className="icon">📱</span>
-              Update Mobile App
-            </button>
-            */}
             <button className="quick-action-btn">
               <span className="icon">⚙️</span>
-              Settings & Preferences
+              Settings
+            </button>
+            <button className="quick-action-btn">
+              <span className="icon">📈</span>
+              View Analytics
             </button>
           </div>
         </div>
