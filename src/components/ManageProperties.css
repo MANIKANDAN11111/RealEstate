@@ -18,7 +18,7 @@
 .header-top {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  /* align-items: flex-start; */
   gap: 20px;
   flex-wrap: wrap;
 }
@@ -31,25 +31,30 @@
 .header-content h1 {
   font-size: 32px;
   font-weight: 800;
-  margin-bottom: 12px;
+  margin-bottom: 5px;
   background: linear-gradient(90deg, #fff, #3b82f6);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  vertical-align:middle;
 }
 
 .subtitle {
   color: #94a3b8;
   font-size: 16px;
+  text-align: start;
   margin-bottom: 0;
 }
 
 .header-stats-corner {
+  padding-left: 610px;
   display: flex;
   gap: 16px;
   flex-wrap: wrap;
-  justify-content: flex-end;
+  text-align: end;
+  align-items: flex-end;    
 }
+
 
 .stat-card-corner {
   background: rgba(255, 255, 255, 0.05);
@@ -78,10 +83,10 @@
   font-size: 14px;
   color: #94a3b8;
   font-weight: 500;
-  display: block;
+  display:flex;
+  justify-content: end;
 }
 
-/* Controls Section */
 .controls-section {
   background: #1e293b;
   border-radius: 16px;
@@ -142,6 +147,7 @@
 .filter-group {
   display: flex;
   flex-direction: column;
+  align-items: flex-end;
   gap: 12px;
 }
 
@@ -228,6 +234,7 @@
   margin-bottom: 24px;
   border: 1px solid #334155;
   overflow-x: auto;
+  text-align: center;
 }
 
 .properties-table {
@@ -237,7 +244,7 @@
 }
 
 .properties-table th {
-  text-align: left;
+  text-align: center;
   padding: 16px;
   font-size: 13px;
   font-weight: 600;

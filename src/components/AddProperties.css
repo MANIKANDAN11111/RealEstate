@@ -33,6 +33,7 @@
 }
 
 .header-content h1 {
+  text-align: start;
   font-size: 32px;
   font-weight: 800;
   margin-bottom: 12px;

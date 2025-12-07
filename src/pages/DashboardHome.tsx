@@ -131,13 +131,13 @@ const DashboardHome = () => {
       icon: '🏢', 
       color: 'blue', 
       description: 'View and manage all properties',
-      link: '/properties'
+      link: '/dashboard/manage-properties'
     },
     { 
-      title: 'Approve Users', 
+      title: 'Manage Users', 
       icon: '👥', 
       color: 'green', 
-      description: 'Approve new user registrations',
+      description: 'Manage user registrations',
       link: '/users/approve'
     },
     { 
@@ -145,15 +145,8 @@ const DashboardHome = () => {
       icon: '📊', 
       color: 'purple', 
       description: 'Generate and view reports',
-      link: '/reports'
+      link: '/dashboard/analysis-reports'
     },
-    { 
-      title: 'System Health', 
-      icon: '⚡', 
-      color: 'orange', 
-      description: 'Monitor system performance',
-      link: '/system'
-    }
   ];
 
   // Recent Updates Data

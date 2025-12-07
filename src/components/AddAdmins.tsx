@@ -323,7 +323,7 @@ const AddAdmins = () => {
       <div className="page-header">
         <div className="header-content">
           <h1>Admin Management</h1>
-          <p className="subtitle">Add and manage administrator accounts</p>
+          <h3 className="subtitle">Add and manage administrator accounts</h3>
         </div>
         
         <div className="header-stats">
@@ -362,7 +362,7 @@ const AddAdmins = () => {
             <span className="tab-icon">👥</span>
             Manage Admins
           </button>
-          <button 
+          {/* <button 
             className={`tab-btn ${activeTab === 'roles' ? 'active' : ''}`}
             onClick={() => setActiveTab('roles')}
           >
@@ -375,7 +375,7 @@ const AddAdmins = () => {
           >
             <span className="tab-icon">📊</span>
             Activity Log
-          </button>
+          </button> */}
         </div>
 
         <div className="tab-content">
@@ -514,10 +514,10 @@ const AddAdmins = () => {
                     <span className="icon">🔄</span>
                     {loading ? 'Refreshing...' : 'Refresh'}
                   </button>
-                  <button className="bulk-action-btn">
+                  {/* <button className="bulk-action-btn">
                     <span className="icon">⚡</span>
                     Bulk Actions
-                  </button>
+                  </button> */}
                 </div>
               </div>
 
@@ -606,13 +606,13 @@ const AddAdmins = () => {
                                 >
                                   ✏️
                                 </button>
-                                <button 
+                                {/* <button 
                                   className={`action-btn ${admin.status === 'Active' ? 'deactivate-btn' : 'activate-btn'}`}
                                   onClick={() => toggleAdminStatus(admin.id)}
                                   title={admin.status === 'Active' ? 'Deactivate' : 'Activate'}
                                 >
                                   {admin.status === 'Active' ? '⏸️' : '▶️'}
-                                </button>
+                                </button> */}
                                 <button 
                                   className="action-btn delete-btn"
                                   onClick={() => deleteAdmin(admin.id)}
@@ -630,7 +630,7 @@ const AddAdmins = () => {
                 )}
               </div>
 
-              <div className="recent-activity">
+              {/* <div className="recent-activity">
                 <h3>Recent Admin Activity</h3>
                 <div className="activity-list">
                   <div className="activity-item">
@@ -648,7 +648,7 @@ const AddAdmins = () => {
                     </div>
                   </div>
                 </div>
-              </div>
+              </div> */}
             </div>
           )}
 

@@ -113,6 +113,7 @@ const ManageProperties = () => {
         <div className="header-top">
           <div className="header-content">
             <h1>Manage Properties</h1>
+            <h3 className="subtitle">Manage and Track all your Properties</h3>
           </div>
           <div className="header-stats-corner">
             <div className="stat-card-corner">
@@ -182,7 +183,7 @@ const ManageProperties = () => {
               Export Data
             </button>
             <button className="add-btn"
-            onClick={() => navigate('/AddProperties')}>
+            onClick={() => navigate('/dashboard/add-properties')}>
                <span className="icon">➕</span>
               Add New Property
             </button>
@@ -194,9 +195,9 @@ const ManageProperties = () => {
         <table className="properties-table">
           <thead>
             <tr>
-              <th>
+              {/* <th>
                 <input type="checkbox" className="select-all" />
-              </th>
+              </th> */}
               <th>Property Title</th>
               <th>Type</th>
               <th>Location</th>
@@ -211,9 +212,9 @@ const ManageProperties = () => {
           <tbody>
             {filteredProperties.map((property) => (
               <tr key={property.id}>
-                <td>
+                {/* <td>
                   <input type="checkbox" className="property-select" />
-                </td>
+                </td> */}
                 <td className="property-title-cell">
                   <div className="property-info">
                     <div className="property-image">
@@ -353,7 +354,8 @@ const ManageProperties = () => {
         <div className="summary-card-full">
           <h3>Quick Actions</h3>
           <div className="quick-actions-grid">
-            <button className="quick-action-btn">
+            <button className="quick-action-btn"
+            onClick={() => navigate('/dashboard/analysis-reports')}>
               <span className="icon">📊</span>
               Generate Report
             </button>
@@ -365,9 +367,11 @@ const ManageProperties = () => {
               <span className="icon">⚙️</span>
               Settings
             </button>
-            <button className="quick-action-btn">
+            <button className="quick-action-btn"
+            onClick={() => navigate('/dashboard/analysis-reports')}>
               <span className="icon">📈</span>
               View Analytics
+             
             </button>
           </div>
         </div>
