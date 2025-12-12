@@ -22,6 +22,14 @@ interface FormData {
   sendInvite: boolean;
 }
 
+interface EditFormData {
+  name: string;
+  email: string;
+  mobileNumber: string;
+  password: string;
+  status: string;
+}
+
 interface Errors {
   email: string;
   mobileNumber: string;
@@ -54,8 +62,22 @@ const AddAdmins = () => {
   });
 
   const [apiMessage, setApiMessage] = useState<ApiMessage>({ type: '', text: '' });
-
   const [activeTab, setActiveTab] = useState('add');
+  
+  // For edit functionality
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editFormData, setEditFormData] = useState<EditFormData>({
+    name: '',
+    email: '',
+    mobileNumber: '',
+    password: '',
+    status: 'Active'
+  });
+  const [editingAdmin, setEditingAdmin] = useState<Admin | null>(null);
+  const [editErrors, setEditErrors] = useState<{ mobileNumber: string; password: string }>({
+    mobileNumber: '',
+    password: ''
+  });
 
   // Fetch admins from API
   useEffect(() => {
@@ -74,7 +96,7 @@ const AddAdmins = () => {
       const response = await fetch('https://realestatebackend-8adg.onrender.com/getalladmin', {
         method: 'GET',
         headers: {
-           'Authorization': `Bearer ${token}`,
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
           'Accept': 'application/json'
         },
@@ -174,6 +196,146 @@ const AddAdmins = () => {
       setErrors(prev => ({ ...prev, mobileNumber: validateMobileNumber(value) }));
     } else if (name === 'password') {
       setErrors(prev => ({ ...prev, password: validatePassword(value) }));
+    }
+  };
+
+  // DELETE ADMIN FUNCTION
+  const deleteAdmin = async (email: string) => {
+    if (window.confirm(`Are you sure you want to delete admin with email: ${email}?`)) {
+      try {
+        const token = localStorage.getItem('token');
+        console.log(`Deleting admin with email: ${email}`);
+        
+        const response = await fetch(`https://realestatebackend-8adg.onrender.com/admin/delete?email=${encodeURIComponent(email)}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        console.log('Delete response status:', response.status);
+        
+        if (response.ok) {
+          // Remove from local state
+          setAdmins(prevAdmins => prevAdmins.filter(admin => admin.email !== email));
+          alert('Admin deleted successfully!');
+          await fetchAdmins(); // Refresh the list
+        } else {
+          const errorText = await response.text();
+          console.error('Delete error:', errorText);
+          alert(`Failed to delete admin: ${errorText}`);
+        }
+      } catch (error: any) {
+        console.error('Error deleting admin:', error);
+        alert(`Error deleting admin: ${error.message}`);
+      }
+    }
+  };
+
+  // EDIT ADMIN FUNCTIONS
+  const openEditModal = (admin: Admin) => {
+    setEditingAdmin(admin);
+    setEditFormData({
+      name: admin.name,
+      email: admin.email,
+      mobileNumber: admin.mobileNumber === "Not provided" || admin.mobileNumber === "0" ? "" : admin.mobileNumber,
+      password: '', // Don't show current password for security
+      status: admin.status
+    });
+    setEditErrors({ mobileNumber: '', password: '' });
+    setShowEditModal(true);
+  };
+
+  const closeEditModal = () => {
+    setShowEditModal(false);
+    setEditingAdmin(null);
+    setEditFormData({
+      name: '',
+      email: '',
+      mobileNumber: '',
+      password: '',
+      status: 'Active'
+    });
+  };
+
+  const handleEditInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setEditFormData(prev => ({ ...prev, [name]: value }));
+    
+    if (name === 'mobileNumber') {
+      setEditErrors(prev => ({ ...prev, mobileNumber: validateMobileNumber(value) }));
+    } else if (name === 'password') {
+      if (value && value.length < 8) {
+        setEditErrors(prev => ({ ...prev, password: 'Password must be at least 8 characters long' }));
+      } else {
+        setEditErrors(prev => ({ ...prev, password: '' }));
+      }
+    }
+  };
+
+  const handleEditSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    const mobileNumberError = validateMobileNumber(editFormData.mobileNumber);
+    const passwordError = editFormData.password ? (editFormData.password.length < 8 ? 'Password must be at least 8 characters long' : '') : '';
+    
+    if (mobileNumberError || passwordError) {
+      setEditErrors({
+        mobileNumber: mobileNumberError,
+        password: passwordError
+      });
+      return;
+    }
+
+    if (!editingAdmin) return;
+
+    try {
+      setApiLoading(true);
+      const token = localStorage.getItem('token');
+      
+      // Prepare update data - only include fields that have changed
+      const updateData: any = {};
+      if (editFormData.name !== editingAdmin.name) updateData.name = editFormData.name;
+      if (editFormData.mobileNumber !== editingAdmin.mobileNumber && editFormData.mobileNumber) 
+        updateData.mobileNumber = editFormData.mobileNumber;
+      if (editFormData.password) updateData.password = editFormData.password;
+      if (editFormData.status !== editingAdmin.status) updateData.status = editFormData.status;
+      
+      // If no changes, just close the modal
+      if (Object.keys(updateData).length === 0) {
+        alert('No changes made');
+        closeEditModal();
+        return;
+      }
+
+      console.log('Updating admin with data:', updateData);
+      console.log('Admin email:', editingAdmin.email);
+      
+      const response = await fetch(`https://realestatebackend-8adg.onrender.com/admin/update?email=${encodeURIComponent(editingAdmin.email)}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(updateData)
+      });
+
+      const responseText = await response.text();
+      console.log('Update response:', responseText);
+      
+      if (response.ok) {
+        alert('Admin updated successfully!');
+        await fetchAdmins(); // Refresh the list
+        closeEditModal();
+      } else {
+        alert(`Failed to update admin: ${responseText}`);
+      }
+    } catch (error: any) {
+      console.error('Error updating admin:', error);
+      alert(`Error updating admin: ${error.message}`);
+    } finally {
+      setApiLoading(false);
     }
   };
 
@@ -302,24 +464,106 @@ const AddAdmins = () => {
     }
   };
 
-  const deleteAdmin = async (id: string) => {
-    if (window.confirm('Are you sure you want to remove this admin?')) {
-      try {
-        setAdmins(prevAdmins => prevAdmins.filter(admin => admin.id !== id));
-        alert('Admin removed successfully!');
-      } catch (error) {
-        console.error('Error deleting admin:', error);
-        alert('Failed to delete admin');
-      }
-    }
-  };
-
   const resendInvite = (email: string) => {
     alert(`Invitation resent to ${email}`);
   };
 
   return (
     <div className="add-admins">
+      {/* Edit Admin Modal */}
+      {showEditModal && (
+        <div className="modal-overlay">
+          <div className="modal-container">
+            <div className="modal-header">
+              <h2>Edit Admin</h2>
+              <button className="modal-close" onClick={closeEditModal}>×</button>
+            </div>
+            <div className="modal-body">
+              <form onSubmit={handleEditSubmit}>
+                <div className="form-group">
+                  <label className="form-label">Name</label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={editFormData.name}
+                    onChange={handleEditInputChange}
+                    className="form-input"
+                    required
+                  />
+                </div>
+                
+                <div className="form-group">
+                  <label className="form-label">Mobile Number</label>
+                  <input
+                    type="tel"
+                    name="mobileNumber"
+                    value={editFormData.mobileNumber}
+                    onChange={handleEditInputChange}
+                    className={`form-input ${editErrors.mobileNumber ? 'error' : ''}`}
+                    placeholder="Enter 10-digit mobile number"
+                    maxLength={10}
+                    pattern="\d{10}"
+                  />
+                  {editErrors.mobileNumber && <div className="error-message">{editErrors.mobileNumber}</div>}
+                </div>
+                
+                <div className="form-group">
+                  <label className="form-label">New Password (Optional)</label>
+                  <input
+                    type="password"
+                    name="password"
+                    value={editFormData.password}
+                    onChange={handleEditInputChange}
+                    className={`form-input ${editErrors.password ? 'error' : ''}`}
+                    placeholder="Leave empty to keep current password"
+                  />
+                  {editErrors.password && <div className="error-message">{editErrors.password}</div>}
+                  <small className="input-hint">Minimum 8 characters. Leave empty to keep current password.</small>
+                </div>
+                
+                <div className="form-group">
+                  <label className="form-label">Status</label>
+                  <select
+                    name="status"
+                    value={editFormData.status}
+                    onChange={handleEditInputChange}
+                    className="form-input"
+                  >
+                    <option value="Active">Active</option>
+                    <option value="Inactive">Inactive</option>
+                  </select>
+                </div>
+                
+                <div className="modal-actions">
+                  <button 
+                    type="button" 
+                    className="cancel-btn" 
+                    onClick={closeEditModal}
+                    disabled={apiLoading}
+                  >
+                    Cancel
+                  </button>
+                  <button 
+                    type="submit" 
+                    className="submit-btn"
+                    disabled={apiLoading}
+                  >
+                    {apiLoading ? (
+                      <>
+                        <span className="loading-spinner"></span>
+                        Updating...
+                      </>
+                    ) : (
+                      'Update Admin'
+                    )}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="page-header">
         <div className="header-content">
           <h1>Admin Management</h1>
@@ -362,20 +606,6 @@ const AddAdmins = () => {
             <span className="tab-icon">👥</span>
             Manage Admins
           </button>
-          {/* <button 
-            className={`tab-btn ${activeTab === 'roles' ? 'active' : ''}`}
-            onClick={() => setActiveTab('roles')}
-          >
-            <span className="tab-icon">⚙️</span>
-            Roles & Permissions
-          </button>
-          <button 
-            className={`tab-btn ${activeTab === 'activity' ? 'active' : ''}`}
-            onClick={() => setActiveTab('activity')}
-          >
-            <span className="tab-icon">📊</span>
-            Activity Log
-          </button> */}
         </div>
 
         <div className="tab-content">
@@ -444,7 +674,7 @@ const AddAdmins = () => {
                         disabled={apiLoading}
                       />
                       {errors.mobileNumber && <div className="error-message">{errors.mobileNumber}</div>}
-                      <div className="input-hint">Optional </div>
+                      <div className="input-hint">Optional</div>
                     </div>
 
                     <div className="form-group">
@@ -514,10 +744,6 @@ const AddAdmins = () => {
                     <span className="icon">🔄</span>
                     {loading ? 'Refreshing...' : 'Refresh'}
                   </button>
-                  {/* <button className="bulk-action-btn">
-                    <span className="icon">⚡</span>
-                    Bulk Actions
-                  </button> */}
                 </div>
               </div>
 
@@ -602,21 +828,15 @@ const AddAdmins = () => {
                               <div className="action-buttons">
                                 <button 
                                   className="action-btn edit-btn"
+                                  onClick={() => openEditModal(admin)}
                                   title="Edit Admin"
                                 >
                                   ✏️
                                 </button>
-                                {/* <button 
-                                  className={`action-btn ${admin.status === 'Active' ? 'deactivate-btn' : 'activate-btn'}`}
-                                  onClick={() => toggleAdminStatus(admin.id)}
-                                  title={admin.status === 'Active' ? 'Deactivate' : 'Activate'}
-                                >
-                                  {admin.status === 'Active' ? '⏸️' : '▶️'}
-                                </button> */}
                                 <button 
                                   className="action-btn delete-btn"
-                                  onClick={() => deleteAdmin(admin.id)}
-                                  title="Remove Admin"
+                                  onClick={() => deleteAdmin(admin.email)}
+                                  title="Delete Admin"
                                 >
                                   🗑️
                                 </button>
@@ -628,197 +848,6 @@ const AddAdmins = () => {
                     </table>
                   </>
                 )}
-              </div>
-
-              {/* <div className="recent-activity">
-                <h3>Recent Admin Activity</h3>
-                <div className="activity-list">
-                  <div className="activity-item">
-                    <div className="activity-icon success">✓</div>
-                    <div className="activity-content">
-                      <p>Admin list refreshed</p>
-                      <span className="activity-time">Just now</span>
-                    </div>
-                  </div>
-                  <div className="activity-item">
-                    <div className="activity-icon info">i</div>
-                    <div className="activity-content">
-                      <p>Total {admins.length} admin(s) loaded</p>
-                      <span className="activity-time">Recently</span>
-                    </div>
-                  </div>
-                </div>
-              </div> */}
-            </div>
-          )}
-
-          {activeTab === 'roles' && (
-            <div className="roles-permissions">
-              <div className="roles-header">
-                <h2>Roles & Permissions</h2>
-                <button className="add-role-btn">
-                  <span className="icon">➕</span>
-                  Add New Role
-                </button>
-              </div>
-
-              <div className="roles-grid">
-                <div className="role-card">
-                  <div className="role-header">
-                    <h3>Super Admin</h3>
-                    <span className="role-users">2 Users</span>
-                  </div>
-                  <div className="role-description">
-                    Full system access with all permissions
-                  </div>
-                  <div className="role-permissions">
-                    <span className="permission-tag">All Permissions</span>
-                  </div>
-                  <div className="role-actions">
-                    <button className="edit-role-btn">Edit Role</button>
-                    <button className="manage-users-btn">Manage Users</button>
-                  </div>
-                </div>
-
-                <div className="role-card">
-                  <div className="role-header">
-                    <h3>Content Manager</h3>
-                    <span className="role-users">1 User</span>
-                  </div>
-                  <div className="role-description">
-                    Manage properties, content, and listings
-                  </div>
-                  <div className="role-permissions">
-                    <span className="permission-tag">Properties</span>
-                    <span className="permission-tag">Content</span>
-                    <span className="permission-tag">Media</span>
-                  </div>
-                  <div className="role-actions">
-                    <button className="edit-role-btn">Edit Role</button>
-                    <button className="manage-users-btn">Manage Users</button>
-                  </div>
-                </div>
-
-                <div className="role-card">
-                  <div className="role-header">
-                    <h3>Finance Admin</h3>
-                    <span className="role-users">1 User</span>
-                  </div>
-                  <div className="role-description">
-                    Handle financial transactions and reports
-                  </div>
-                  <div className="role-permissions">
-                    <span className="permission-tag">Finance</span>
-                    <span className="permission-tag">Reports</span>
-                    <span className="permission-tag">Transactions</span>
-                  </div>
-                  <div className="role-actions">
-                    <button className="edit-role-btn">Edit Role</button>
-                    <button className="manage-users-btn">Manage Users</button>
-                  </div>
-                </div>
-
-                <div className="role-card">
-                  <div className="role-header">
-                    <h3>Support Admin</h3>
-                    <span className="role-users">1 User</span>
-                  </div>
-                  <div className="role-description">
-                    Handle customer inquiries and support
-                  </div>
-                  <div className="role-permissions">
-                    <span className="permission-tag">Support</span>
-                    <span className="permission-tag">Users</span>
-                    <span className="permission-tag">Inquiries</span>
-                  </div>
-                  <div className="role-actions">
-                    <button className="edit-role-btn">Edit Role</button>
-                    <button className="manage-users-btn">Manage Users</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'activity' && (
-            <div className="activity-log">
-              <div className="log-header">
-                <h2>Admin Activity Log</h2>
-                <div className="log-filters">
-                  <select className="filter-select">
-                    <option value="all">All Activities</option>
-                    <option value="login">Logins</option>
-                    <option value="create">Creations</option>
-                    <option value="modify">Modifications</option>
-                    <option value="delete">Deletions</option>
-                  </select>
-                  <input 
-                    type="date" 
-                    className="date-filter"
-                    defaultValue="2024-01-01"
-                  />
-                  <button className="export-log-btn">
-                    <span className="icon">📥</span>
-                    Export Log
-                  </button>
-                </div>
-              </div>
-
-              <div className="log-table-container">
-                <table className="log-table">
-                  <thead>
-                    <tr>
-                      <th>Time</th>
-                      <th>Admin</th>
-                      <th>Action</th>
-                      <th>Details</th>
-                      <th>IP Address</th>
-                      <th>Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td className="log-time">Today, 14:30</td>
-                      <td className="log-admin">Manikandan</td>
-                      <td className="log-action">Login</td>
-                      <td className="log-details">Successful login from Chrome</td>
-                      <td className="log-ip">192.168.1.100</td>
-                      <td><span className="log-status success">Success</span></td>
-                    </tr>
-                    <tr>
-                      <td className="log-time">Today, 11:15</td>
-                      <td className="log-admin">Sriram</td>
-                      <td className="log-action">Property Added</td>
-                      <td className="log-details">Added new property "Luxury Villa"</td>
-                      <td className="log-ip">192.168.1.101</td>
-                      <td><span className="log-status success">Success</span></td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-
-              <div className="log-summary">
-                <div className="summary-card">
-                  <h4>Activity Summary</h4>
-                  <div className="summary-stats">
-                    <div className="stat-item">
-                      <span className="stat-label">Total Activities</span>
-                      <span className="stat-value">1,248</span>
-                    </div>
-                    <div className="stat-item">
-                      <span className="stat-label">Today's Activities</span>
-                      <span className="stat-value">42</span>
-                    </div>
-                    <div className="stat-item">
-                      <span className="stat-label">Failed Attempts</span>
-                      <span className="stat-value">8</span>
-                    </div>
-                    <div className="stat-item">
-                      <span className="stat-label">Avg. Daily</span>
-                      <span className="stat-value">56</span>
-                    </div>
-                  </div>
-                </div>
               </div>
             </div>
           )}
