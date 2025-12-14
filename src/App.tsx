@@ -3,6 +3,10 @@ import Dashboard from './pages/Dashboard';
 import AdminLogin from './pages/AdminLogin';
 import { useState } from 'react';
 import HomePage from './components/users/home_user'; 
+// import Buy from './pages/users/Buy';
+import Sell from './pages/users/Sell';
+import Advertise from './pages/users/AdvertiseProperty';
+import Contact from './pages/users/ContactUs';
 
 import './App.css';  
 
@@ -21,6 +25,10 @@ function App() {
         <Routes>
           {/* User Routes */}
           <Route path="/" element={<HomePage />} />
+          {/* <Route path="/buy" element={<Buy />} /> */}
+          <Route path="/sell" element={<Sell />} />
+          <Route path="/advertise" element={<Advertise />} />
+          <Route path="/contact" element={<Contact />} />
           
           {/* Admin Login Route */}
           <Route 

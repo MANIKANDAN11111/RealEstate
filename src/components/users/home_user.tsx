@@ -18,12 +18,13 @@ interface HeaderProps {
 
 function Header({ currentPage, scrolled }: HeaderProps) {
   const navItems = [
-    { name: 'Home', icon: Home, page: 'home', path: '/' },
-    { name: 'Buy', icon: Building2, page: 'buy', path: '../../pages/users/Buy' },
-    { name: 'Sell', icon: DollarSign, page: 'sell', path: '../../pages/users/Sell' },
-    { name: 'Advertise Property', icon: Megaphone, page: 'advertise', path: '/advertise' },
-    { name: 'Contact Us', icon: Phone, page: 'contact', path: '/contact' },
-  ];
+  { name: 'Home', icon: Home, page: 'home', path: '/' },
+  { name: 'Buy', icon: Building2, page: 'buy', path: '/buy' },
+  { name: 'Sell', icon: DollarSign, page: 'sell', path: '/sell' },
+  { name: 'Advertise Property', icon: Megaphone, page: 'advertise', path: '/advertise' },
+  { name: 'Contact Us', icon: Phone, page: 'contact', path: '/contact' },
+];
+
 
   return (
     <header className={`header ${scrolled ? 'scrolled' : ''}`}>
