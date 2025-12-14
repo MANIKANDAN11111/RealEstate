@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import './Header.css';
+import './Header_admin.css';
 
 interface HeaderProps {
   toggleSidebar: () => void;

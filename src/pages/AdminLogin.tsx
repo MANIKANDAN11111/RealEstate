@@ -442,12 +442,12 @@ export default function AdminLogin({ onLogin }: AdminLoginProps) {
             </button>
           </form>
 
-          <footer className="login-footer">
-            <div className="footer-content">
-              <p className="copyright">
+          <footer className="login-footer1">
+            <div className="footer-content1">
+              <p className="copyright1">
                 © 2015-2025 Ananthi Group of Companies
               </p>
-              <p className="version">
+              <p className="version1">
                 v2.4.2
               </p>
             </div>

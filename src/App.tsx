@@ -1,12 +1,14 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Dashboard from './pages/Dashboard';
 import AdminLogin from './pages/AdminLogin';
-import { useState } from 'react'; // Import useState
+import { useState } from 'react';
+import HomePage from './components/users/home_user'; 
+
 import './App.css';  
 
 function App() {
   // Add state for authentication
-  const [isAuthenticated, setIsAuthenticated] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false); // Start as false
 
   // Login function to be passed to AdminLogin
   const handleLogin = () => {
@@ -17,19 +19,31 @@ function App() {
     <Router>
       <div className="App">
         <Routes>
+          {/* User Routes */}
+          <Route path="/" element={<HomePage />} />
+          
+          {/* Admin Login Route */}
           <Route 
             path="/login" 
-            element={<AdminLogin onLogin={handleLogin} />} 
+            element={
+              isAuthenticated ? 
+                <Navigate to="/dashboard" /> : 
+                <AdminLogin onLogin={handleLogin} />
+            } 
           />
+          
+          {/* Admin Dashboard Route */}
           <Route 
             path="/dashboard/*" 
-            element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />} 
+            element={
+              isAuthenticated ? 
+                <Dashboard /> : 
+                <Navigate to="/login" />
+            } 
           />
-          <Route
-            path="/"
-            element={<Navigate to={isAuthenticated ? "/login" : "/login"} />} 
-          />
-          {/* Add more routes as needed */}
+          
+          {/* Fallback Route */}
+          <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </div>
     </Router>

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
-import Header from '../components/Header';
+import Header from '../components/Header_admin';
 import DashboardHome from './DashboardHome';
 import AddProperties from '../components/AddProperties';
 import ManageProperties from '../components/ManageProperties';

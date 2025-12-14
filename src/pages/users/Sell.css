@@ -1,0 +1,585 @@
+/* Main Container */
+.sell-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sell-container {
+  width: 100%;
+  max-width: 1200px;
+  background: white;
+  border-radius: 24px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  position: relative;
+}
+
+/* Success Message */
+.success-message {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 3rem;
+  border-radius: 20px;
+  text-align: center;
+  z-index: 100;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+  to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+.success-icon {
+  width: 60px;
+  height: 60px;
+  background: #2ecc71;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  font-weight: bold;
+  margin: 0 auto 1.5rem;
+}
+
+.success-message h3 {
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+  font-size: 1.8rem;
+}
+
+.success-message p {
+  color: #7f8c8d;
+  font-size: 1.1rem;
+}
+
+/* Header */
+.sell-header {
+  background: linear-gradient(135deg, #2c3e50, #34495e);
+  color: white;
+  padding: 3rem 2rem;
+  text-align: center;
+}
+
+.sell-title {
+  font-size: 2.8rem;
+  margin-bottom: 1rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #3498db, #2ecc71);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.sell-subtitle {
+  font-size: 1.2rem;
+  color: #bdc3c7;
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* Content Layout */
+.sell-content {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 0;
+  min-height: 600px;
+}
+
+.sell-form-wrapper {
+  padding: 3rem;
+  border-right: 1px solid #eee;
+}
+
+/* Form Grid */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group.full-width {
+  grid-column: 1 / -1;
+}
+
+/* Labels */
+.form-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #2c3e50;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.optional-label {
+  font-size: 0.75rem;
+  color: #7f8c8d;
+  font-weight: normal;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+/* Input Wrapper */
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon {
+  position: absolute;
+  left: 15px;
+  color: #7f8c8d;
+  font-size: 1.1rem;
+  z-index: 1;
+}
+
+.form-input {
+  width: 100%;
+  padding: 1rem 1rem 1rem 3rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background: white;
+  color: #2c3e50;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.15);
+}
+
+.form-input::placeholder {
+  color: #95a5a6;
+}
+
+/* Phone Input */
+.phone-input-wrapper {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.country-code {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #f8f9fa;
+  padding: 1rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  font-weight: 600;
+  color: #2c3e50;
+  min-width: 100px;
+  justify-content: center;
+}
+
+.country-flag {
+  font-size: 1.2rem;
+}
+
+.country-number {
+  font-weight: 600;
+}
+
+.phone-input {
+  flex: 1;
+  padding: 1rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.phone-input:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.15);
+}
+
+.input-hint {
+  font-size: 0.75rem;
+  color: #95a5a6;
+  margin-top: 0.25rem;
+  margin-left: 0.5rem;
+}
+
+.input-hint.optional {
+  color: #f39c12;
+}
+
+/* Select Wrapper */
+.select-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.select-icon {
+  position: absolute;
+  left: 15px;
+  color: #7f8c8d;
+  font-size: 1.1rem;
+  z-index: 1;
+}
+
+.form-select {
+  width: 100%;
+  padding: 1rem 3rem 1rem 3rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  font-size: 1rem;
+  background: white;
+  color: #2c3e50;
+  appearance: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.form-select:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.15);
+}
+
+.form-select option {
+  padding: 1rem;
+}
+
+.select-arrow {
+  position: absolute;
+  right: 15px;
+  color: #7f8c8d;
+  font-size: 0.8rem;
+  pointer-events: none;
+}
+
+/* Robot Check */
+.robot-check-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  background: #f8f9fa;
+  border-radius: 12px;
+  margin: 2rem 0;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  border: 2px solid #e0e0e0;
+}
+
+.robot-check-section:hover {
+  background: #f0f0f0;
+}
+
+.robot-checkbox {
+  width: 28px;
+  height: 28px;
+  border: 2px solid #bdc3c7;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.robot-checkbox.checked {
+  background: #2ecc71;
+  border-color: #27ae60;
+}
+
+.robot-checkmark {
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.robot-checkbox.checked .robot-checkmark {
+  opacity: 1;
+}
+
+.robot-text {
+  font-size: 1rem;
+  color: #2c3e50;
+  font-weight: 500;
+  user-select: none;
+}
+
+/* Submit Button */
+.submit-btn {
+  width: 100%;
+  padding: 1.2rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.submit-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+.submit-btn:disabled {
+  background: #bdc3c7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.submit-btn.submitting {
+  background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Help Section */
+.help-section {
+  padding: 3rem;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.help-card {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.help-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.help-content {
+  flex: 1;
+}
+
+.help-title {
+  font-size: 1.4rem;
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.help-subtitle {
+  font-size: 1rem;
+  color: #3498db;
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+
+.help-description {
+  font-size: 0.9rem;
+  color: #7f8c8d;
+  line-height: 1.6;
+}
+
+.chat-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  background: linear-gradient(135deg, #2ecc71, #27ae60);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.chat-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(46, 204, 113, 0.3);
+}
+
+.chat-icon {
+  font-size: 1.2rem;
+}
+
+/* Benefits Section */
+.benefits-section {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+}
+
+.benefits-title {
+  font-size: 1.3rem;
+  color: #2c3e50;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+}
+
+.benefits-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.benefits-list li {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: #2c3e50;
+  font-size: 0.95rem;
+}
+
+.benefit-icon {
+  color: #2ecc71;
+  font-size: 1.2rem;
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+  .sell-content {
+    grid-template-columns: 1fr;
+  }
+  
+  .sell-form-wrapper {
+    border-right: none;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .sell-header {
+    padding: 2rem 1rem;
+  }
+  
+  .sell-title {
+    font-size: 2.2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .sell-page {
+    padding: 1rem;
+  }
+  
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .sell-form-wrapper,
+  .help-section {
+    padding: 2rem 1.5rem;
+  }
+  
+  .phone-input-wrapper {
+    flex-direction: column;
+  }
+  
+  .country-code {
+    min-width: auto;
+    justify-content: flex-start;
+    padding: 0.875rem 1rem;
+  }
+  
+  .sell-title {
+    font-size: 1.8rem;
+  }
+  
+  .sell-subtitle {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .sell-header {
+    padding: 1.5rem 1rem;
+  }
+  
+  .sell-title {
+    font-size: 1.6rem;
+  }
+  
+  .help-card,
+  .benefits-section {
+    padding: 1.5rem;
+  }
+}
+
+/* Animation for form elements */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.form-group {
+  animation: slideUp 0.5s ease forwards;
+  animation-delay: calc(var(--delay, 0) * 0.1s);
+  opacity: 0;
+}
+
+/* Set animation delays for form groups */
+.form-group:nth-child(1) { --delay: 1; }
+.form-group:nth-child(2) { --delay: 2; }
+.form-group:nth-child(3) { --delay: 3; }
+.form-group:nth-child(4) { --delay: 4; }
+.form-group:nth-child(5) { --delay: 5; }
+.form-group:nth-child(6) { --delay: 6; }
+.form-group:nth-child(7) { --delay: 7; }
