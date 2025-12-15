@@ -1,24 +1,195 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import {
+  Home, Building2, DollarSign, Megaphone, Phone,
+  Facebook, Twitter, Instagram, Linkedin, Mail,
+  MessageSquare, User, Smartphone
+} from 'lucide-react';
 import './ContactUs.css';
+import AGLogo from '../../assets/AG_logo.jpeg';
+
+// Header Component
+interface HeaderProps {
+  currentPage: string;
+  scrolled: boolean;
+}
+
+function Header({ currentPage, scrolled }: HeaderProps) {
+  const navItems = [
+    { name: 'Home', icon: Home, page: 'home', path: '/' },
+    { name: 'Buy', icon: Building2, page: 'buy', path: '/buy' },
+    { name: 'Sell', icon: DollarSign, page: 'sell', path: '/sell' },
+    { name: 'Advertise Property', icon: Megaphone, page: 'advertise', path: '/advertise' },
+    { name: 'Contact Us', icon: Phone, page: 'contact', path: '/contact' },
+  ];
+
+  return (
+    <header className={`contact-header-container ${scrolled ? 'scrolled' : ''}`}>
+      <div className="contact-header-content">
+        <Link to="/" className="contact-logo-link">
+          <img src={AGLogo} alt="PropFinder Logo" className="contact-logo-image" />
+          <span className="contact-logo-text">PropFinder</span>
+        </Link>
+
+        <nav className="contact-nav">
+          {navItems.map((item) => (
+            <Link
+              key={item.page}
+              to={item.path}
+              className={`contact-nav-item ${currentPage === item.page ? 'active' : ''}`}
+            >
+              <item.icon className="contact-nav-icon" />
+              <span>{item.name}</span>
+            </Link>
+          ))}
+        </nav>
+      </div>
+    </header>
+  );
+}
+
+// Footer Component
+function Footer() {
+  return (
+    <footer className="contact-footer">
+      <div className="contact-footer-container">
+        <div className="contact-footer-content">
+          <div className="contact-footer-section">
+            <div className="contact-footer-logo">
+              <Link to="/" className="contact-logo-link">
+                <img src={AGLogo} alt="PropFinder Logo" className="contact-logo-image" />
+                <span className="contact-footer-logo-text">PropFinder</span>
+              </Link>
+            </div>
+            <p className="contact-footer-description">
+              Your trusted partner in finding the perfect property across Tamil Nadu. We make real
+              estate easy.
+            </p>
+            <div className="contact-footer-social">
+              <a href="#" className="contact-social-link">
+                <Facebook className="contact-social-icon" />
+              </a>
+              <a href="#" className="contact-social-link">
+                <Twitter className="contact-social-icon" />
+              </a>
+              <a href="#" className="contact-social-link">
+                <Instagram className="contact-social-icon" />
+              </a>
+              <a href="#" className="contact-social-link">
+                <Linkedin className="contact-social-icon" />
+              </a>
+            </div>
+          </div>
+
+          <div className="contact-footer-section">
+            <h3 className="contact-footer-title">Quick Links</h3>
+            <ul className="contact-footer-links">
+              <li>
+                <Link to="/" className="contact-footer-link">Home</Link>
+              </li>
+              <li>
+                <Link to="/buy" className="contact-footer-link">Buy Property</Link>
+              </li>
+              <li>
+                <Link to="/sell" className="contact-footer-link">Sell Property</Link>
+              </li>
+              <li>
+                <Link to="/advertise" className="contact-footer-link">Advertise</Link>
+              </li>
+            </ul>
+          </div>
+
+          <div className="contact-footer-section">
+            <h3 className="contact-footer-title">Properties</h3>
+            <ul className="contact-footer-links">
+              <li>
+                <Link to="/buy" className="contact-footer-link">Buy Property</Link>
+              </li>
+              <li>
+                <Link to="/properties" className="contact-footer-link">Rent Property</Link>
+              </li>
+              <li>
+                <Link to="/sell" className="contact-footer-link">Sell Property</Link>
+              </li>
+              <li>
+                <Link to="/properties" className="contact-footer-link">Featured Listings</Link>
+              </li>
+            </ul>
+          </div>
+
+          <div className="contact-footer-section">
+            <h3 className="contact-footer-title">Legal</h3>
+            <ul className="contact-footer-links">
+              <li>
+                <a href="#" className="contact-footer-link">Privacy Policy</a>
+              </li>
+              <li>
+                <a href="#" className="contact-footer-link">Terms of Service</a>
+              </li>
+              <li>
+                <a href="#" className="contact-footer-link">Cookie Policy</a>
+              </li>
+              <li>
+                <a href="#" className="contact-footer-link">Disclaimer</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div className="contact-footer-bottom">
+          <p className="contact-footer-copyright">
+            &copy; 2024 PropFinder. All rights reserved. | Built with excellence for Tamil Nadu
+          </p>
+        </div>
+      </div>
+    </footer>
+  );
+}
 
 // TypeScript interfaces
 interface ContactFormData {
-  firstName: string;
-  lastName: string;
+  name: string;
   email: string;
   mobileNo: string;
-  contactNo: string;
   subject: string;
   message: string;
 }
 
 const ContactUs: React.FC = () => {
+  const location = useLocation();
+  const [scrolled, setScrolled] = useState(false);
+  const formRef = useRef<HTMLDivElement>(null);
+  
+  const getCurrentPage = () => {
+    const path = location.pathname;
+    if (path === '/') return 'home';
+    if (path === '/buy') return 'buy';
+    if (path === '/sell') return 'sell';
+    if (path === '/advertise') return 'advertise';
+    if (path === '/contact') return 'contact';
+    return 'home';
+  };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const isScrolled = window.scrollY > 50;
+      if (isScrolled !== scrolled) {
+        setScrolled(isScrolled);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [scrolled]);
+
+  const currentPage = getCurrentPage();
+  
   const [formData, setFormData] = useState<ContactFormData>({
-    firstName: '',
-    lastName: '',
+    name: '',
     email: '',
     mobileNo: '',
-    contactNo: '',
     subject: '',
     message: ''
   });
@@ -35,11 +206,11 @@ const ContactUs: React.FC = () => {
     }));
   };
 
-  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>, field: 'mobileNo' | 'contactNo') => {
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/\D/g, '').slice(0, 10);
     setFormData(prev => ({
       ...prev,
-      [field]: value
+      mobileNo: value
     }));
   };
 
@@ -52,7 +223,7 @@ const ContactUs: React.FC = () => {
     }
 
     // Validate required fields
-    if (!formData.firstName || !formData.email || !formData.mobileNo || !formData.subject || !formData.message) {
+    if (!formData.name || !formData.email || !formData.mobileNo || !formData.subject || !formData.message) {
       alert('Please fill all required fields');
       return;
     }
@@ -82,11 +253,9 @@ const ContactUs: React.FC = () => {
       // Reset form after 3 seconds
       setTimeout(() => {
         setFormData({
-          firstName: '',
-          lastName: '',
+          name: '',
           email: '',
           mobileNo: '',
-          contactNo: '',
           subject: '',
           message: ''
         });
@@ -106,309 +275,250 @@ const ContactUs: React.FC = () => {
     setIsRobotVerified(!isRobotVerified);
   };
 
+  const scrollToForm = () => {
+    if (formRef.current) {
+      const headerHeight = document.querySelector('.contact-header-container')?.clientHeight || 80;
+      const offsetTop = formRef.current.offsetTop - headerHeight - 20;
+      
+      window.scrollTo({
+        top: offsetTop,
+        behavior: 'smooth'
+      });
+    }
+  };
+
   return (
-    <div className="contact-page">
-      <div className="contact-container">
-        {/* Success Message */}
-        {showSuccess && (
-          <div className="success-message">
-            <div className="success-icon">✓</div>
-            <h3>Message Sent Successfully!</h3>
-            <p>We'll get back to you within 24 hours.</p>
-          </div>
-        )}
-
-        <div className="contact-header">
-          <div className="company-logo">
-            <div className="logo-icon">🏢</div>
-            <div className="logo-text">
-              <h1 className="company-name">AMAZING PROPERTIES</h1>
-              <p className="company-tagline">Your Trusted Real Estate Partner</p>
-            </div>
-          </div>
+    <div className="contact-page-wrapper">
+      <Header currentPage={currentPage} scrolled={scrolled} />
+      
+      {/* Hero Section */}
+      <div className="contact-hero-section">
+        <div className="contact-hero-content">
+          <h1 className="contact-hero-title">Contact Us</h1>
+          <p className="contact-hero-subtitle">
+            Get in touch with us for any queries about properties or real estate services
+          </p>
+          
+          <button 
+            className="contact-hero-button primary"
+            onClick={scrollToForm}
+          >
+            <MessageSquare className="contact-hero-button-icon" />
+            Send Message
+          </button>
         </div>
+      </div>
 
-        <div className="contact-content">
-          {/* Contact Information Section */}
-          <div className="info-section">
-            <div className="info-card">
-              <h2 className="info-title">Contact Information</h2>
-              
-              <div className="contact-person">
-                <div className="person-icon">👨‍💼</div>
-                <div className="person-details">
-                  <h3 className="person-name">Sankar</h3>
-                  <p className="person-role">Property Consultant</p>
-                </div>
-              </div>
-
-              <div className="contact-details">
-                <div className="contact-item">
-                  <div className="contact-icon">📞</div>
-                  <div className="contact-info">
-                    <p className="contact-label">Mobile No</p>
-                    <p className="contact-value">+91 9600224837</p>
-                  </div>
-                </div>
-
-                <div className="contact-item">
-                  <div className="contact-icon">📱</div>
-                  <div className="contact-info">
-                    <p className="contact-label">WhatsApp</p>
-                    <p className="contact-value">+91 9600224837</p>
-                  </div>
-                </div>
-
-                <div className="contact-item">
-                  <div className="contact-icon">✉️</div>
-                  <div className="contact-info">
-                    <p className="contact-label">Email</p>
-                    <a href="mailto:amazingproperties.co.in@gmail.com" className="contact-email">
-                      amazingproperties.co.in@gmail.com
-                    </a>
-                  </div>
-                </div>
-              </div>
-
-              <div className="working-hours">
-                <div className="hours-icon">🕒</div>
-                <div className="hours-info">
-                  <h4>Working Hours</h4>
-                  <p>Monday - Saturday: 9:00 AM - 8:00 PM</p>
-                  <p>Sunday: 10:00 AM - 6:00 PM</p>
-                </div>
-              </div>
-
-              <div className="social-links">
-                <h4>Connect With Us</h4>
-                <div className="social-icons">
-                  <a href="#" className="social-icon facebook">f</a>
-                  <a href="#" className="social-icon twitter">𝕏</a>
-                  <a href="#" className="social-icon instagram">📷</a>
-                  <a href="#" className="social-icon whatsapp">📱</a>
-                  <a href="#" className="social-icon linkedin">in</a>
-                </div>
-              </div>
+      {/* Contact Form Section */}
+      <div className="contact-form-section" ref={formRef}>
+        <div className="contact-container">
+          {/* Success Message */}
+          {showSuccess && (
+            <div className="contact-success-message">
+              <div className="contact-success-icon">✓</div>
+              <h3>Message Sent Successfully!</h3>
+              <p>We'll get back to you within 24 hours.</p>
             </div>
-          </div>
+          )}
 
-          {/* Contact Form Section */}
-          <div className="form-section">
-            <div className="form-header">
-              <h2 className="form-title">Contact Form</h2>
-              <p className="form-subtitle">Fill the form below and we'll contact you shortly</p>
+          <div className="contact-form-card">
+            <div className="contact-form-header">
+              <h2 className="contact-form-title">Get in Touch</h2>
+              <p className="contact-form-subtitle">
+                Fill the form below and we'll contact you shortly
+              </p>
             </div>
 
-            <form className="contact-form" onSubmit={handleSubmit}>
-              {/* Name Fields */}
-              <div className="name-fields">
-                <div className="form-group">
-                  <label htmlFor="firstName" className="form-label">
-                    <span className="label-bold">First Name *</span>
-                  </label>
-                  <div className="input-wrapper">
-                    <input
-                      type="text"
-                      id="firstName"
-                      name="firstName"
-                      className="form-input"
-                      placeholder="First Name"
-                      value={formData.firstName}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
+            <div className="contact-main-content">
+              {/* Contact Owner Card */}
+              <div className="contact-owner-card">
+                <div className="owner-card-header">
+                  <h3 className="owner-card-title">
+                    <Phone className="owner-card-icon" />
+                    Contact the Owner
+                  </h3>
+                  <p className="owner-card-subtitle">Direct contact information</p>
                 </div>
-
-                <div className="form-group">
-                  <label htmlFor="lastName" className="form-label">
-                    <span className="label-normal">Last Name</span>
-                  </label>
-                  <div className="input-wrapper">
-                    <input
-                      type="text"
-                      id="lastName"
-                      name="lastName"
-                      className="form-input"
-                      placeholder="Last Name"
-                      value={formData.lastName}
-                      onChange={handleChange}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="separator"></div>
-
-              {/* Contact Information */}
-              <div className="contact-info-fields">
-                <div className="form-group">
-                  <label htmlFor="email" className="form-label">
-                    <span className="label-bold">Email *</span>
-                    <span className="label-hint">Email Address</span>
-                  </label>
-                  <div className="input-wrapper">
-                    <div className="input-icon">✉️</div>
-                    <input
-                      type="email"
-                      id="email"
-                      name="email"
-                      className="form-input"
-                      placeholder="your.email@example.com"
-                      value={formData.email}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div className="form-group">
-                  <label htmlFor="mobileNo" className="form-label">
-                    <span className="label-bold">Mobile No *</span>
-                    <span className="label-hint">Contact No</span>
-                  </label>
-                  <div className="phone-input-wrapper">
-                    <div className="country-code">
-                      <span className="country-flag">🇮🇳</span>
-                      <span className="country-number">+91</span>
+                
+                <div className="owner-contact-details">
+                  <div className="owner-contact-item">
+                    <div className="owner-contact-icon">📞</div>
+                    <div className="owner-contact-info">
+                      <p className="owner-contact-label">Phone Numbers</p>
+                      <div className="owner-contact-numbers">
+                        <a href="tel:6374656460" className="owner-contact-number">+91 6374656460</a>
+                        <a href="tel:8682800268" className="owner-contact-number">+91 8682800268</a>
+                      </div>
                     </div>
-                    <input
-                      type="tel"
-                      id="mobileNo"
-                      name="mobileNo"
-                      className="phone-input"
-                      placeholder="98765 43210"
-                      value={formData.mobileNo}
-                      onChange={(e) => handlePhoneChange(e, 'mobileNo')}
-                      required
-                    />
                   </div>
-                </div>
 
-                <div className="form-group">
-                  <label htmlFor="contactNo" className="form-label">
-                    <span className="label-normal">Alternate Contact No</span>
-                  </label>
-                  <div className="phone-input-wrapper">
-                    <div className="country-code">
-                      <span className="country-flag">📱</span>
-                      <span className="country-number">+91</span>
+                  <div className="owner-contact-item">
+                    <div className="owner-contact-icon">✉️</div>
+                    <div className="owner-contact-info">
+                      <p className="owner-contact-label">Email Address</p>
+                      <a href="mailto:ananthitechnologies@gmail.com" className="owner-contact-email">
+                        ananthitechnologies@gmail.com
+                      </a>
                     </div>
-                    <input
-                      type="tel"
-                      id="contactNo"
-                      name="contactNo"
-                      className="phone-input"
-                      placeholder="Optional"
-                      value={formData.contactNo}
-                      onChange={(e) => handlePhoneChange(e, 'contactNo')}
-                    />
+                  </div>
+                </div>
+
+                <div className="owner-working-hours">
+                  <div className="owner-hours-icon">🕒</div>
+                  <div className="owner-hours-info">
+                    <h4>Working Hours</h4>
+                    <p>Monday - Saturday: 9:00 AM - 8:00 PM</p>
+                    <p>Sunday: 10:00 AM - 6:00 PM</p>
                   </div>
                 </div>
               </div>
 
-              <div className="separator"></div>
+              {/* Contact Form */}
+              <form className="contact-form-content" onSubmit={handleSubmit}>
+                {/* Form Fields Grid */}
+                <div className="contact-form-grid">
+                  {/* Name Field */}
+                  <div className="contact-form-group">
+                    <label htmlFor="name" className="contact-form-label">
+                      Your Name *
+                    </label>
+                    <div className="contact-input-wrapper">
+                      <div className="contact-input-icon">👤</div>
+                      <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        className="contact-form-input"
+                        placeholder="Full Name"
+                        value={formData.name}
+                        onChange={handleChange}
+                        required
+                      />
+                    </div>
+                  </div>
 
-              {/* Subject Field */}
-              <div className="subject-field">
-                <div className="form-group full-width">
-                  <label htmlFor="subject" className="form-label">
-                    <span className="label-bold">Subject</span>
-                    <span className="label-hint">Subject</span>
-                  </label>
-                  <div className="input-wrapper">
-                    <input
-                      type="text"
-                      id="subject"
-                      name="subject"
-                      className="form-input"
-                      placeholder="What is this regarding?"
-                      value={formData.subject}
-                      onChange={handleChange}
-                      required
-                    />
+                  {/* Email Field */}
+                  <div className="contact-form-group">
+                    <label htmlFor="email" className="contact-form-label">
+                      Email *
+                    </label>
+                    <div className="contact-input-wrapper">
+                      <div className="contact-input-icon">✉️</div>
+                      <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        className="contact-form-input"
+                        placeholder="Email Address"
+                        value={formData.email}
+                        onChange={handleChange}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  {/* Mobile Number */}
+                  <div className="contact-form-group">
+                    <label htmlFor="mobileNo" className="contact-form-label">
+                      Mobile No *
+                    </label>
+                    <div className="contact-phone-input-wrapper">
+                      <div className="contact-country-code">
+                        <span className="contact-country-flag">🇮🇳</span>
+                        <span className="contact-country-number">+91</span>
+                      </div>
+                      <input
+                        type="tel"
+                        id="mobileNo"
+                        name="mobileNo"
+                        className="contact-phone-input"
+                        placeholder="98765 43210"
+                        value={formData.mobileNo}
+                        onChange={handlePhoneChange}
+                        required
+                      />
+                    </div>
+                    <p className="contact-input-hint">10-digit mobile number</p>
+                  </div>
+
+                  {/* Subject Field */}
+                  <div className="contact-form-group contact-full-width">
+                    <label htmlFor="subject" className="contact-form-label">
+                      Subject *
+                    </label>
+                    <div className="contact-input-wrapper">
+                      <div className="contact-input-icon">📝</div>
+                      <input
+                        type="text"
+                        id="subject"
+                        name="subject"
+                        className="contact-form-input"
+                        placeholder="What is the purpose of your contact?"
+                        value={formData.subject}
+                        onChange={handleChange}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  {/* Message Field */}
+                  <div className="contact-form-group contact-full-width">
+                    <label htmlFor="message" className="contact-form-label">
+                      Your Message *
+                    </label>
+                    <div className="contact-textarea-wrapper">
+                      <textarea
+                        id="message"
+                        name="message"
+                        className="contact-form-textarea"
+                        placeholder="Type your message here (5 lines minimum)..."
+                        value={formData.message}
+                        onChange={handleChange}
+                        rows={5}
+                        minLength={50}
+                        required
+                      />
+                    </div>
+                    <p className="contact-textarea-hint">Please write your message in detail (minimum 5 lines)</p>
                   </div>
                 </div>
-              </div>
 
-              <div className="separator"></div>
-
-              {/* Message Field */}
-              <div className="message-field">
-                <div className="form-group full-width">
-                  <label htmlFor="message" className="form-label">
-                    <span className="label-bold">Your Message *</span>
-                    <span className="label-hint">Your Message</span>
-                  </label>
-                  <div className="textarea-wrapper">
-                    <textarea
-                      id="message"
-                      name="message"
-                      className="message-textarea"
-                      placeholder="Type your message here..."
-                      rows={5}
-                      value={formData.message}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Email Display */}
-              <div className="email-display">
-                <div className="email-icon">📧</div>
-                <div className="email-info">
-                  <p className="email-label">Email us directly at:</p>
-                  <a href="mailto:amazingproperties.co.in@gmail.com" className="email-address">
-                    amazingproperties.co.in@gmail.com
-                  </a>
-                </div>
-              </div>
-
-              {/* Robot Check and Game Info */}
-              <div className="verification-section">
-                <div className="robot-check-container">
+                {/* Robot Check */}
+                <div className="contact-robot-check-section">
                   <div 
-                    className={`robot-checkbox ${isRobotVerified ? 'checked' : ''}`}
+                    className={`contact-robot-checkbox ${isRobotVerified ? 'checked' : ''}`}
                     onClick={handleRobotCheck}
                     role="button"
                     tabIndex={0}
                     onKeyDown={(e) => e.key === 'Enter' && handleRobotCheck()}
                   >
-                    <div className="robot-checkmark">✓</div>
+                    <div className="contact-robot-checkmark">✓</div>
                   </div>
-                  <span className="robot-text">I'm not a robot</span>
+                  <span className="contact-robot-text">I'm not a robot</span>
                 </div>
 
-                <div className="game-info">
-                  <div className="game-checkbox"></div>
-                  <div className="game-text">
-                    <span className="game-label">RÉDIPTON</span>
-                    <span className="game-sublabel">Player of Game</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Submit Button */}
-              <button 
-                type="submit" 
-                className={`submit-btn ${isSubmitting ? 'submitting' : ''}`}
-                disabled={isSubmitting || !isRobotVerified}
-              >
-                {isSubmitting ? (
-                  <>
-                    <span className="spinner"></span>
-                    SENDING...
-                  </>
-                ) : (
-                  'SEND MESSAGE'
-                )}
-              </button>
-            </form>
+                {/* Submit Button */}
+                <button 
+                  type="submit" 
+                  className={`contact-submit-btn ${isSubmitting ? 'submitting' : ''}`}
+                  disabled={isSubmitting || !isRobotVerified}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <span className="contact-spinner"></span>
+                      SENDING...
+                    </>
+                  ) : (
+                    'SEND MESSAGE'
+                  )}
+                </button>
+              </form>
+            </div>
           </div>
         </div>
       </div>
+
+      <Footer />
     </div>
   );
 };

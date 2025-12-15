@@ -1,79 +1,259 @@
-/* Main Container */
-.sell-page {
+/* Reset and Base Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.sell-page-wrapper {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  background: #f8f9fa;
+}
+
+/* Header Styles - Matching Home Page */
+.sell-header-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.sell-header-container.scrolled {
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.sell-header-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 1rem 2rem;
   display: flex;
   align-items: center;
+  justify-content: space-between;
+}
+
+.sell-logo-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+}
+
+.sell-logo-image {
+  height: 45px;
+  width: 45px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 2px solid #2c3e50;
+}
+
+.sell-logo-text {
+  font-size: 1.6rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.5px;
+}
+
+.sell-nav {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.sell-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  text-decoration: none;
+  color: #2c3e50;
+  font-weight: 600;
+  border-radius: 30px;
+  transition: all 0.3s ease;
+  font-size: 0.95rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.sell-nav-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+  transition: left 0.3s ease;
+  z-index: -1;
+}
+
+.sell-nav-item:hover::before {
+  left: 0;
+}
+
+.sell-nav-item:hover {
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+}
+
+.sell-nav-item.active {
+  background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.25);
+}
+
+.sell-nav-icon {
+  width: 18px;
+  height: 18px;
+}
+
+/* Hero Section - Matching Home Page Theme */
+.sell-hero-section {
+  margin-top: 80px;
+  padding: 6rem 2rem;
+  background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
+              url('https://images.pexels.com/photos/1643383/pexels-photo-1643383.jpeg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  color: white;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.sell-hero-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(44, 62, 80, 0.9) 0%, rgba(52, 152, 219, 0.8) 100%);
+  z-index: 1;
+}
+
+.sell-hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.sell-hero-title {
+  font-size: 3.5rem;
+  font-weight: 800;
+  margin-bottom: 1.5rem;
+  line-height: 1.2;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.sell-hero-subtitle {
+  font-size: 1.3rem;
+  margin-bottom: 3rem;
+  color: #ecf0f1;
+  line-height: 1.6;
+}
+
+.sell-hero-buttons {
+  display: flex;
+  gap: 1.5rem;
   justify-content: center;
+  flex-wrap: wrap;
+}
+
+.sell-hero-button {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: 50px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.sell-hero-button.primary {
+  background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(46, 204, 113, 0.4);
+}
+
+.sell-hero-button.secondary {
+  background: transparent;
+  color: white;
+  border: 2px solid white;
+  backdrop-filter: blur(10px);
+}
+
+.sell-hero-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.sell-hero-button.primary:hover {
+  background: linear-gradient(135deg, #27ae60 0%, #219653 100%);
+}
+
+.sell-hero-button.secondary:hover {
+  background: white;
+  color: #2c3e50;
+}
+
+.sell-hero-button-icon {
+  width: 20px;
+  height: 20px;
+}
+
+/* Main Form Section */
+.sell-form-section {
+  padding: 4rem 2rem;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
 }
 
 .sell-container {
-  width: 100%;
   max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Form Card */
+.sell-form-card {
   background: white;
-  border-radius: 24px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  overflow: hidden;
-  position: relative;
-}
-
-/* Success Message */
-.success-message {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  padding: 3rem;
   border-radius: 20px;
-  text-align: center;
-  z-index: 100;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-  animation: fadeIn 0.3s ease;
+  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.3s ease;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
-  to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+.sell-form-card:hover {
+  transform: translateY(-5px);
 }
 
-.success-icon {
-  width: 60px;
-  height: 60px;
-  background: #2ecc71;
-  color: white;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 28px;
-  font-weight: bold;
-  margin: 0 auto 1.5rem;
-}
-
-.success-message h3 {
-  color: #2c3e50;
-  margin-bottom: 0.5rem;
-  font-size: 1.8rem;
-}
-
-.success-message p {
-  color: #7f8c8d;
-  font-size: 1.1rem;
-}
-
-/* Header */
-.sell-header {
-  background: linear-gradient(135deg, #2c3e50, #34495e);
+.sell-form-header {
+  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
   color: white;
   padding: 3rem 2rem;
   text-align: center;
 }
 
-.sell-title {
-  font-size: 2.8rem;
+.sell-form-title {
+  font-size: 2.5rem;
   margin-bottom: 1rem;
   font-weight: 700;
   background: linear-gradient(135deg, #3498db, #2ecc71);
@@ -82,48 +262,40 @@
   background-clip: text;
 }
 
-.sell-subtitle {
-  font-size: 1.2rem;
+.sell-form-subtitle {
+  font-size: 1.1rem;
   color: #bdc3c7;
   max-width: 600px;
   margin: 0 auto;
   line-height: 1.6;
 }
 
-/* Content Layout */
-.sell-content {
-  display: grid;
-  grid-template-columns: 1.2fr 0.8fr;
-  gap: 0;
-  min-height: 600px;
-}
-
-.sell-form-wrapper {
+/* Form Content */
+.sell-form-content {
   padding: 3rem;
-  border-right: 1px solid #eee;
 }
 
 /* Form Grid */
-.form-grid {
+.sell-form-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 1.5rem;
   margin-bottom: 2rem;
 }
 
-.form-group {
+.sell-form-group {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
 
-.form-group.full-width {
+.sell-full-width {
   grid-column: 1 / -1;
 }
 
 /* Labels */
-.form-label {
-  font-size: 0.85rem;
+.sell-form-label {
+  font-size: 0.9rem;
   font-weight: 600;
   color: #2c3e50;
   text-transform: uppercase;
@@ -133,157 +305,168 @@
   gap: 0.5rem;
 }
 
-.optional-label {
+.sell-optional-label {
   font-size: 0.75rem;
   color: #7f8c8d;
   font-weight: normal;
   text-transform: none;
   letter-spacing: normal;
+  margin-left: 0.5rem;
 }
 
 /* Input Wrapper */
-.input-wrapper {
+.sell-input-wrapper {
   position: relative;
   display: flex;
   align-items: center;
 }
 
-.input-icon {
+.sell-input-icon {
   position: absolute;
   left: 15px;
-  color: #7f8c8d;
+  color: #3498db;
   font-size: 1.1rem;
   z-index: 1;
 }
 
-.form-input {
+.sell-form-input {
   width: 100%;
   padding: 1rem 1rem 1rem 3rem;
   border: 2px solid #e0e0e0;
   border-radius: 12px;
   font-size: 1rem;
   transition: all 0.3s ease;
-  background: white;
+  background: #f8f9fa;
   color: #2c3e50;
+  font-weight: 500;
 }
 
-.form-input:focus {
+.sell-form-input:focus {
   outline: none;
   border-color: #3498db;
+  background: white;
   box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.15);
 }
 
-.form-input::placeholder {
+.sell-form-input::placeholder {
   color: #95a5a6;
 }
 
 /* Phone Input */
-.phone-input-wrapper {
+.sell-phone-input-wrapper {
   display: flex;
   gap: 0.5rem;
 }
 
-.country-code {
+.sell-country-code {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background: #f8f9fa;
+  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
   padding: 1rem;
-  border: 2px solid #e0e0e0;
+  border: 2px solid #2c3e50;
   border-radius: 12px;
   font-weight: 600;
-  color: #2c3e50;
+  color: white;
   min-width: 100px;
   justify-content: center;
 }
 
-.country-flag {
+.sell-country-flag {
   font-size: 1.2rem;
 }
 
-.country-number {
+.sell-country-number {
   font-weight: 600;
 }
 
-.phone-input {
+.sell-phone-input {
   flex: 1;
   padding: 1rem;
   border: 2px solid #e0e0e0;
   border-radius: 12px;
   font-size: 1rem;
   transition: all 0.3s ease;
+  background: #f8f9fa;
+  color: #2c3e50;
+  font-weight: 500;
 }
 
-.phone-input:focus {
+.sell-phone-input:focus {
   outline: none;
   border-color: #3498db;
+  background: white;
   box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.15);
 }
 
-.input-hint {
+.sell-input-hint {
   font-size: 0.75rem;
   color: #95a5a6;
   margin-top: 0.25rem;
   margin-left: 0.5rem;
 }
 
-.input-hint.optional {
+.sell-optional {
   color: #f39c12;
 }
 
 /* Select Wrapper */
-.select-wrapper {
+.sell-select-wrapper {
   position: relative;
   display: flex;
   align-items: center;
 }
 
-.select-icon {
+.sell-select-icon {
   position: absolute;
   left: 15px;
-  color: #7f8c8d;
+  color: #3498db;
   font-size: 1.1rem;
   z-index: 1;
 }
 
-.form-select {
+.sell-form-select {
   width: 100%;
   padding: 1rem 3rem 1rem 3rem;
   border: 2px solid #e0e0e0;
   border-radius: 12px;
   font-size: 1rem;
-  background: white;
+  background: #f8f9fa;
   color: #2c3e50;
   appearance: none;
   cursor: pointer;
   transition: all 0.3s ease;
+  font-weight: 500;
 }
 
-.form-select:focus {
+.sell-form-select:focus {
   outline: none;
   border-color: #3498db;
+  background: white;
   box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.15);
 }
 
-.form-select option {
+.sell-form-select option {
   padding: 1rem;
+  background: white;
+  color: #2c3e50;
 }
 
-.select-arrow {
+.sell-select-arrow {
   position: absolute;
   right: 15px;
-  color: #7f8c8d;
+  color: #3498db;
   font-size: 0.8rem;
   pointer-events: none;
 }
 
 /* Robot Check */
-.robot-check-section {
+.sell-robot-check-section {
   display: flex;
   align-items: center;
   gap: 1rem;
   padding: 1.5rem;
-  background: #f8f9fa;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
   border-radius: 12px;
   margin: 2rem 0;
   cursor: pointer;
@@ -291,14 +474,14 @@
   border: 2px solid #e0e0e0;
 }
 
-.robot-check-section:hover {
-  background: #f0f0f0;
+.sell-robot-check-section:hover {
+  background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
 }
 
-.robot-checkbox {
+.sell-robot-checkbox {
   width: 28px;
   height: 28px;
-  border: 2px solid #bdc3c7;
+  border: 2px solid #95a5a6;
   border-radius: 6px;
   display: flex;
   align-items: center;
@@ -307,12 +490,12 @@
   background: white;
 }
 
-.robot-checkbox.checked {
-  background: #2ecc71;
+.sell-robot-checkbox.checked {
+  background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
   border-color: #27ae60;
 }
 
-.robot-checkmark {
+.sell-robot-checkmark {
   color: white;
   font-size: 16px;
   font-weight: bold;
@@ -320,27 +503,27 @@
   transition: opacity 0.3s ease;
 }
 
-.robot-checkbox.checked .robot-checkmark {
+.sell-robot-checkbox.checked .sell-robot-checkmark {
   opacity: 1;
 }
 
-.robot-text {
+.sell-robot-text {
   font-size: 1rem;
   color: #2c3e50;
-  font-weight: 500;
+  font-weight: 600;
   user-select: none;
 }
 
 /* Submit Button */
-.submit-btn {
+.sell-submit-btn {
   width: 100%;
-  padding: 1.2rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 1.3rem;
+  background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
   color: white;
   border: none;
   border-radius: 12px;
   font-size: 1.1rem;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   transition: all 0.3s ease;
   display: flex;
@@ -349,216 +532,214 @@
   gap: 0.75rem;
   letter-spacing: 0.5px;
   text-transform: uppercase;
+  box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
 }
 
-.submit-btn:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+.sell-submit-btn:hover:not(:disabled) {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(52, 152, 219, 0.4);
+  background: linear-gradient(135deg, #3498db 0%, #2c3e50 100%);
 }
 
-.submit-btn:disabled {
-  background: #bdc3c7;
+.sell-submit-btn:disabled {
+  background: #95a5a6;
   cursor: not-allowed;
   transform: none;
+  box-shadow: none;
 }
 
-.submit-btn.submitting {
+.sell-submit-btn.submitting {
   background: linear-gradient(135deg, #95a5a6, #7f8c8d);
 }
 
-.spinner {
+.sell-spinner {
   width: 20px;
   height: 20px;
   border: 3px solid rgba(255, 255, 255, 0.3);
   border-top-color: white;
   border-radius: 50%;
-  animation: spin 0.8s linear infinite;
+  animation: sell-spin 0.8s linear infinite;
 }
 
-@keyframes spin {
+@keyframes sell-spin {
   to { transform: rotate(360deg); }
 }
 
-/* Help Section */
-.help-section {
-  padding: 3rem;
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-}
-
-.help-card {
+/* Success Message */
+.sell-success-message {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   background: white;
-  border-radius: 16px;
-  padding: 2rem;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
+  padding: 3rem;
+  border-radius: 20px;
+  text-align: center;
+  z-index: 1000;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: sell-fadeIn 0.3s ease;
+  border: 3px solid #2ecc71;
+  max-width: 500px;
+  width: 90%;
 }
 
-.help-icon {
-  font-size: 2.5rem;
-  margin-bottom: 0.5rem;
+@keyframes sell-fadeIn {
+  from { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+  to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
 }
 
-.help-content {
-  flex: 1;
-}
-
-.help-title {
-  font-size: 1.4rem;
-  color: #2c3e50;
-  margin-bottom: 0.5rem;
-  font-weight: 600;
-}
-
-.help-subtitle {
-  font-size: 1rem;
-  color: #3498db;
-  margin-bottom: 1rem;
-  font-weight: 500;
-}
-
-.help-description {
-  font-size: 0.9rem;
-  color: #7f8c8d;
-  line-height: 1.6;
-}
-
-.chat-btn {
+.sell-success-icon {
+  width: 70px;
+  height: 70px;
+  background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+  color: white;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.75rem;
-  padding: 1rem 1.5rem;
-  background: linear-gradient(135deg, #2ecc71, #27ae60);
+  font-size: 32px;
+  font-weight: bold;
+  margin: 0 auto 1.5rem;
+  box-shadow: 0 10px 25px rgba(46, 204, 113, 0.3);
+}
+
+.sell-success-message h3 {
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.sell-success-message p {
+  color: #7f8c8d;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+/* Footer Styles */
+.sell-footer {
+  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
   color: white;
-  border: none;
-  border-radius: 10px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
+  padding: 3rem 0 1.5rem;
+  margin-top: auto;
+}
+
+.sell-footer-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.sell-footer-content {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 3rem;
+  margin-bottom: 3rem;
+}
+
+.sell-footer-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.sell-footer-logo {
+  margin-bottom: 1rem;
+}
+
+.sell-footer-logo-text {
+  font-size: 1.6rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #3498db, #2ecc71);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.5px;
+}
+
+.sell-footer-description {
+  color: #bdc3c7;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.sell-footer-social {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.sell-social-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
   transition: all 0.3s ease;
 }
 
-.chat-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(46, 204, 113, 0.3);
+.sell-social-link:hover {
+  background: linear-gradient(135deg, #3498db 0%, #2ecc71 100%);
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
 }
 
-.chat-icon {
+.sell-social-icon {
+  width: 18px;
+  height: 18px;
+  color: white;
+}
+
+.sell-footer-title {
   font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: white;
 }
 
-/* Benefits Section */
-.benefits-section {
-  background: white;
-  border-radius: 16px;
-  padding: 2rem;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
-}
-
-.benefits-title {
-  font-size: 1.3rem;
-  color: #2c3e50;
-  margin-bottom: 1.5rem;
-  font-weight: 600;
-}
-
-.benefits-list {
+.sell-footer-links {
   list-style: none;
   padding: 0;
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.75rem;
 }
 
-.benefits-list li {
+.sell-footer-links li {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  color: #2c3e50;
+}
+
+.sell-footer-link {
+  color: #bdc3c7;
+  text-decoration: none;
   font-size: 0.95rem;
+  transition: all 0.3s ease;
+  font-weight: 500;
 }
 
-.benefit-icon {
-  color: #2ecc71;
-  font-size: 1.2rem;
+.sell-footer-link:hover {
+  color: white;
+  transform: translateX(5px);
 }
 
-/* Responsive Design */
-@media (max-width: 992px) {
-  .sell-content {
-    grid-template-columns: 1fr;
-  }
-  
-  .sell-form-wrapper {
-    border-right: none;
-    border-bottom: 1px solid #eee;
-  }
-  
-  .sell-header {
-    padding: 2rem 1rem;
-  }
-  
-  .sell-title {
-    font-size: 2.2rem;
-  }
+.sell-footer-bottom {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 1.5rem;
+  text-align: center;
 }
 
-@media (max-width: 768px) {
-  .sell-page {
-    padding: 1rem;
-  }
-  
-  .form-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .sell-form-wrapper,
-  .help-section {
-    padding: 2rem 1.5rem;
-  }
-  
-  .phone-input-wrapper {
-    flex-direction: column;
-  }
-  
-  .country-code {
-    min-width: auto;
-    justify-content: flex-start;
-    padding: 0.875rem 1rem;
-  }
-  
-  .sell-title {
-    font-size: 1.8rem;
-  }
-  
-  .sell-subtitle {
-    font-size: 1rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .sell-header {
-    padding: 1.5rem 1rem;
-  }
-  
-  .sell-title {
-    font-size: 1.6rem;
-  }
-  
-  .help-card,
-  .benefits-section {
-    padding: 1.5rem;
-  }
+.sell-footer-copyright {
+  color: #95a5a6;
+  font-size: 0.9rem;
+  font-weight: 500;
 }
 
 /* Animation for form elements */
-@keyframes slideUp {
+@keyframes sell-slideUp {
   from {
     opacity: 0;
     transform: translateY(20px);
@@ -569,17 +750,149 @@
   }
 }
 
-.form-group {
-  animation: slideUp 0.5s ease forwards;
-  animation-delay: calc(var(--delay, 0) * 0.1s);
+.sell-form-group {
+  animation: sell-slideUp 0.5s ease forwards;
+  animation-delay: calc(var(--sell-delay, 0) * 0.1s);
   opacity: 0;
 }
 
 /* Set animation delays for form groups */
-.form-group:nth-child(1) { --delay: 1; }
-.form-group:nth-child(2) { --delay: 2; }
-.form-group:nth-child(3) { --delay: 3; }
-.form-group:nth-child(4) { --delay: 4; }
-.form-group:nth-child(5) { --delay: 5; }
-.form-group:nth-child(6) { --delay: 6; }
-.form-group:nth-child(7) { --delay: 7; }
+.sell-form-group:nth-child(1) { --sell-delay: 1; }
+.sell-form-group:nth-child(2) { --sell-delay: 2; }
+.sell-form-group:nth-child(3) { --sell-delay: 3; }
+.sell-form-group:nth-child(4) { --sell-delay: 4; }
+.sell-form-group:nth-child(5) { --sell-delay: 5; }
+.sell-form-group:nth-child(6) { --sell-delay: 6; }
+.sell-form-group:nth-child(7) { --sell-delay: 7; }
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .sell-footer-content {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+  }
+}
+
+@media (max-width: 992px) {
+  .sell-hero-title {
+    font-size: 2.8rem;
+  }
+  
+  .sell-form-title {
+    font-size: 2.2rem;
+  }
+  
+  .sell-form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .sell-header-content {
+    padding: 1rem;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .sell-nav {
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+  }
+  
+  .sell-nav-item span {
+    display: none;
+  }
+  
+  .sell-nav-item {
+    padding: 0.5rem 1rem;
+  }
+  
+  .sell-nav-icon {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .sell-hero-section {
+    padding: 4rem 1rem;
+    margin-top: 120px;
+  }
+  
+  .sell-hero-title {
+    font-size: 2.2rem;
+  }
+  
+  .sell-hero-subtitle {
+    font-size: 1.1rem;
+  }
+  
+  .sell-hero-buttons {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .sell-hero-button {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .sell-form-section {
+    padding: 2rem 1rem;
+  }
+  
+  .sell-form-content {
+    padding: 2rem;
+  }
+  
+  .sell-phone-input-wrapper {
+    flex-direction: column;
+  }
+  
+  .sell-country-code {
+    min-width: auto;
+    justify-content: flex-start;
+    padding: 0.875rem 1rem;
+  }
+  
+  .sell-form-title {
+    font-size: 1.8rem;
+  }
+  
+  .sell-form-subtitle {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .sell-form-header {
+    padding: 2rem 1rem;
+  }
+  
+  .sell-form-title {
+    font-size: 1.6rem;
+  }
+  
+  .sell-form-content {
+    padding: 1.5rem;
+  }
+  
+  .sell-footer-content {
+    grid-template-columns: 1fr;
+  }
+  
+  .sell-footer-section {
+    text-align: center;
+  }
+  
+  .sell-footer-social {
+    justify-content: center;
+  }
+  
+  .sell-success-message {
+    padding: 2rem;
+  }
+  
+  .sell-success-message h3 {
+    font-size: 1.4rem;
+  }
+}

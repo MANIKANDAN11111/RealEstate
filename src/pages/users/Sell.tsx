@@ -1,5 +1,150 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import {
+  Home, Building2, DollarSign, Megaphone, Phone,
+  Facebook, Twitter, Instagram, Linkedin, Upload,
+  ShoppingBag
+} from 'lucide-react';
 import './Sell.css';
+import AGLogo from '../../assets/AG_logo.jpeg';
+
+// Header Component
+interface HeaderProps {
+  currentPage: string;
+  scrolled: boolean;
+}
+
+function Header({ currentPage, scrolled }: HeaderProps) {
+  const navItems = [
+    { name: 'Home', icon: Home, page: 'home', path: '/' },
+    { name: 'Buy', icon: Building2, page: 'buy', path: '/buy' },
+    { name: 'Sell', icon: DollarSign, page: 'sell', path: '/sell' },
+    { name: 'Advertise Property', icon: Megaphone, page: 'advertise', path: '/advertise' },
+    { name: 'Contact Us', icon: Phone, page: 'contact', path: '/contact' },
+  ];
+
+  return (
+    <header className={`sell-header-container ${scrolled ? 'scrolled' : ''}`}>
+      <div className="sell-header-content">
+        <Link to="/" className="sell-logo-link">
+          <img src={AGLogo} alt="PropFinder Logo" className="sell-logo-image" />
+          <span className="sell-logo-text">PropFinder</span>
+        </Link>
+
+        <nav className="sell-nav">
+          {navItems.map((item) => (
+            <Link
+              key={item.page}
+              to={item.path}
+              className={`sell-nav-item ${currentPage === item.page ? 'active' : ''}`}
+            >
+              <item.icon className="sell-nav-icon" />
+              <span>{item.name}</span>
+            </Link>
+          ))}
+        </nav>
+      </div>
+    </header>
+  );
+}
+
+// Footer Component
+function Footer() {
+  return (
+    <footer className="sell-footer">
+      <div className="sell-footer-container">
+        <div className="sell-footer-content">
+          <div className="sell-footer-section">
+            <div className="sell-footer-logo">
+              <Link to="/" className="sell-logo-link">
+                <img src={AGLogo} alt="PropFinder Logo" className="sell-logo-image" />
+                <span className="sell-footer-logo-text">PropFinder</span>
+              </Link>
+            </div>
+            <p className="sell-footer-description">
+              Your trusted partner in finding the perfect property across Tamil Nadu. We make real
+              estate easy.
+            </p>
+            <div className="sell-footer-social">
+              <a href="#" className="sell-social-link">
+                <Facebook className="sell-social-icon" />
+              </a>
+              <a href="#" className="sell-social-link">
+                <Twitter className="sell-social-icon" />
+              </a>
+              <a href="#" className="sell-social-link">
+                <Instagram className="sell-social-icon" />
+              </a>
+              <a href="#" className="sell-social-link">
+                <Linkedin className="sell-social-icon" />
+              </a>
+            </div>
+          </div>
+
+          <div className="sell-footer-section">
+            <h3 className="sell-footer-title">Quick Links</h3>
+            <ul className="sell-footer-links">
+              <li>
+                <Link to="/" className="sell-footer-link">Home</Link>
+              </li>
+              <li>
+                <Link to="/buy" className="sell-footer-link">Buy Property</Link>
+              </li>
+              <li>
+                <Link to="/sell" className="sell-footer-link">Sell Property</Link>
+              </li>
+              <li>
+                <Link to="/advertise" className="sell-footer-link">Advertise</Link>
+              </li>
+            </ul>
+          </div>
+
+          <div className="sell-footer-section">
+            <h3 className="sell-footer-title">Properties</h3>
+            <ul className="sell-footer-links">
+              <li>
+                <Link to="/buy" className="sell-footer-link">Buy Property</Link>
+              </li>
+              <li>
+                <Link to="/properties" className="sell-footer-link">Rent Property</Link>
+              </li>
+              <li>
+                <Link to="/sell" className="sell-footer-link">Sell Property</Link>
+              </li>
+              <li>
+                <Link to="/properties" className="sell-footer-link">Featured Listings</Link>
+              </li>
+            </ul>
+          </div>
+
+          <div className="sell-footer-section">
+            <h3 className="sell-footer-title">Legal</h3>
+            <ul className="sell-footer-links">
+              <li>
+                <a href="#" className="sell-footer-link">Privacy Policy</a>
+              </li>
+              <li>
+                <a href="#" className="sell-footer-link">Terms of Service</a>
+              </li>
+              <li>
+                <a href="#" className="sell-footer-link">Cookie Policy</a>
+              </li>
+              <li>
+                <a href="#" className="sell-footer-link">Disclaimer</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div className="sell-footer-bottom">
+          <p className="sell-footer-copyright">
+            &copy; 2024 PropFinder. All rights reserved. | Built with excellence for Tamil Nadu
+          </p>
+        </div>
+      </div>
+    </footer>
+  );
+}
 
 // TypeScript interfaces
 interface SellFormData {
@@ -19,6 +164,36 @@ const propertyTypes: PropertyType[] = ['Apartment', 'Villa', 'Plot', 'Commercial
 const userTypes: UserType[] = ['Owner', 'Agent', 'Builder', 'Investor', 'NRI'];
 
 const Sell: React.FC = () => {
+  const location = useLocation();
+  const [scrolled, setScrolled] = useState(false);
+  const formRef = useRef<HTMLDivElement>(null);
+  
+  const getCurrentPage = () => {
+    const path = location.pathname;
+    if (path === '/') return 'home';
+    if (path === '/buy') return 'buy';
+    if (path === '/sell') return 'sell';
+    if (path === '/advertise') return 'advertise';
+    if (path === '/contact') return 'contact';
+    return 'home';
+  };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const isScrolled = window.scrollY > 50;
+      if (isScrolled !== scrolled) {
+        setScrolled(isScrolled);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [scrolled]);
+
+  const currentPage = getCurrentPage();
+  
   const [formData, setFormData] = useState<SellFormData>({
     name: '',
     email: '',
@@ -57,17 +232,19 @@ const Sell: React.FC = () => {
       return;
     }
 
-    // Validate required fields
-    if (!formData.name || !formData.email || !formData.mobileNo || !formData.propertyType || !formData.userType || !formData.propertyLocation) {
+    // Validate required fields (email is now optional)
+    if (!formData.name || !formData.mobileNo || !formData.propertyType || !formData.userType || !formData.propertyLocation) {
       alert('Please fill all required fields');
       return;
     }
 
-    // Validate email
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
-      alert('Please enter a valid email address');
-      return;
+    // Validate email if provided
+    if (formData.email) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(formData.email)) {
+        alert('Please enter a valid email address');
+        return;
+      }
     }
 
     // Validate mobile number
@@ -112,40 +289,79 @@ const Sell: React.FC = () => {
     setIsRobotVerified(!isRobotVerified);
   };
 
+  const scrollToForm = () => {
+    if (formRef.current) {
+      // Calculate position to scroll (accounting for header height)
+      const headerHeight = document.querySelector('.sell-header-container')?.clientHeight || 80;
+      const offsetTop = formRef.current.offsetTop - headerHeight - 20;
+      
+      window.scrollTo({
+        top: offsetTop,
+        behavior: 'smooth'
+      });
+    }
+  };
+
   return (
-    <div className="sell-page">
-      <div className="sell-container">
-        {/* Success Message */}
-        {showSuccess && (
-          <div className="success-message">
-            <div className="success-icon">✓</div>
-            <h3>Form Submitted Successfully!</h3>
-            <p>Our team will contact you within 24 hours.</p>
+    <div className="sell-page-wrapper">
+      <Header currentPage={currentPage} scrolled={scrolled} />
+      
+      {/* Hero Section with Home Page Theme */}
+      <div className="sell-hero-section">
+        <div className="sell-hero-content">
+          <h1 className="sell-hero-title">Sell Your Property with Confidence</h1>
+          <p className="sell-hero-subtitle">Get the best offers from verified buyers across Tamil Nadu</p>
+          
+          <div className="sell-hero-buttons">
+            <button 
+              className="sell-hero-button primary"
+              onClick={scrollToForm}
+            >
+              <Upload className="sell-hero-button-icon" />
+              Quick Sell Form
+            </button>
+            
+            <button className="sell-hero-button secondary">
+              <ShoppingBag className="sell-hero-button-icon" />
+              View Our Properties
+            </button>
           </div>
-        )}
-
-        <div className="sell-header">
-          <h1 className="sell-title">Sell Your Property</h1>
-          <p className="sell-subtitle">Fill the form below and get the best offers from verified buyers</p>
         </div>
+      </div>
 
-        <div className="sell-content">
-          <div className="sell-form-wrapper">
-            <form className="sell-form" onSubmit={handleSubmit}>
+      {/* Sell Form Section */}
+      <div className="sell-form-section" ref={formRef}>
+        <div className="sell-container">
+          {/* Success Message */}
+          {showSuccess && (
+            <div className="sell-success-message">
+              <div className="sell-success-icon">✓</div>
+              <h3>Form Submitted Successfully!</h3>
+              <p>Our team will contact you within 24 hours.</p>
+            </div>
+          )}
+
+          <div className="sell-form-card">
+            <div className="sell-form-header">
+              <h2 className="sell-form-title">Sell Your Property</h2>
+              <p className="sell-form-subtitle">Fill the form below and get the best offers from verified buyers</p>
+            </div>
+
+            <form className="sell-form-content" onSubmit={handleSubmit}>
               {/* Form Fields Grid */}
-              <div className="form-grid">
+              <div className="sell-form-grid">
                 {/* Name Field */}
-                <div className="form-group">
-                  <label htmlFor="name" className="form-label">
+                <div className="sell-form-group">
+                  <label htmlFor="name" className="sell-form-label">
                     Your Name *
                   </label>
-                  <div className="input-wrapper">
-                    <div className="input-icon">👤</div>
+                  <div className="sell-input-wrapper">
+                    <div className="sell-input-icon">👤</div>
                     <input
                       type="text"
                       id="name"
                       name="name"
-                      className="form-input"
+                      className="sell-form-input"
                       placeholder="Full Name"
                       value={formData.name}
                       onChange={handleChange}
@@ -155,84 +371,84 @@ const Sell: React.FC = () => {
                 </div>
 
                 {/* Email Field */}
-                <div className="form-group">
-                  <label htmlFor="email" className="form-label">
-                    Email *
+                <div className="sell-form-group">
+                  <label htmlFor="email" className="sell-form-label">
+                    Email
+                    <span className="sell-optional-label">(Optional)</span>
                   </label>
-                  <div className="input-wrapper">
-                    <div className="input-icon">✉️</div>
+                  <div className="sell-input-wrapper">
+                    <div className="sell-input-icon">✉️</div>
                     <input
                       type="email"
                       id="email"
                       name="email"
-                      className="form-input"
+                      className="sell-form-input"
                       placeholder="Email Address"
                       value={formData.email}
                       onChange={handleChange}
-                      required
                     />
                   </div>
                 </div>
 
                 {/* Mobile Number */}
-                <div className="form-group">
-                  <label htmlFor="mobileNo" className="form-label">
+                <div className="sell-form-group">
+                  <label htmlFor="mobileNo" className="sell-form-label">
                     Mobile No *
                   </label>
-                  <div className="phone-input-wrapper">
-                    <div className="country-code">
-                      <span className="country-flag">🇮🇳</span>
-                      <span className="country-number">+91</span>
+                  <div className="sell-phone-input-wrapper">
+                    <div className="sell-country-code">
+                      <span className="sell-country-flag">🇮🇳</span>
+                      <span className="sell-country-number">+91</span>
                     </div>
                     <input
                       type="tel"
                       id="mobileNo"
                       name="mobileNo"
-                      className="phone-input"
+                      className="sell-phone-input"
                       placeholder="98765 43210"
                       value={formData.mobileNo}
                       onChange={(e) => handlePhoneChange(e, 'mobileNo')}
                       required
                     />
                   </div>
-                  <p className="input-hint">10-digit mobile number</p>
+                  <p className="sell-input-hint">10-digit mobile number</p>
                 </div>
 
                 {/* WhatsApp Number */}
-                <div className="form-group">
-                  <label htmlFor="whatsappNo" className="form-label">
+                <div className="sell-form-group">
+                  <label htmlFor="whatsappNo" className="sell-form-label">
                     WhatsApp No
-                    <span className="optional-label">(For Quick Response)</span>
+                    <span className="sell-optional-label">(For Quick Response)</span>
                   </label>
-                  <div className="phone-input-wrapper">
-                    <div className="country-code">
-                      <span className="country-flag">📱</span>
-                      <span className="country-number">+91</span>
+                  <div className="sell-phone-input-wrapper">
+                    <div className="sell-country-code">
+                      <span className="sell-country-flag">📱</span>
+                      <span className="sell-country-number">+91</span>
                     </div>
                     <input
                       type="tel"
                       id="whatsappNo"
                       name="whatsappNo"
-                      className="phone-input"
+                      className="sell-phone-input"
                       placeholder="98765 43210"
                       value={formData.whatsappNo}
                       onChange={(e) => handlePhoneChange(e, 'whatsappNo')}
                     />
                   </div>
-                  <p className="input-hint optional">Optional</p>
+                  <p className="sell-input-hint sell-optional">Optional</p>
                 </div>
 
                 {/* Property Type */}
-                <div className="form-group">
-                  <label htmlFor="propertyType" className="form-label">
+                <div className="sell-form-group">
+                  <label htmlFor="propertyType" className="sell-form-label">
                     Property Type *
                   </label>
-                  <div className="select-wrapper">
-                    <div className="select-icon">🏠</div>
+                  <div className="sell-select-wrapper">
+                    <div className="sell-select-icon">🏠</div>
                     <select
                       id="propertyType"
                       name="propertyType"
-                      className="form-select"
+                      className="sell-form-select"
                       value={formData.propertyType}
                       onChange={handleChange}
                       required
@@ -242,21 +458,21 @@ const Sell: React.FC = () => {
                         <option key={type} value={type}>{type}</option>
                       ))}
                     </select>
-                    <div className="select-arrow">▼</div>
+                    <div className="sell-select-arrow">▼</div>
                   </div>
                 </div>
 
                 {/* User Type */}
-                <div className="form-group">
-                  <label htmlFor="userType" className="form-label">
+                <div className="sell-form-group">
+                  <label htmlFor="userType" className="sell-form-label">
                     You are *
                   </label>
-                  <div className="select-wrapper">
-                    <div className="select-icon">👥</div>
+                  <div className="sell-select-wrapper">
+                    <div className="sell-select-icon">👥</div>
                     <select
                       id="userType"
                       name="userType"
-                      className="form-select"
+                      className="sell-form-select"
                       value={formData.userType}
                       onChange={handleChange}
                       required
@@ -266,22 +482,22 @@ const Sell: React.FC = () => {
                         <option key={type} value={type}>{type}</option>
                       ))}
                     </select>
-                    <div className="select-arrow">▼</div>
+                    <div className="sell-select-arrow">▼</div>
                   </div>
                 </div>
 
                 {/* Property Location */}
-                <div className="form-group full-width">
-                  <label htmlFor="propertyLocation" className="form-label">
+                <div className="sell-form-group sell-full-width">
+                  <label htmlFor="propertyLocation" className="sell-form-label">
                     Property Location *
                   </label>
-                  <div className="input-wrapper">
-                    <div className="input-icon">📍</div>
+                  <div className="sell-input-wrapper">
+                    <div className="sell-input-icon">📍</div>
                     <input
                       type="text"
                       id="propertyLocation"
                       name="propertyLocation"
-                      className="form-input"
+                      className="sell-form-input"
                       placeholder="Property Available Area / Location"
                       value={formData.propertyLocation}
                       onChange={handleChange}
@@ -292,82 +508,40 @@ const Sell: React.FC = () => {
               </div>
 
               {/* Robot Check */}
-              <div className="robot-check-section">
+              <div className="sell-robot-check-section">
                 <div 
-                  className={`robot-checkbox ${isRobotVerified ? 'checked' : ''}`}
+                  className={`sell-robot-checkbox ${isRobotVerified ? 'checked' : ''}`}
                   onClick={handleRobotCheck}
                   role="button"
                   tabIndex={0}
                   onKeyDown={(e) => e.key === 'Enter' && handleRobotCheck()}
                 >
-                  <div className="robot-checkmark">✓</div>
+                  <div className="sell-robot-checkmark">✓</div>
                 </div>
-                <span className="robot-text">I'm not a robot</span>
+                <span className="sell-robot-text">I'm not a robot</span>
               </div>
 
               {/* Submit Button */}
               <button 
                 type="submit" 
-                className={`submit-btn ${isSubmitting ? 'submitting' : ''}`}
+                className={`sell-submit-btn ${isSubmitting ? 'submitting' : ''}`}
                 disabled={isSubmitting || !isRobotVerified}
               >
                 {isSubmitting ? (
                   <>
-                    <span className="spinner"></span>
+                    <span className="sell-spinner"></span>
                     SENDING...
                   </>
                 ) : (
-                  'SEND MESSAGE'
+                  'SUBMIT SELL REQUEST'
                 )}
               </button>
             </form>
           </div>
-
-          {/* Help Section */}
-          <div className="help-section">
-            <div className="help-card">
-              <div className="help-icon">💬</div>
-              <div className="help-content">
-                <h3 className="help-title">Need Help?</h3>
-                <p className="help-subtitle">Chat with our property experts</p>
-                <p className="help-description">
-                  Our team is available 24/7 to assist you with property listing, pricing, and documentation.
-                </p>
-              </div>
-              <button className="chat-btn">
-                <span className="chat-icon">💬</span>
-                Chat Now
-              </button>
-            </div>
-
-            <div className="benefits-section">
-              <h4 className="benefits-title">Benefits of Listing With Us</h4>
-              <ul className="benefits-list">
-                <li>
-                  <span className="benefit-icon">✅</span>
-                  <span>Free Property Valuation</span>
-                </li>
-                <li>
-                  <span className="benefit-icon">✅</span>
-                  <span>Verified Buyers Only</span>
-                </li>
-                <li>
-                  <span className="benefit-icon">✅</span>
-                  <span>Legal Assistance</span>
-                </li>
-                <li>
-                  <span className="benefit-icon">✅</span>
-                  <span>Quick Sale Guarantee</span>
-                </li>
-                <li>
-                  <span className="benefit-icon">✅</span>
-                  <span>No Hidden Charges</span>
-                </li>
-              </ul>
-            </div>
-          </div>
         </div>
       </div>
+
+      <Footer />
     </div>
   );
 };

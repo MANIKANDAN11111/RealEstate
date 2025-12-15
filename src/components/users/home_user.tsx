@@ -18,30 +18,29 @@ interface HeaderProps {
 
 function Header({ currentPage, scrolled }: HeaderProps) {
   const navItems = [
-  { name: 'Home', icon: Home, page: 'home', path: '/' },
-  { name: 'Buy', icon: Building2, page: 'buy', path: '/buy' },
-  { name: 'Sell', icon: DollarSign, page: 'sell', path: '/sell' },
-  { name: 'Advertise Property', icon: Megaphone, page: 'advertise', path: '/advertise' },
-  { name: 'Contact Us', icon: Phone, page: 'contact', path: '/contact' },
-];
-
+    { name: 'Home', icon: Home, page: 'home', path: '/' },
+    { name: 'Buy', icon: Building2, page: 'buy', path: '/buy' },
+    { name: 'Sell', icon: DollarSign, page: 'sell', path: '/sell' },
+    { name: 'Advertise Property', icon: Megaphone, page: 'advertise', path: '/advertise' },
+    { name: 'Contact Us', icon: Phone, page: 'contact', path: '/contact' },
+  ];
 
   return (
-    <header className={`header ${scrolled ? 'scrolled' : ''}`}>
-      <div className="header-container">
-        <Link to="/" className="logo-link">
-          <img src={AGLogo} alt="PropFinder Logo" className="logo-image" />
-          <span className="logo-text1">PropFinder</span>
+    <header className={`sell-header-container ${scrolled ? 'scrolled' : ''}`}>
+      <div className="sell-header-content">
+        <Link to="/" className="sell-logo-link">
+          <img src={AGLogo} alt="PropFinder Logo" className="sell-logo-image" />
+          <span className="sell-logo-text">PropFinder</span>
         </Link>
 
-        <nav className="nav">
+        <nav className="sell-nav">
           {navItems.map((item) => (
             <Link
               key={item.page}
               to={item.path}
-              className={`nav-item ${currentPage === item.page ? 'active' : ''}`}
+              className={`sell-nav-item ${currentPage === item.page ? 'active' : ''}`}
             >
-              <item.icon className="nav-icon" />
+              <item.icon className="sell-nav-icon" />
               <span>{item.name}</span>
             </Link>
           ))}
@@ -54,93 +53,93 @@ function Header({ currentPage, scrolled }: HeaderProps) {
 // Footer Component
 function Footer() {
   return (
-    <footer className="footer">
-      <div className="footer-container">
-        <div className="footer-content">
-          <div className="footer-section">
-            <div className="footer-logo">
-              <Link to="/" className="logo-link">
-                <img src={AGLogo} alt="PropFinder Logo" className="logo-image" />
-                <span className="footer-logo-text">PropFinder</span>
+    <footer className="sell-footer">
+      <div className="sell-footer-container">
+        <div className="sell-footer-content">
+          <div className="sell-footer-section">
+            <div className="sell-footer-logo">
+              <Link to="/" className="sell-logo-link">
+                <img src={AGLogo} alt="PropFinder Logo" className="sell-logo-image" />
+                <span className="sell-footer-logo-text">PropFinder</span>
               </Link>
             </div>
-            <p className="footer-description">
+            <p className="sell-footer-description">
               Your trusted partner in finding the perfect property across Tamil Nadu. We make real
               estate easy.
             </p>
-            <div className="footer-social">
-              <a href="#" className="social-link">
-                <Facebook className="social-icon" />
+            <div className="sell-footer-social">
+              <a href="#" className="sell-social-link">
+                <Facebook className="sell-social-icon" />
               </a>
-              <a href="#" className="social-link">
-                <Twitter className="social-icon" />
+              <a href="#" className="sell-social-link">
+                <Twitter className="sell-social-icon" />
               </a>
-              <a href="#" className="social-link">
-                <Instagram className="social-icon" />
+              <a href="#" className="sell-social-link">
+                <Instagram className="sell-social-icon" />
               </a>
-              <a href="#" className="social-link">
-                <Linkedin className="social-icon" />
+              <a href="#" className="sell-social-link">
+                <Linkedin className="sell-social-icon" />
               </a>
             </div>
           </div>
 
-          <div className="footer-section">
-            <h3 className="footer-title">Quick Links</h3>
-            <ul className="footer-links">
+          <div className="sell-footer-section">
+            <h3 className="sell-footer-title">Quick Links</h3>
+            <ul className="sell-footer-links">
               <li>
-                <Link to="/" className="footer-link">Home</Link>
+                <Link to="/" className="sell-footer-link">Home</Link>
               </li>
               <li>
-                <Link to="/buy" className="footer-link">Buy Property</Link>
+                <Link to="/buy" className="sell-footer-link">Buy Property</Link>
               </li>
               <li>
-                <Link to="/sell" className="footer-link">Sell Property</Link>
+                <Link to="/sell" className="sell-footer-link">Sell Property</Link>
               </li>
               <li>
-                <Link to="/advertise" className="footer-link">Advertise</Link>
-              </li>
-            </ul>
-          </div>
-
-          <div className="footer-section">
-            <h3 className="footer-title">Properties</h3>
-            <ul className="footer-links">
-              <li>
-                <Link to="/buy" className="footer-link">Buy Property</Link>
-              </li>
-              <li>
-                <Link to="/properties" className="footer-link">Rent Property</Link>
-              </li>
-              <li>
-                <Link to="/sell" className="footer-link">Sell Property</Link>
-              </li>
-              <li>
-                <Link to="/properties" className="footer-link">Featured Listings</Link>
+                <Link to="/advertise" className="sell-footer-link">Advertise</Link>
               </li>
             </ul>
           </div>
 
-          <div className="footer-section">
-            <h3 className="footer-title">Legal</h3>
-            <ul className="footer-links">
+          <div className="sell-footer-section">
+            <h3 className="sell-footer-title">Properties</h3>
+            <ul className="sell-footer-links">
               <li>
-                <a href="#" className="footer-link">Privacy Policy</a>
+                <Link to="/buy" className="sell-footer-link">Buy Property</Link>
               </li>
               <li>
-                <a href="#" className="footer-link">Terms of Service</a>
+                <Link to="/properties" className="sell-footer-link">Rent Property</Link>
               </li>
               <li>
-                <a href="#" className="footer-link">Cookie Policy</a>
+                <Link to="/sell" className="sell-footer-link">Sell Property</Link>
               </li>
               <li>
-                <a href="#" className="footer-link">Disclaimer</a>
+                <Link to="/properties" className="sell-footer-link">Featured Listings</Link>
+              </li>
+            </ul>
+          </div>
+
+          <div className="sell-footer-section">
+            <h3 className="sell-footer-title">Legal</h3>
+            <ul className="sell-footer-links">
+              <li>
+                <a href="#" className="sell-footer-link">Privacy Policy</a>
+              </li>
+              <li>
+                <a href="#" className="sell-footer-link">Terms of Service</a>
+              </li>
+              <li>
+                <a href="#" className="sell-footer-link">Cookie Policy</a>
+              </li>
+              <li>
+                <a href="#" className="sell-footer-link">Disclaimer</a>
               </li>
             </ul>
           </div>
         </div>
 
-        <div className="footer-bottom">
-          <p className="footer-copyright">
+        <div className="sell-footer-bottom">
+          <p className="sell-footer-copyright">
             &copy; 2024 PropFinder. All rights reserved. | Built with excellence for Tamil Nadu
           </p>
         </div>
@@ -336,33 +335,26 @@ export default function HomePage() {
       <Header currentPage={currentPage} scrolled={scrolled} />
       
       <div className="home-page">
-        {/* Hero Section - Now contains the header inside it */}
-        <section 
-          className="hero"
-          style={{
-            backgroundImage: `url(${HeroBackground})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat'
-          }}
-        >
-          <div className="hero-content">
-            <h1 className="hero-title">Find Your Dream Property</h1>
+        {/* Hero Section - Matching Sell Page Theme */}
+        <section className="sell-hero-section home-hero">
+          <div className="sell-hero-content">
+            <h1 className="sell-hero-title">Find Your Dream Property</h1>
+            <p className="sell-hero-subtitle">Discover the perfect home across Tamil Nadu's prime locations</p>
             
-            <div className="hero-buttons">
+            <div className="sell-hero-buttons">
               <button 
-                className="hero-button publish"
+                className="sell-hero-button primary"
                 onClick={handlePublish}
               >
-                <Upload className="hero-button-icon" />
+                <Upload className="sell-hero-button-icon" />
                 Publish Your Properties
               </button>
               
               <button 
-                className="hero-button buy"
+                className="sell-hero-button secondary"
                 onClick={handleBuy}
               >
-                <ShoppingBag className="hero-button-icon" />
+                <ShoppingBag className="sell-hero-button-icon" />
                 Buy Our Property
               </button>
             </div>
@@ -440,7 +432,7 @@ export default function HomePage() {
           <div className="section-header">
             <div>
               <h2 className="section-title">Featured Properties</h2>
-              <p className="section-subtitle">Featured Properties</p>
+              <p className="section-subtitle">Discover our premium properties across Tamil Nadu</p>
             </div>
             <button className="view-all-button" onClick={handleBuy}>
               View All
