@@ -89,7 +89,7 @@ export default function AdminLogin({ onLogin }: AdminLoginProps) {
       const timeoutId = setTimeout(() => controller.abort(), 10000);
 
       const res = await fetch("https://realestatebackend-8adg.onrender.com/auth/login", {
-        method: "POST",
+        method: "POST",        
         headers: {
           "Content-Type": "application/json",
           "Accept": "text/plain" // We accept text/plain for the raw token response

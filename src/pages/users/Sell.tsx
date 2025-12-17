@@ -224,66 +224,90 @@ const Sell: React.FC = () => {
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!isRobotVerified) {
-      alert('Please verify that you are not a robot');
+ const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  if (!isRobotVerified) {
+    alert('Please verify that you are not a robot');
+    return;
+  }
+
+  if (
+    !formData.name ||
+    !formData.mobileNo ||
+    !formData.propertyType ||
+    !formData.userType ||
+    !formData.propertyLocation
+  ) {
+    alert('Please fill all required fields');
+    return;
+  }
+
+  if (formData.mobileNo.length !== 10) {
+    alert('Please enter a valid 10-digit mobile number');
+    return;
+  }
+
+  if (formData.email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      alert('Please enter a valid email address');
       return;
     }
+  }
 
-    // Validate required fields (email is now optional)
-    if (!formData.name || !formData.mobileNo || !formData.propertyType || !formData.userType || !formData.propertyLocation) {
-      alert('Please fill all required fields');
-      return;
-    }
+  setIsSubmitting(true);
 
-    // Validate email if provided
-    if (formData.email) {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(formData.email)) {
-        alert('Please enter a valid email address');
-        return;
-      }
-    }
-
-    // Validate mobile number
-    if (formData.mobileNo.length !== 10) {
-      alert('Please enter a valid 10-digit mobile number');
-      return;
-    }
-
-    setIsSubmitting(true);
-    
-    try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Show success message
-      setShowSuccess(true);
-      
-      // Reset form after 3 seconds
-      setTimeout(() => {
-        setFormData({
-          name: '',
-          email: '',
-          mobileNo: '',
-          whatsappNo: '',
-          propertyType: '',
-          userType: '',
-          propertyLocation: ''
-        });
-        setIsRobotVerified(false);
-        setShowSuccess(false);
-      }, 3000);
-      
-    } catch (error) {
-      console.error('Error submitting form:', error);
-      alert('Error submitting form. Please try again.');
-    } finally {
-      setIsSubmitting(false);
-    }
+  const payload = {
+    name: formData.name,
+    email: formData.email || "NA",
+    mobileNo: formData.mobileNo,
+    whatsappNo: formData.whatsappNo || "NA",
+    propertyType: formData.propertyType,
+    userType: formData.userType,
+    propertyLocation: formData.propertyLocation
   };
+
+  try {
+    const response = await fetch(
+      "https://realestatebackend-8adg.onrender.com/api/sell",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to submit sell request");
+    }
+
+    setShowSuccess(true);
+
+    setTimeout(() => {
+      setFormData({
+        name: '',
+        email: '',
+        mobileNo: '',
+        whatsappNo: '',
+        propertyType: '',
+        userType: '',
+        propertyLocation: ''
+      });
+      setIsRobotVerified(false);
+      setShowSuccess(false);
+    }, 3000);
+
+  } catch (error) {
+    console.error('Error submitting form:', error);
+    alert('Error submitting form. Please try again.');
+  } finally {
+    setIsSubmitting(false);
+  }
+};
+
 
   const handleRobotCheck = () => {
     setIsRobotVerified(!isRobotVerified);
