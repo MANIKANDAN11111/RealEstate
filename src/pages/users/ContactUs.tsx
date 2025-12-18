@@ -3,13 +3,13 @@ import { Link, useLocation } from 'react-router-dom';
 import {
   Home, Building2, DollarSign, Megaphone, Phone,
   Facebook, Twitter, Instagram, Linkedin, Mail,
-  MessageSquare, User, Smartphone
+  MessageSquare, User, Smartphone  
 } from 'lucide-react';
 import './ContactUs.css';
 import AGLogo from '../../assets/AG_logo.jpeg';
 
 // Header Component
-interface HeaderProps {
+interface HeaderProps {  
   currentPage: string;
   scrolled: boolean;
 }

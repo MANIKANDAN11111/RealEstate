@@ -204,7 +204,7 @@ function PropertyCard(props: PropertyCardProps) {
           </div>
         </div>
         
-<Link to={`/property/${props.id}`} className="view-details-btn">View Details </Link>
+<Link to={`/Property/`} className="view-details-btn">View Details </Link>
       </div>
     </div>
   );
