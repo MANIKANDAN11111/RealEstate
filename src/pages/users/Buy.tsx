@@ -7,6 +7,7 @@ import {
   ChevronLeft, ChevronRight
 } from 'lucide-react';
 import './Buy.css';
+
 import AGLogo from '../../assets/AG_logo.jpeg';
 
 // Header Component
@@ -149,6 +150,7 @@ function Footer() {
 
 // PropertyCard Component
 interface PropertyCardProps {
+  id: number;
   image: string;
   price: string;
   title: string;
@@ -201,7 +203,8 @@ function PropertyCard(props: PropertyCardProps) {
             <span>{props.sqft} sqft</span>
           </div>
         </div>
-        <button className="view-details-btn">View Details</button>
+        
+<Link to={`/property/${props.id}`} className="view-details-btn">View Details </Link>
       </div>
     </div>
   );

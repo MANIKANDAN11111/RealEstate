@@ -9,6 +9,7 @@ import Advertise from './pages/users/AdvertiseProperty';
 import Contact from './pages/users/ContactUs';
 
 import './App.css';  
+import PropertyDetails from './pages/users/buy_view_details';
 
 function App() {
   // Add state for authentication
@@ -29,6 +30,7 @@ function App() {
           <Route path="/sell" element={<Sell />} />
           <Route path="/advertise" element={<Advertise />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/buy/:id" element={<PropertyDetails />} />
           
           {/* Admin Login Route */}
           <Route 
