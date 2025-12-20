@@ -48,7 +48,7 @@ function App() {
             element={
               isAuthenticated ? 
                 <Dashboard /> : 
-                <Navigate to="/login" />
+                <Navigate to="/login" /> 
             } 
           />
           
