@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import {
   Home, Building2, DollarSign, Megaphone, Phone,
   Facebook, Twitter, Instagram, Linkedin, Mail,
-  MessageSquare, User, Smartphone  
+  MessageSquare, User, Smartphone, MapPin, MessageCircle
 } from 'lucide-react';
 import './ContactUs.css';
 import AGLogo from '../../assets/AG_logo.jpeg';
@@ -143,6 +143,52 @@ function Footer() {
         </div>
       </div>
     </footer>
+  );
+}
+
+// Quick Contact Floating Buttons Component
+function QuickContactButtons() {
+  const handleWhatsAppClick = () => {
+    window.open('https://wa.me/916374656460', '_blank');
+  };
+
+  const handleCallClick = () => {
+    window.location.href = 'tel:+916374656460';
+  };
+
+  const handleLocationClick = () => {
+    window.open('https://maps.google.com/?q=Tamil+Nadu,India', '_blank');
+  };
+
+  return (
+    <div className="quick-contact-buttons">
+      <button 
+        className="quick-contact-btn whatsapp-btn"
+        onClick={handleWhatsAppClick}
+        title="Chat on WhatsApp"
+      >
+        <MessageCircle className="quick-contact-icon" />
+        <span className="quick-contact-tooltip">Chat on WhatsApp</span>
+      </button>
+      
+      <button 
+        className="quick-contact-btn call-btn"
+        onClick={handleCallClick}
+        title="Call Now"
+      >
+        <Phone className="quick-contact-icon" />
+        <span className="quick-contact-tooltip">Call Now</span>
+      </button>
+      
+      <button 
+        className="quick-contact-btn location-btn"
+        onClick={handleLocationClick}
+        title="Our Location"
+      >
+        <MapPin className="quick-contact-icon" />
+        <span className="quick-contact-tooltip">Our Location</span>
+      </button>
+    </div>
   );
 }
 
@@ -291,6 +337,9 @@ const ContactUs: React.FC = () => {
     <div className="contact-page-wrapper">
       <Header currentPage={currentPage} scrolled={scrolled} />
       
+      {/* Quick Contact Floating Buttons */}
+      <QuickContactButtons />
+      
       {/* Hero Section */}
       <div className="contact-hero-section">
         <div className="contact-hero-content">
@@ -361,6 +410,21 @@ const ContactUs: React.FC = () => {
                       </a>
                     </div>
                   </div>
+
+                  <div className="owner-contact-item">
+                    <div className="owner-contact-icon">📍</div>
+                    <div className="owner-contact-info">
+                      <p className="owner-contact-label">Our Location</p>
+                      <a 
+                        href="https://maps.google.com/?q=Tamil+Nadu,India" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="owner-contact-location"
+                      >
+                        Tamil Nadu, India
+                      </a>
+                    </div>
+                  </div>
                 </div>
 
                 <div className="owner-working-hours">
@@ -370,6 +434,26 @@ const ContactUs: React.FC = () => {
                     <p>Monday - Saturday: 9:00 AM - 8:00 PM</p>
                     <p>Sunday: 10:00 AM - 6:00 PM</p>
                   </div>
+                </div>
+
+                {/* Quick Action Buttons */}
+                <div className="owner-quick-actions">
+                  <a 
+                    href="https://wa.me/916374656460" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="owner-quick-btn whatsapp-action"
+                  >
+                    <MessageCircle className="owner-quick-icon" />
+                    WhatsApp
+                  </a>
+                  <a 
+                    href="tel:+916374656460" 
+                    className="owner-quick-btn call-action"
+                  >
+                    <Phone className="owner-quick-icon" />
+                    Call Now
+                  </a>
                 </div>
               </div>
 

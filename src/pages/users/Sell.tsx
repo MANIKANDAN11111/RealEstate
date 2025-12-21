@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import {
   Home, Building2, DollarSign, Megaphone, Phone,
   Facebook, Twitter, Instagram, Linkedin, Upload,
-  ShoppingBag
+  ShoppingBag, MessageCircle, MapPin
 } from 'lucide-react';
 import './Sell.css';
 import AGLogo from '../../assets/AG_logo.jpeg';
@@ -143,6 +143,52 @@ function Footer() {
         </div>
       </div>
     </footer>
+  );
+}
+
+// Quick Contact Floating Buttons Component
+function QuickContactButtons() {
+  const handleWhatsAppClick = () => {
+    window.open('https://wa.me/916374656460', '_blank');
+  };
+
+  const handleCallClick = () => {
+    window.location.href = 'tel:+916374656460';
+  };
+
+  const handleLocationClick = () => {
+    window.open('https://maps.google.com/?q=Tamil+Nadu,India', '_blank');
+  };
+
+  return (
+    <div className="quick-contact-buttons">
+      <button 
+        className="quick-contact-btn whatsapp-btn"
+        onClick={handleWhatsAppClick}
+        title="Chat on WhatsApp"
+      >
+        <MessageCircle className="quick-contact-icon" />
+        <span className="quick-contact-tooltip">Chat on WhatsApp</span>
+      </button>
+      
+      <button 
+        className="quick-contact-btn call-btn"
+        onClick={handleCallClick}
+        title="Call Now"
+      >
+        <Phone className="quick-contact-icon" />
+        <span className="quick-contact-tooltip">Call Now</span>
+      </button>
+      
+      <button 
+        className="quick-contact-btn location-btn"
+        onClick={handleLocationClick}
+        title="Our Location"
+      >
+        <MapPin className="quick-contact-icon" />
+        <span className="quick-contact-tooltip">Our Location</span>
+      </button>
+    </div>
   );
 }
 
@@ -329,6 +375,9 @@ const Sell: React.FC = () => {
   return (
     <div className="sell-page-wrapper">
       <Header currentPage={currentPage} scrolled={scrolled} />
+      
+      {/* Quick Contact Floating Buttons */}
+      <QuickContactButtons />
       
       {/* Hero Section with Home Page Theme */}
       <div className="sell-hero-section">

@@ -312,32 +312,11 @@ The villa is equipped with modern amenities including CCTV security, 24/7 water 
                   </div>
                 ))}
               </div>
-              <h3 className="pd5-property-details-subtitle">Special Features</h3>
-              <div className="pd5-property-details-features">
-                {property.features.map((feature, index) => (
-                  <div key={index} className="pd5-property-details-feature">
-                    <Star className="pd5-property-details-feature-icon" />
-                    {feature}
-                  </div>
-                ))}
-              </div>
+             
+             
             </div>
 
-            {/* Location & Nearby */}
-            <div className="pd5-property-details-section">
-              <h2 className="pd5-property-details-section-title">Location & Nearby</h2>
-              <div className="pd5-property-details-nearby">
-                {property.nearbyPlaces.map((place, index) => (
-                  <div key={index} className="pd5-property-details-nearby-item">
-                    <div className="pd5-property-details-nearby-icon">{place.icon}</div>
-                    <div className="pd5-property-details-nearby-content">
-                      <div className="pd5-property-details-nearby-name">{place.name}</div>
-                      <div className="pd5-property-details-nearby-distance">{place.distance}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+            
           </div>
 
           {/* Right Column - Contact & Info */}
@@ -375,59 +354,29 @@ The villa is equipped with modern amenities including CCTV security, 24/7 water 
                 </div>
               </div>
               <div className="pd5-property-details-contact-actions">
-                <button className="pd5-property-details-call-btn" onClick={handleContactOwner}>
-                  <Phone className="pd5-property-details-call-icon" />
-                  Call Now
-                </button>
-                <button className="pd5-property-details-visit-btn" onClick={handleScheduleVisit}>
-                  <Calendar className="pd5-property-details-visit-icon" />
-                  Schedule Visit
-                </button>
+              
               </div>
             </div>
-
-            {/* Financial Info */}
-            <div className="pd5-property-details-financial-card">
-              <h3 className="pd5-property-details-financial-title">Financial Details</h3>
-              <div className="pd5-property-details-financial-info">
-                {Object.entries(property.financials).map(([key, value]) => (
-                  <div key={key} className="pd5-property-details-financial-item">
-                    <span className="pd5-property-details-financial-label">
-                      {key.replace(/([A-Z])/g, ' $1')}
-                    </span>
-                    <span className="pd5-property-details-financial-value">{value}</span>
+          {/* Location & Nearby */}
+            <div className="pd5-property-details-section">
+              <h2 className="pd5-property-details-section-title">Location & Nearby</h2>
+              <div className="pd5-property-details-nearby">
+                {property.nearbyPlaces.map((place, index) => (
+                  <div key={index} className="pd5-property-details-nearby-item">
+                    <div className="pd5-property-details-nearby-icon">{place.icon}</div>
+                    <div className="pd5-property-details-nearby-content">
+                      <div className="pd5-property-details-nearby-name">{place.name}</div>
+                      <div className="pd5-property-details-nearby-distance">{place.distance}</div>
+                    </div>
                   </div>
-                ))}
+                ))} 
               </div>
-            </div>
+             </div>
+           
 
-            {/* Action Buttons */}
-            <div className="pd5-property-details-action-buttons">
-              <button className="pd5-property-details-download-btn">
-                <Download className="pd5-property-details-download-icon" />
-                Download Brochure
-              </button>
-              <button className="pd5-property-details-print-btn">
-                <Printer className="pd5-property-details-print-icon" />
-                Print Details
-              </button>
-            </div>
+            
 
-            {/* Property ID & Status */}
-            <div className="pd5-property-details-meta-info">
-              <div className="pd5-property-details-meta-item">
-                <span className="pd5-property-details-meta-label">Property ID:</span>
-                <span className="pd5-property-details-meta-value">PROP-{String(property.id).padStart(5, '0')}</span>
-              </div>
-              <div className="pd5-property-details-meta-item">
-                <span className="pd5-property-details-meta-label">Listed:</span>
-                <span className="pd5-property-details-meta-value">3 days ago</span>
-              </div>
-              <div className="pd5-property-details-meta-item">
-                <span className="pd5-property-details-meta-label">Status:</span>
-                <span className="pd5-property-details-meta-value pd5-status-available">Available</span>
-              </div>
-            </div>
+           
           </div>
         </div>
       </main>

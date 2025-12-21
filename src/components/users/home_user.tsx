@@ -3,8 +3,8 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   Home, Search, Building2, DollarSign, Megaphone, Phone,
   MapPin, ArrowRight, Bed, Bath, Maximize,
-  Heart, Facebook, Twitter, Instagram, Linkedin,
-  Upload, ShoppingBag
+  Heart, Search, Facebook, Twitter, Instagram, Linkedin,
+  Upload, ShoppingBag, MessageCircle
 } from 'lucide-react';
 import './home_user.css';
 import AGLogo from '../../assets/AG_logo.jpeg';
@@ -145,6 +145,52 @@ function Footer() {
         </div>
       </div>
     </footer>
+  );
+}
+
+// Quick Contact Floating Buttons Component
+function QuickContactButtons() {
+  const handleWhatsAppClick = () => {
+    window.open('https://wa.me/916374656460', '_blank');
+  };
+
+  const handleCallClick = () => {
+    window.location.href = 'tel:+916374656460';
+  };
+
+  const handleLocationClick = () => {
+    window.open('https://maps.google.com/?q=Tamil+Nadu,India', '_blank');
+  };
+
+  return (
+    <div className="quick-contact-buttons">
+      <button 
+        className="quick-contact-btn whatsapp-btn"
+        onClick={handleWhatsAppClick}
+        title="Chat on WhatsApp"
+      >
+        <MessageCircle className="quick-contact-icon" />
+        <span className="quick-contact-tooltip">Chat on WhatsApp</span>
+      </button>
+      
+      <button 
+        className="quick-contact-btn call-btn"
+        onClick={handleCallClick}
+        title="Call Now"
+      >
+        <Phone className="quick-contact-icon" />
+        <span className="quick-contact-tooltip">Call Now</span>
+      </button>
+      
+      <button 
+        className="quick-contact-btn location-btn"
+        onClick={handleLocationClick}
+        title="Our Location"
+      >
+        <MapPin className="quick-contact-icon" />
+        <span className="quick-contact-tooltip">Our Location</span>
+      </button>
+    </div>
   );
 }
 
@@ -333,6 +379,9 @@ export default function HomePage() {
   return (
     <div className="home-page-wrapper">
       <Header currentPage={currentPage} scrolled={scrolled} />
+      
+      {/* Quick Contact Floating Buttons */}
+      <QuickContactButtons />
       
       <div className="home-page">
         {/* Hero Section - Matching Sell Page Theme */}
