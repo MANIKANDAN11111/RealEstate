@@ -10,6 +10,7 @@ interface HeaderProps {
 }
 
 function Header({ scrolled }: HeaderProps) {
+  
   const navItems = [
     { name: 'Home', icon: Home, path: '/' },
     { name: 'Buy', icon: Building, path: '/buy' },

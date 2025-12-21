@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
-  Home, Building2, DollarSign, Megaphone, Phone,
+  Home, Search, Building2, DollarSign, Megaphone, Phone,
   MapPin, ArrowRight, Bed, Bath, Maximize,
-  Heart, Search, Facebook, Twitter, Instagram, Linkedin,
+  Heart, Facebook, Twitter, Instagram, Linkedin,
   Upload, ShoppingBag
 } from 'lucide-react';
 import './home_user.css';
