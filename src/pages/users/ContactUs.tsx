@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import {
   Home, Building2, DollarSign, Megaphone, Phone,
   Facebook, Twitter, Instagram, Linkedin, Mail,
-  MessageSquare, User, Smartphone, MapPin, MessageCircle
+  MessageSquare, User, Smartphone  
 } from 'lucide-react';
 import './ContactUs.css';
 import AGLogo from '../../assets/AG_logo.jpeg';
@@ -146,52 +146,6 @@ function Footer() {
   );
 }
 
-// Quick Contact Floating Buttons Component
-function QuickContactButtons() {
-  const handleWhatsAppClick = () => {
-    window.open('https://wa.me/916374656460', '_blank');
-  };
-
-  const handleCallClick = () => {
-    window.location.href = 'tel:+916374656460';
-  };
-
-  const handleLocationClick = () => {
-    window.open('https://maps.google.com/?q=Tamil+Nadu,India', '_blank');
-  };
-
-  return (
-    <div className="quick-contact-buttons">
-      <button 
-        className="quick-contact-btn whatsapp-btn"
-        onClick={handleWhatsAppClick}
-        title="Chat on WhatsApp"
-      >
-        <MessageCircle className="quick-contact-icon" />
-        <span className="quick-contact-tooltip">Chat on WhatsApp</span>
-      </button>
-      
-      <button 
-        className="quick-contact-btn call-btn"
-        onClick={handleCallClick}
-        title="Call Now"
-      >
-        <Phone className="quick-contact-icon" />
-        <span className="quick-contact-tooltip">Call Now</span>
-      </button>
-      
-      <button 
-        className="quick-contact-btn location-btn"
-        onClick={handleLocationClick}
-        title="Our Location"
-      >
-        <MapPin className="quick-contact-icon" />
-        <span className="quick-contact-tooltip">Our Location</span>
-      </button>
-    </div>
-  );
-}
-
 // TypeScript interfaces
 interface ContactFormData {
   name: string;
@@ -262,56 +216,82 @@ const ContactUs: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!isRobotVerified) {
       alert('Please verify that you are not a robot');
       return;
     }
 
-    // Validate required fields
-    if (!formData.name || !formData.email || !formData.mobileNo || !formData.subject || !formData.message) {
-      alert('Please fill all required fields');
+    // Validate only required fields (name and mobile number)
+    if (!formData.name || !formData.mobileNo) {
+      alert('Please fill Name and Mobile Number');
       return;
     }
 
-    // Validate email
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
-      alert('Please enter a valid email address');
-      return;
+    // Email validation (only if provided)
+    if (formData.email) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(formData.email)) {
+        alert('Please enter a valid email address');
+        return;
+      }
     }
 
-    // Validate mobile number
+    // Mobile number validation
     if (formData.mobileNo.length !== 10) {
       alert('Please enter a valid 10-digit mobile number');
       return;
     }
 
     setIsSubmitting(true);
-    
+
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Show success message
+      const response = await fetch(
+        'https://realestatebackend-8adg.onrender.com/api/contact',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            name: formData.name,
+            email: formData.email || 'NA',
+            mobileNo: formData.mobileNo,
+            subject: formData.subject || 'NA',
+            message: formData.message || 'NA',
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Failed to submit contact form');
+      }
+
+      const data = await response.json();
+      console.log('API Success:', data);
+
+      // Show success UI
       setShowSuccess(true);
-      
-      // Reset form after 3 seconds
+
+      // Reset form
+      setFormData({
+        name: '',
+        email: '',
+        mobileNo: '',
+        subject: '',
+        message: '',
+      });
+
+      setIsRobotVerified(false);
+
       setTimeout(() => {
-        setFormData({
-          name: '',
-          email: '',
-          mobileNo: '',
-          subject: '',
-          message: ''
-        });
-        setIsRobotVerified(false);
         setShowSuccess(false);
       }, 3000);
-      
+
     } catch (error) {
-      console.error('Error submitting form:', error);
-      alert('Error submitting form. Please try again.');
+      console.error('API Error:', error);
+      alert('Something went wrong. Please try again later.');
     } finally {
       setIsSubmitting(false);
     }
@@ -336,9 +316,6 @@ const ContactUs: React.FC = () => {
   return (
     <div className="contact-page-wrapper">
       <Header currentPage={currentPage} scrolled={scrolled} />
-      
-      {/* Quick Contact Floating Buttons */}
-      <QuickContactButtons />
       
       {/* Hero Section */}
       <div className="contact-hero-section">
@@ -410,21 +387,6 @@ const ContactUs: React.FC = () => {
                       </a>
                     </div>
                   </div>
-
-                  <div className="owner-contact-item">
-                    <div className="owner-contact-icon">📍</div>
-                    <div className="owner-contact-info">
-                      <p className="owner-contact-label">Our Location</p>
-                      <a 
-                        href="https://maps.google.com/?q=Tamil+Nadu,India" 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="owner-contact-location"
-                      >
-                        Tamil Nadu, India
-                      </a>
-                    </div>
-                  </div>
                 </div>
 
                 <div className="owner-working-hours">
@@ -434,26 +396,6 @@ const ContactUs: React.FC = () => {
                     <p>Monday - Saturday: 9:00 AM - 8:00 PM</p>
                     <p>Sunday: 10:00 AM - 6:00 PM</p>
                   </div>
-                </div>
-
-                {/* Quick Action Buttons */}
-                <div className="owner-quick-actions">
-                  <a 
-                    href="https://wa.me/916374656460" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="owner-quick-btn whatsapp-action"
-                  >
-                    <MessageCircle className="owner-quick-icon" />
-                    WhatsApp
-                  </a>
-                  <a 
-                    href="tel:+916374656460" 
-                    className="owner-quick-btn call-action"
-                  >
-                    <Phone className="owner-quick-icon" />
-                    Call Now
-                  </a>
                 </div>
               </div>
 
@@ -484,7 +426,7 @@ const ContactUs: React.FC = () => {
                   {/* Email Field */}
                   <div className="contact-form-group">
                     <label htmlFor="email" className="contact-form-label">
-                      Email *
+                      Email
                     </label>
                     <div className="contact-input-wrapper">
                       <div className="contact-input-icon">✉️</div>
@@ -496,7 +438,6 @@ const ContactUs: React.FC = () => {
                         placeholder="Email Address"
                         value={formData.email}
                         onChange={handleChange}
-                        required
                       />
                     </div>
                   </div>
@@ -528,7 +469,7 @@ const ContactUs: React.FC = () => {
                   {/* Subject Field */}
                   <div className="contact-form-group contact-full-width">
                     <label htmlFor="subject" className="contact-form-label">
-                      Subject *
+                      Subject
                     </label>
                     <div className="contact-input-wrapper">
                       <div className="contact-input-icon">📝</div>
@@ -540,7 +481,6 @@ const ContactUs: React.FC = () => {
                         placeholder="What is the purpose of your contact?"
                         value={formData.subject}
                         onChange={handleChange}
-                        required
                       />
                     </div>
                   </div>
@@ -548,22 +488,19 @@ const ContactUs: React.FC = () => {
                   {/* Message Field */}
                   <div className="contact-form-group contact-full-width">
                     <label htmlFor="message" className="contact-form-label">
-                      Your Message *
+                      Your Message
                     </label>
                     <div className="contact-textarea-wrapper">
                       <textarea
                         id="message"
                         name="message"
                         className="contact-form-textarea"
-                        placeholder="Type your message here (5 lines minimum)..."
+                        placeholder="Type your message here..."
                         value={formData.message}
                         onChange={handleChange}
                         rows={5}
-                        minLength={50}
-                        required
                       />
                     </div>
-                    <p className="contact-textarea-hint">Please write your message in detail (minimum 5 lines)</p>
                   </div>
                 </div>
 

@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   Home, Search, Building2, DollarSign, Megaphone, Phone,
   MapPin, ArrowRight, Bed, Bath, Maximize,
-  Heart, Search, Facebook, Twitter, Instagram, Linkedin,
+  Heart, Facebook, Twitter, Instagram, Linkedin,
   Upload, ShoppingBag, MessageCircle
 } from 'lucide-react';
 import './home_user.css';
