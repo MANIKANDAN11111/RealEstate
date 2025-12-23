@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
-import { Home, MapPin, Bed, Bath, Maximize, Heart, Share2, Phone, Mail, Calendar, Check, Car, Layers, Shield, TrendingUp, ArrowLeft, Star, Download, Printer, Facebook, Twitter, Linkedin, Instagram, Clock, Users, Building, Mountain } from 'lucide-react';
+import { 
+  Home, MapPin, Bed, Bath, Maximize, Heart, Share2, Phone, Mail, 
+  Calendar, Check, Car, Layers, Shield, TrendingUp, ArrowLeft, 
+  Star, Download, Printer, Facebook, Twitter, Linkedin, Instagram, 
+  Clock, Users, Building, Mountain, DollarSign, Megaphone 
+} from 'lucide-react';
 import AGLogo from '../../assets/AG_logo.jpeg';
 import './buy_view_details.css';
 
@@ -14,8 +19,8 @@ function Header({ scrolled }: HeaderProps) {
   const navItems = [
     { name: 'Home', icon: Home, path: '/' },
     { name: 'Buy', icon: Building, path: '/buy' },
-    { name: 'Sell', icon: TrendingUp, path: '/sell' },
-    { name: 'Advertise', icon: Users, path: '/advertise' },
+    { name: 'Sell', icon: DollarSign, path: '/sell' },
+    { name: 'Advertise', icon: Megaphone, path: '/advertise' },
     { name: 'Contact', icon: Phone, path: '/contact' },
   ];
 
@@ -24,7 +29,7 @@ function Header({ scrolled }: HeaderProps) {
       <div className="pd5-property-details-header-content">
         <Link to="/" className="pd5-property-details-logo">
           <img src={AGLogo} alt="PropFinder" className="pd5-property-details-logo-image" />
-          <span className="pd5-property-details-logo-text">PropFinder</span>
+          <span className="pd5-property-details-logo-text">DreamProperties</span>
         </Link>
         <nav className="pd5-property-details-nav">
           {navItems.map((item) => (
@@ -43,34 +48,98 @@ function Header({ scrolled }: HeaderProps) {
   );
 }
 
-// Footer Component
+// Updated Footer Component (from ContactUs)
 function Footer() {
   return (
-    <footer className="pd5-property-details-footer">
-      <div className="pd5-property-details-footer-content">
-        <div className="pd5-property-details-footer-logo">
-          <img src={AGLogo} alt="PropFinder" className="pd5-property-details-footer-logo-image" />
-          <span className="pd5-property-details-footer-logo-text">PropFinder</span>
+    <footer className="pd5-contact-footer">
+      <div className="pd5-contact-footer-container">
+        <div className="pd5-contact-footer-content">
+          <div className="pd5-contact-footer-section">
+            <div className="pd5-contact-footer-logo">
+              <Link to="/" className="pd5-contact-logo-link">
+                <img src={AGLogo} alt="PropFinder Logo" className="pd5-contact-logo-image" />
+                <span className="pd5-contact-footer-logo-text">DreamProperties</span>
+              </Link>
+            </div>
+            <p className="pd5-contact-footer-description">
+              Your trusted partner in finding the perfect property across Tamil Nadu. We make real
+              estate easy.
+            </p>
+            <div className="pd5-contact-footer-social">
+              <a href="#" className="pd5-contact-social-link">
+                <Facebook className="pd5-contact-social-icon" />
+              </a>
+              <a href="#" className="pd5-contact-social-link">
+                <Twitter className="pd5-contact-social-icon" />
+              </a>
+              <a href="#" className="pd5-contact-social-link">
+                <Instagram className="pd5-contact-social-icon" />
+              </a>
+              <a href="#" className="pd5-contact-social-link">
+                <Linkedin className="pd5-contact-social-icon" />
+              </a>
+            </div>
+          </div>
+
+          <div className="pd5-contact-footer-section">
+            <h3 className="pd5-contact-footer-title">Quick Links</h3>
+            <ul className="pd5-contact-footer-links">
+              <li>
+                <Link to="/" className="pd5-contact-footer-link">Home</Link>
+              </li>
+              <li>
+                <Link to="/buy" className="pd5-contact-footer-link">Buy Property</Link>
+              </li>
+              <li>
+                <Link to="/sell" className="pd5-contact-footer-link">Sell Property</Link>
+              </li>
+              <li>
+                <Link to="/advertise" className="pd5-contact-footer-link">Advertise</Link>
+              </li>
+            </ul>
+          </div>
+
+          <div className="pd5-contact-footer-section">
+            <h3 className="pd5-contact-footer-title">Properties</h3>
+            <ul className="pd5-contact-footer-links">
+              <li>
+                <Link to="/buy" className="pd5-contact-footer-link">Buy Property</Link>
+              </li>
+              <li>
+                <Link to="/properties" className="pd5-contact-footer-link">Rent Property</Link>
+              </li>
+              <li>
+                <Link to="/sell" className="pd5-contact-footer-link">Sell Property</Link>
+              </li>
+              <li>
+                <Link to="/properties" className="pd5-contact-footer-link">Featured Listings</Link>
+              </li>
+            </ul>
+          </div>
+
+          <div className="pd5-contact-footer-section">
+            <h3 className="pd5-contact-footer-title">Legal</h3>
+            <ul className="pd5-contact-footer-links">
+              <li>
+                <a href="#" className="pd5-contact-footer-link">Privacy Policy</a>
+              </li>
+              <li>
+                <a href="#" className="pd5-contact-footer-link">Terms of Service</a>
+              </li>
+              <li>
+                <a href="#" className="pd5-contact-footer-link">Cookie Policy</a>
+              </li>
+              <li>
+                <a href="#" className="pd5-contact-footer-link">Disclaimer</a>
+              </li>
+            </ul>
+          </div>
         </div>
-        <p className="pd5-property-details-footer-description">
-          Your trusted partner in finding the perfect property across Tamil Nadu
-        </p>
-        <div className="pd5-property-details-footer-social">
-          <a href="#" className="pd5-property-details-social-link">
-            <Facebook />
-          </a>
-          <a href="#" className="pd5-property-details-social-link">
-            <Twitter />
-          </a>
-          <a href="#" className="pd5-property-details-social-link">
-            <Linkedin />
-          </a>
-          <a href="#" className="pd5-property-details-social-link">
-            <Instagram />
-          </a>
-        </div>
-        <div className="pd5-property-details-footer-bottom">
-          © 2024 PropFinder. All rights reserved.
+
+        <div className="pd5-contact-footer-bottom">
+          <p className="pd5-contact-footer-copyright">
+            &copy; 2024 DreamProperties. All rights reserved. | Built with excellence for Tamil Nadu
+          </p>
         </div>
       </div>
     </footer>
@@ -312,11 +381,7 @@ The villa is equipped with modern amenities including CCTV security, 24/7 water 
                   </div>
                 ))}
               </div>
-             
-             
             </div>
-
-            
           </div>
 
           {/* Right Column - Contact & Info */}
@@ -354,10 +419,18 @@ The villa is equipped with modern amenities including CCTV security, 24/7 water 
                 </div>
               </div>
               <div className="pd5-property-details-contact-actions">
-              
+                <button className="pd5-property-details-call-btn" onClick={handleContactOwner}>
+                  <Phone className="pd5-property-details-call-icon" />
+                  Call Owner
+                </button>
+                <button className="pd5-property-details-visit-btn" onClick={handleScheduleVisit}>
+                  <Calendar className="pd5-property-details-visit-icon" />
+                  Schedule Visit
+                </button>
               </div>
             </div>
-          {/* Location & Nearby */}
+
+            {/* Location & Nearby */}
             <div className="pd5-property-details-section">
               <h2 className="pd5-property-details-section-title">Location & Nearby</h2>
               <div className="pd5-property-details-nearby">
@@ -371,12 +444,7 @@ The villa is equipped with modern amenities including CCTV security, 24/7 water 
                   </div>
                 ))} 
               </div>
-             </div>
-           
-
-            
-
-           
+            </div>
           </div>
         </div>
       </main>
