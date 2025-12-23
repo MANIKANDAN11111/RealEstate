@@ -372,8 +372,10 @@ const ContactUs: React.FC = () => {
                     <div className="owner-contact-info">
                       <p className="owner-contact-label">Phone Numbers</p>
                       <div className="owner-contact-numbers">
-                        <a href="tel:6374656460" className="owner-contact-number">+91 6374656460</a>
+                        <a href="tel:6374656460" className="owner-contact-number">+91 6374656460 </a>
+                        (Esakky pandian)
                         <a href="tel:8682800268" className="owner-contact-number">+91 8682800268</a>
+                        (Rishi)
                       </div>
                     </div>
                   </div>

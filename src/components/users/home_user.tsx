@@ -502,7 +502,7 @@ export default function HomePage() {
             <p className="quote-text">
               "Finding your perfect home shouldn't be a dream. We make it a reality with trust, transparency, and expertise."
             </p>
-            <p className="quote-author">— Tamil Nadu Real Estate Group</p>
+            <p className="quote-author">—AG DREAM PROPERTIES</p>
           </div>
         </section>
 
