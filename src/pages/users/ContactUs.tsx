@@ -3,7 +3,8 @@ import { Link, useLocation } from 'react-router-dom';
 import {
   Home, Building2, DollarSign, Megaphone, Phone,
   Facebook, Twitter, Instagram, Linkedin, Mail,
-  MessageSquare, User, Smartphone  
+  MessageSquare, Clock, MapPin, User, Smartphone,
+  MessageCircle
 } from 'lucide-react';
 import './ContactUs.css';
 import AGLogo from '../../assets/AG_logo.jpeg';
@@ -28,7 +29,7 @@ function Header({ currentPage, scrolled }: HeaderProps) {
       <div className="contact-header-content">
         <Link to="/" className="contact-logo-link">
           <img src={AGLogo} alt="PropFinder Logo" className="contact-logo-image" />
-          <span className="contact-logo-text">PropFinder</span>
+          <span className="contact-logo-text">DreamProperties</span>
         </Link>
 
         <nav className="contact-nav">
@@ -58,7 +59,7 @@ function Footer() {
             <div className="contact-footer-logo">
               <Link to="/" className="contact-logo-link">
                 <img src={AGLogo} alt="PropFinder Logo" className="contact-logo-image" />
-                <span className="contact-footer-logo-text">PropFinder</span>
+                <span className="contact-footer-logo-text">DreamProperties</span>
               </Link>
             </div>
             <p className="contact-footer-description">
@@ -138,11 +139,57 @@ function Footer() {
 
         <div className="contact-footer-bottom">
           <p className="contact-footer-copyright">
-            &copy; 2024 PropFinder. All rights reserved. | Built with excellence for Tamil Nadu
+            &copy; 2024 DreamProperties. All rights reserved. | Built with excellence for Tamil Nadu
           </p>
         </div>
       </div>
     </footer>
+  );
+}
+
+// Quick Contact Floating Buttons Component
+function QuickContactButtons() {
+  const handleWhatsAppClick = () => {
+    window.open('https://wa.me/916374656460', '_blank');
+  };
+
+  const handleCallClick = () => {
+    window.location.href = 'tel:+916374656460';
+  };
+
+  const handleLocationClick = () => {
+    window.open('https://maps.google.com/?q=Tamil+Nadu,India', '_blank');
+  };
+
+  return (
+    <div className="quick-contact-buttons">
+      <button 
+        className="quick-contact-btn whatsapp-btn"
+        onClick={handleWhatsAppClick}
+        title="Chat on WhatsApp"
+      >
+        <MessageCircle className="quick-contact-icon" />
+        <span className="quick-contact-tooltip">Chat on WhatsApp</span>
+      </button>
+      
+      <button 
+        className="quick-contact-btn call-btn"
+        onClick={handleCallClick}
+        title="Call Now"
+      >
+        <Phone className="quick-contact-icon" />
+        <span className="quick-contact-tooltip">Call Now</span>
+      </button>
+      
+      <button 
+        className="quick-contact-btn location-btn"
+        onClick={handleLocationClick}
+        title="Our Location"
+      >
+        <MapPin className="quick-contact-icon" />
+        <span className="quick-contact-tooltip">Our Location</span>
+      </button>
+    </div>
   );
 }
 
@@ -317,6 +364,9 @@ const ContactUs: React.FC = () => {
     <div className="contact-page-wrapper">
       <Header currentPage={currentPage} scrolled={scrolled} />
       
+      {/* Quick Contact Floating Buttons */}
+      <QuickContactButtons />
+      
       {/* Hero Section */}
       <div className="contact-hero-section">
         <div className="contact-hero-content">
@@ -373,7 +423,9 @@ const ContactUs: React.FC = () => {
                       <p className="owner-contact-label">Phone Numbers</p>
                       <div className="owner-contact-numbers">
                         <a href="tel:6374656460" className="owner-contact-number">+91 6374656460</a>
+                        <span className="owner-contact-person">(Esakky pandian)</span>
                         <a href="tel:8682800268" className="owner-contact-number">+91 8682800268</a>
+                        <span className="owner-contact-person">(Rishi)</span>
                       </div>
                     </div>
                   </div>
@@ -392,9 +444,9 @@ const ContactUs: React.FC = () => {
                 <div className="owner-working-hours">
                   <div className="owner-hours-icon">🕒</div>
                   <div className="owner-hours-info">
-                    <h4>Working Hours</h4>
-                    <p>Monday - Saturday: 9:00 AM - 8:00 PM</p>
-                    <p>Sunday: 10:00 AM - 6:00 PM</p>
+                    <h4 className="owner-hours-title">Working Hours</h4>
+                    <p className="owner-hours-detail">Monday - Saturday: 9:00 AM - 8:00 PM</p>
+                    <p className="owner-hours-detail">Sunday: 10:00 AM - 6:00 PM</p>
                   </div>
                 </div>
               </div>
@@ -426,7 +478,7 @@ const ContactUs: React.FC = () => {
                   {/* Email Field */}
                   <div className="contact-form-group">
                     <label htmlFor="email" className="contact-form-label">
-                      Email
+                      Email Address
                     </label>
                     <div className="contact-input-wrapper">
                       <div className="contact-input-icon">✉️</div>

@@ -30,7 +30,7 @@ function Header({ currentPage, scrolled }: HeaderProps) {
       <div className="sell-header-content">
         <Link to="/" className="sell-logo-link">
           <img src={AGLogo} alt="PropFinder Logo" className="sell-logo-image" />
-          <span className="sell-logo-text">PropFinder</span>
+          <span className="sell-logo-text">DreamProperties</span>
         </Link>
 
         <nav className="sell-nav">
@@ -60,7 +60,7 @@ function Footer() {
             <div className="sell-footer-logo">
               <Link to="/" className="sell-logo-link">
                 <img src={AGLogo} alt="PropFinder Logo" className="sell-logo-image" />
-                <span className="sell-footer-logo-text">PropFinder</span>
+                <span className="sell-footer-logo-text">DreamProperties</span>
               </Link>
             </div>
             <p className="sell-footer-description">
@@ -140,7 +140,7 @@ function Footer() {
 
         <div className="sell-footer-bottom">
           <p className="sell-footer-copyright">
-            &copy; 2024 PropFinder. All rights reserved. | Built with excellence for Tamil Nadu
+            &copy; 2024 DreamProperties. All rights reserved. | Built with excellence for Tamil Nadu
           </p>
         </div>
       </div>

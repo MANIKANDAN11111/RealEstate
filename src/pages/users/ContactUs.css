@@ -371,6 +371,7 @@
   display: grid;
   grid-template-columns: 1fr 1.2fr;
   gap: 3rem;
+  align-items: start;
 }
 
 /* Contact Owner Card */
@@ -380,7 +381,9 @@
   padding: 2.5rem;
   border: 2px solid #e0e0e0;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
-  height: fit-content;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .owner-card-header {
@@ -448,6 +451,9 @@
 
 .owner-contact-info {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
 .owner-contact-label {
@@ -455,8 +461,8 @@
   color: #7f8c8d;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  margin-bottom: 0.75rem;
   font-weight: 600;
+  margin: 0;
 }
 
 .owner-contact-numbers {
@@ -472,6 +478,7 @@
   text-decoration: none;
   transition: color 0.3s ease;
   display: block;
+  line-height: 1.4;
 }
 
 .owner-contact-number:hover {
@@ -479,32 +486,26 @@
   text-decoration: underline;
 }
 
+.owner-contact-person {
+  font-size: 0.9rem;
+  color: #7f8c8d;
+  display: block;
+  margin-top: 0.25rem;
+}
+
 .owner-contact-email {
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   color: #2c3e50;
-  font-weight: 700;
+  font-weight: 600;
   text-decoration: none;
   transition: color 0.3s ease;
   display: block;
-  word-break: break-all;
+  word-break: break-word;
+  line-height: 1.5;
 }
 
 .owner-contact-email:hover {
   color: #3498db;
-  text-decoration: underline;
-}
-
-.owner-contact-location {
-  font-size: 1.2rem;
-  color: #2c3e50;
-  font-weight: 700;
-  text-decoration: none;
-  transition: color 0.3s ease;
-  display: block;
-}
-
-.owner-contact-location:hover {
-  color: #e74c3c;
   text-decoration: underline;
 }
 
@@ -516,6 +517,7 @@
   padding: 1.5rem;
   border-radius: 12px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  margin-top: auto;
 }
 
 .owner-hours-icon {
@@ -533,65 +535,23 @@
 
 .owner-hours-info {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
-.owner-hours-info h4 {
+.owner-hours-title {
   color: #2c3e50;
-  margin: 0 0 0.75rem 0;
+  margin: 0;
   font-size: 1.1rem;
   font-weight: 600;
 }
 
-.owner-hours-info p {
+.owner-hours-detail {
   color: #7f8c8d;
   font-size: 0.95rem;
-  margin: 0.25rem 0;
+  margin: 0;
   line-height: 1.4;
-}
-
-/* Quick Action Buttons */
-.owner-quick-actions {
-  display: flex;
-  gap: 1rem;
-  margin-top: 2rem;
-  flex-wrap: wrap;
-}
-
-.owner-quick-btn {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  padding: 1rem;
-  border-radius: 12px;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 1rem;
-  transition: all 0.3s ease;
-  min-width: 150px;
-  border: none;
-  cursor: pointer;
-}
-
-.whatsapp-action {
-  background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
-  color: white;
-}
-
-.call-action {
-  background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
-  color: white;
-}
-
-.owner-quick-btn:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-}
-
-.owner-quick-icon {
-  width: 20px;
-  height: 20px;
 }
 
 /* Contact Form */
@@ -753,14 +713,6 @@
 
 .contact-form-textarea::placeholder {
   color: #95a5a6;
-}
-
-.contact-textarea-hint {
-  font-size: 0.75rem;
-  color: #f39c12;
-  margin-top: 0.25rem;
-  margin-left: 0.5rem;
-  font-style: italic;
 }
 
 /* Robot Check */
@@ -964,6 +916,7 @@
   color: #bdc3c7;
   font-size: 0.95rem;
   line-height: 1.6;
+  margin: 0;
 }
 
 .contact-footer-social {
@@ -1039,6 +992,7 @@
   color: #95a5a6;
   font-size: 0.9rem;
   font-weight: 500;
+  margin: 0;
 }
 
 /* Responsive Design */
@@ -1151,8 +1105,9 @@
     flex-direction: column;
   }
   
-  .owner-quick-btn {
-    min-width: 120px;
+  .owner-contact-number, .owner-contact-person {
+    display: inline;
+    margin-right: 0.5rem;
   }
   
   .quick-contact-buttons {
@@ -1212,12 +1167,28 @@
     font-size: 1.4rem;
   }
   
-  .owner-quick-actions {
+  .owner-contact-item {
     flex-direction: column;
+    text-align: center;
+    align-items: center;
   }
   
-  .owner-quick-btn {
-    min-width: 100%;
+  .owner-contact-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 1.5rem;
+  }
+  
+  .owner-working-hours {
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+  }
+  
+  .owner-hours-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 1.5rem;
   }
   
   .quick-contact-buttons {
@@ -1268,5 +1239,4 @@
 .contact-form-group:nth-child(5) { --contact-delay: 5; }
 .owner-contact-item:nth-child(1) { --contact-delay: 1; }
 .owner-contact-item:nth-child(2) { --contact-delay: 2; }
-.owner-contact-item:nth-child(3) { --contact-delay: 3; }
-.owner-working-hours { --contact-delay: 4; }
+.owner-working-hours { --contact-delay: 3; }

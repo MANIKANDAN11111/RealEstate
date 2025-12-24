@@ -29,8 +29,8 @@ function Header({ currentPage, scrolled }: HeaderProps) {
     <header className={`sell-header-container ${scrolled ? 'scrolled' : ''}`}>
       <div className="sell-header-content">
         <Link to="/" className="sell-logo-link">
-          <img src={AGLogo} alt="PropFinder Logo" className="sell-logo-image" />
-          <span className="sell-logo-text">PropFinder</span>
+          <img src={AGLogo} alt="DreamProperties Logo" className="sell-logo-image" />
+          <span className="sell-logo-text">DreamProperties</span>
         </Link>
 
         <nav className="sell-nav">
@@ -60,7 +60,7 @@ function Footer() {
             <div className="sell-footer-logo">
               <Link to="/" className="sell-logo-link">
                 <img src={AGLogo} alt="PropFinder Logo" className="sell-logo-image" />
-                <span className="sell-footer-logo-text">PropFinder</span>
+                <span className="sell-footer-logo-text">DreamProperties</span>
               </Link>
             </div>
             <p className="sell-footer-description">
@@ -140,7 +140,7 @@ function Footer() {
 
         <div className="sell-footer-bottom">
           <p className="sell-footer-copyright">
-            &copy; 2024 PropFinder. All rights reserved. | Built with excellence for Tamil Nadu
+            &copy; 2024 DreamProperties. All rights reserved. | Built with excellence for Tamil Nadu
           </p>
         </div>
       </div>
@@ -410,7 +410,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Search Bar */}
+        {/* Search Bar
         <div className="search-bar-container1">
           <div className="search-bar1">
             <div className="search-tabs1">
@@ -474,14 +474,13 @@ export default function HomePage() {
               </button>
             </div>
           </div>
-        </div>
+        </div> */}
 
         {/* Featured Properties */}
         <section className="featured-properties">
           <div className="section-header">
             <div>
               <h2 className="section-title">Featured Properties</h2>
-              <p className="section-subtitle">Discover our premium properties across Tamil Nadu</p>
             </div>
             <button className="view-all-button" onClick={handleBuy}>
               View All
@@ -502,7 +501,7 @@ export default function HomePage() {
             <p className="quote-text">
               "Finding your perfect home shouldn't be a dream. We make it a reality with trust, transparency, and expertise."
             </p>
-            <p className="quote-author">— Tamil Nadu Real Estate Group</p>
+            <p className="quote-author">—AG DREAM PROPERTIES</p>
           </div>
         </section>
 

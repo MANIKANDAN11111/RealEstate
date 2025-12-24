@@ -127,6 +127,7 @@
   margin: 0 auto;
   padding: 2rem;
   width: 100%;
+  flex: 1;
 }
 
 /* Property Header */
@@ -419,36 +420,6 @@
   color: #27ae60;
 }
 
-.pd5-property-details-subtitle {
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: #2c3e50;
-  margin: 1.5rem 0 1rem;
-}
-
-.pd5-property-details-features {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
-}
-
-.pd5-property-details-feature {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem;
-  background: #fff9e6;
-  border-radius: 8px;
-  color: #2c3e50;
-  font-weight: 500;
-}
-
-.pd5-property-details-feature-icon {
-  width: 18px;
-  height: 18px;
-  color: #f39c12;
-}
-
 /* Nearby Places */
 .pd5-property-details-nearby {
   display: grid;
@@ -645,169 +616,75 @@
   height: 20px;
 }
 
-/* Financial Card */
-.pd5-property-details-financial-card {
-  background: white;
-  border-radius: 12px;
-  padding: 2rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-}
-
-.pd5-property-details-financial-title {
-  font-size: 1.3rem;
-  font-weight: 700;
-  color: #2c3e50;
-  margin-bottom: 1.5rem;
-  text-align: center;
-}
-
-.pd5-property-details-financial-info {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.pd5-property-details-financial-item {
-  display: flex;
-  justify-content: space-between;
-  padding: 0.75rem 0;
-  border-bottom: 1px solid #f1f5f9;
-}
-
-.pd5-property-details-financial-label {
-  color: #7f8c8d;
-  font-weight: 500;
-}
-
-.pd5-property-details-financial-value {
-  font-weight: 700;
-  color: #2c3e50;
-}
-
-/* Action Buttons */
-.pd5-property-details-action-buttons {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.pd5-property-details-download-btn,
-.pd5-property-details-print-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  padding: 1rem;
-  border: 2px solid #e0e0e0;
-  border-radius: 8px;
-  background: white;
-  color: #2c3e50;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.pd5-property-details-download-btn:hover,
-.pd5-property-details-print-btn:hover {
-  background: #f8fafc;
-  border-color: #3498db;
-  transform: translateY(-2px);
-}
-
-.pd5-property-details-download-icon,
-.pd5-property-details-print-icon {
-  width: 20px;
-  height: 20px;
-}
-
-/* Meta Info */
-.pd5-property-details-meta-info {
-  background: white;
-  border-radius: 12px;
-  padding: 1.5rem;
-  border: 2px solid #ebf5fb;
-}
-
-.pd5-property-details-meta-item {
-  display: flex;
-  justify-content: space-between;
-  padding: 0.75rem 0;
-  border-bottom: 1px solid #f1f5f9;
-}
-
-.pd5-property-details-meta-item:last-child {
-  border-bottom: none;
-}
-
-.pd5-property-details-meta-label {
-  color: #7f8c8d;
-  font-weight: 500;
-}
-
-.pd5-property-details-meta-value {
-  font-weight: 700;
-  color: #2c3e50;
-}
-
-.pd5-status-available {
-  color: #27ae60;
-}
-
-/* Footer */
-.pd5-property-details-footer {
-  margin-top: auto;
+/* Updated Footer Styles (from ContactUs) */
+.pd5-contact-footer {
   background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
-  padding: 3rem 0 1.5rem;
   color: white;
+  padding: 3rem 0 1.5rem;
+  margin-top: auto;
 }
 
-.pd5-property-details-footer-content {
+.pd5-contact-footer-container {
   max-width: 1400px;
   margin: 0 auto;
   padding: 0 2rem;
-  text-align: center;
 }
 
-.pd5-property-details-footer-logo {
+.pd5-contact-footer-content {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 3rem;
+  margin-bottom: 3rem;
+}
+
+.pd5-contact-footer-section {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.pd5-contact-footer-logo {
   margin-bottom: 1rem;
 }
 
-.pd5-property-details-footer-logo-image {
-  height: 50px;
-  width: 50px;
-  border-radius: 8px;
-  object-fit: cover;
-  border: 2px solid white;
+.pd5-contact-logo-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
 }
 
-.pd5-property-details-footer-logo-text {
-  font-size: 1.8rem;
+.pd5-contact-logo-image {
+  height: 45px;
+  width: 45px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 2px solid #3498db;
+}
+
+.pd5-contact-footer-logo-text {
+  font-size: 1.6rem;
   font-weight: 800;
   background: linear-gradient(135deg, #3498db, #2ecc71);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  letter-spacing: -0.5px;
 }
 
-.pd5-property-details-footer-description {
+.pd5-contact-footer-description {
   color: #bdc3c7;
-  max-width: 600px;
-  margin: 0 auto 2rem;
+  font-size: 0.95rem;
   line-height: 1.6;
 }
 
-.pd5-property-details-footer-social {
+.pd5-contact-footer-social {
   display: flex;
-  justify-content: center;
   gap: 1rem;
-  margin-bottom: 2rem;
+  margin-top: 1rem;
 }
 
-.pd5-property-details-social-link {
+.pd5-contact-social-link {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -818,22 +695,62 @@
   transition: all 0.3s ease;
 }
 
-.pd5-property-details-social-link:hover {
+.pd5-contact-social-link:hover {
   background: linear-gradient(135deg, #3498db 0%, #2ecc71 100%);
   transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
 }
 
-.pd5-property-details-social-link svg {
+.pd5-contact-social-icon {
   width: 18px;
   height: 18px;
   color: white;
 }
 
-.pd5-property-details-footer-bottom {
+.pd5-contact-footer-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: white;
+}
+
+.pd5-contact-footer-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.pd5-contact-footer-links li {
+  display: flex;
+  align-items: center;
+}
+
+.pd5-contact-footer-link {
+  color: #bdc3c7;
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.pd5-contact-footer-link:hover {
+  color: white;
+  transform: translateX(5px);
+}
+
+.pd5-contact-footer-bottom {
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   padding-top: 1.5rem;
+  text-align: center;
+}
+
+.pd5-contact-footer-copyright {
   color: #95a5a6;
   font-size: 0.9rem;
+  font-weight: 500;
 }
 
 /* Responsive Design */
@@ -853,6 +770,11 @@
 
   .pd5-property-details-nearby {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  .pd5-contact-footer-content {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
   }
 }
 
@@ -909,10 +831,6 @@
     grid-template-columns: 1fr;
   }
 
-  .pd5-property-details-features {
-    grid-template-columns: 1fr;
-  }
-
   .pd5-property-details-nearby {
     grid-template-columns: 1fr;
   }
@@ -920,6 +838,24 @@
   .pd5-property-details-stats {
     grid-template-columns: repeat(2, 1fr);
     padding: 1.5rem;
+  }
+
+  .pd5-contact-footer-content {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .pd5-contact-footer-section {
+    text-align: center;
+    align-items: center;
+  }
+
+  .pd5-contact-footer-social {
+    justify-content: center;
+  }
+
+  .pd5-contact-footer-links {
+    align-items: center;
   }
 }
 
@@ -944,7 +880,23 @@
     flex-direction: column;
   }
 
-  .pd5-property-details-action-buttons {
-    flex-direction: column;
+  .pd5-contact-footer {
+    padding: 2rem 1rem 1rem;
+  }
+
+  .pd5-contact-footer-container {
+    padding: 0 1rem;
+  }
+
+  .pd5-contact-footer-content {
+    gap: 1.5rem;
+  }
+
+  .pd5-contact-footer-logo-text {
+    font-size: 1.4rem;
+  }
+
+  .pd5-contact-footer-description {
+    font-size: 0.9rem;
   }
 }
