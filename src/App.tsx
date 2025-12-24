@@ -7,6 +7,7 @@ import Buy from './pages/users/Buy';
 import Sell from './pages/users/Sell';
 import Advertise from './pages/users/AdvertiseProperty';
 import Contact from './pages/users/ContactUs';
+import PropertyDetails from './pages/users/buy_view_details';
 
 import './App.css';  
 import Property from './pages/users/buy_view_details';
@@ -31,6 +32,7 @@ function App() {
           <Route path="/advertise" element={<Advertise />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/Property" element={<Property />} />
+          <Route path="/property/:id" element={<PropertyDetails />} />
           
           {/* Admin Login Route */}
           <Route 

@@ -65,7 +65,7 @@ const propertyCategories = {
 };
 
 // Sub-categories for each main category
-const propertySubCategories = {
+const propertySubCategories: Record<string, string[]> = {
   'apartment': [
     'Studio',
     '1 BHK',
@@ -144,8 +144,27 @@ const propertySubCategories = {
   ]
 };
 
+interface PropertyDetailField {
+  type: 'select' | 'number' | 'text' | 'checkbox';
+  label: string;
+  name: string;
+  placeholder?: string;
+  options?: string[];
+  min?: number;
+  step?: number;
+}
+
+interface PropertyDetailsConfig {
+  mandatory: PropertyDetailField[];
+  optional: PropertyDetailField[];
+}
+
+interface PropertyDetailsType {
+  [key: string]: PropertyDetailsConfig;
+}
+
 // Property details configuration for each category
-const propertyDetailsConfig = {
+const propertyDetailsConfig: PropertyDetailsType = {
   'residential-plot': {
     mandatory: [
       { type: 'select', label: 'Facing', name: 'facing', options: ['North', 'South', 'East', 'West', 'North-East', 'North-West', 'South-East', 'South-West'] },
@@ -386,10 +405,10 @@ const validateImageFormat = (file: File): { isValid: boolean; error?: string } =
 };
 
 const AddProperties = () => {
-  const [propertyType, setPropertyType] = useState('residential');
-  const [propertyCategory, setPropertyCategory] = useState('');
-  const [propertySubCategory, setPropertySubCategory] = useState('');
-  const [propertyDetails, setPropertyDetails] = useState<Record<string, any>>({});
+  const [propertyType, setPropertyType] = useState<'residential' | 'commercial' | 'land'>('residential');
+  const [propertyCategory, setPropertyCategory] = useState<string>('');
+  const [propertySubCategory, setPropertySubCategory] = useState<string>('');
+  const [propertyDetails, setPropertyDetails] = useState<Record<string, string | number | boolean>>({});
   const [propertyImages, setPropertyImages] = useState<File[]>([]);
   const [propertyVideos, setPropertyVideos] = useState<File[]>([]);
   const [imageErrors, setImageErrors] = useState<Record<number, string>>({});
@@ -411,10 +430,22 @@ const AddProperties = () => {
     email: ''
   });
 
+  // Refs for form inputs
+  const titleRef = useRef<HTMLInputElement>(null);
+  const descriptionRef = useRef<HTMLTextAreaElement>(null);
+  const districtRef = useRef<HTMLSelectElement>(null);
+  const localityRef = useRef<HTMLInputElement>(null);
+  const landmarkRef = useRef<HTMLInputElement>(null);
+  const pincodeRef = useRef<HTMLInputElement>(null);
+  const addressRef = useRef<HTMLTextAreaElement>(null);
+  const contactPersonRef = useRef<HTMLInputElement>(null);
+  const furnishingRef = useRef<HTMLSelectElement>(null);
+  const parkingRef = useRef<HTMLSelectElement>(null);
+
   const imageUploadRef = useRef<HTMLInputElement>(null);
   const videoUploadRef = useRef<HTMLInputElement>(null);
 
-  const handlePropertyTypeChange = (type: string) => {
+  const handlePropertyTypeChange = (type: 'residential' | 'commercial' | 'land') => {
     setPropertyType(type);
     // Reset category and subcategory when property type changes
     setPropertyCategory('');
@@ -430,24 +461,24 @@ const AddProperties = () => {
     setPropertyDetails({});
   };
 
-  const handlePropertyDetailChange = (name: string, value: any) => {
+  const handlePropertyDetailChange = (name: string, value: string | number | boolean) => {
     setPropertyDetails(prev => ({
       ...prev,
       [name]: value
     }));
   };
 
-  const renderPropertyDetailField = (field: any) => {
+  const renderPropertyDetailField = (field: PropertyDetailField) => {
     switch (field.type) {
       case 'select':
         return (
           <select
             className="form-select"
-            value={propertyDetails[field.name] || ''}
+            value={propertyDetails[field.name] as string || ''}
             onChange={(e) => handlePropertyDetailChange(field.name, e.target.value)}
           >
             <option value="">Select {field.label}</option>
-            {field.options.map((option: string) => (
+            {field.options?.map((option: string) => (
               <option key={option} value={option}>{option}</option>
             ))}
           </select>
@@ -459,8 +490,8 @@ const AddProperties = () => {
             type="number"
             className="form-input"
             placeholder={field.placeholder}
-            value={propertyDetails[field.name] || ''}
-            onChange={(e) => handlePropertyDetailChange(field.name, e.target.value)}
+            value={propertyDetails[field.name] as number || ''}
+            onChange={(e) => handlePropertyDetailChange(field.name, e.target.value === '' ? '' : Number(e.target.value))}
             min={field.min || 0}
             step={field.step || 1}
           />
@@ -472,7 +503,7 @@ const AddProperties = () => {
             type="text"
             className="form-input"
             placeholder={field.placeholder}
-            value={propertyDetails[field.name] || ''}
+            value={propertyDetails[field.name] as string || ''}
             onChange={(e) => handlePropertyDetailChange(field.name, e.target.value)}
           />
         );
@@ -484,7 +515,7 @@ const AddProperties = () => {
               type="checkbox"
               id={field.name}
               className="checkbox-input"
-              checked={propertyDetails[field.name] || false}
+              checked={propertyDetails[field.name] as boolean || false}
               onChange={(e) => handlePropertyDetailChange(field.name, e.target.checked)}
             />
             <label htmlFor={field.name} className="checkbox-label">{field.label}</label>
@@ -515,7 +546,7 @@ const AddProperties = () => {
           validImages.push(file);
           // Simulate upload progress
           newUploadProgress[actualIndex] = 0;
-          simulateUploadProgress(actualIndex, 'image');
+          simulateUploadProgress(actualIndex);
         } else {
           newImageErrors[actualIndex] = validation.error || 'Invalid image file';
         }
@@ -551,7 +582,7 @@ const AddProperties = () => {
           validVideos.push(file);
           // Simulate upload progress
           newUploadProgress[actualIndex] = 0;
-          simulateUploadProgress(actualIndex, 'video');
+          simulateUploadProgress(actualIndex);
         } else {
           newVideoErrors[actualIndex] = validation.error || 'Invalid video file';
         }
@@ -568,7 +599,7 @@ const AddProperties = () => {
     }
   };
 
-  const simulateUploadProgress = (index: number, type: 'image' | 'video') => {
+  const simulateUploadProgress = (index: number) => {
     let progress = 0;
     const interval = setInterval(() => {
       progress += Math.random() * 20;
@@ -765,6 +796,7 @@ const AddProperties = () => {
 
   // Handle form submission
   const handleSubmit = () => {
+    // Validate phone and email
     const phoneError = validatePhoneNumber(contactInfo.phone);
     const emailError = validateEmail(contactInfo.email);
     
@@ -776,42 +808,107 @@ const AddProperties = () => {
     if (!phoneError && !emailError) {
       const formData = new FormData();
       
-      // Add form data
-      formData.append('propertyType', propertyType);
-      formData.append('propertyCategory', propertyCategory);
-      formData.append('propertySubCategory', propertySubCategory);
-      formData.append('propertyDetails', JSON.stringify(propertyDetails));
-      formData.append('price', `${priceValue} ${priceUnit}`);
-      formData.append('contactInfo', JSON.stringify(contactInfo));
+      // Collect amenities from checkboxes
+      const amenities: string[] = [];
+      const amenityCheckboxes = document.querySelectorAll('.checkbox-label input[type="checkbox"]:checked');
+      amenityCheckboxes.forEach((checkbox) => {
+        const label = checkbox.closest('.checkbox-label')?.querySelector('.checkbox-text')?.textContent;
+        if (label) {
+          amenities.push(label);
+        }
+      });
+      
+      // Create property data object using refs
+      const propertyData = {
+        propertyType,
+        propertyCategory,
+        propertySubCategory,
+        title: titleRef.current?.value || '',
+        description: descriptionRef.current?.value || '',
+        priceValue,
+        priceUnit,
+        location: {
+          district: districtRef.current?.value || '',
+          locality: localityRef.current?.value || '',
+          landmark: landmarkRef.current?.value || '',
+          pincode: pincodeRef.current?.value || '',
+          fullAddress: addressRef.current?.value || ''
+        },
+        features: propertyType === 'residential' ? {
+          bedrooms,
+          bathrooms,
+          builtUpArea: propertyDetails.builtUpArea || 0,
+          carpetArea: propertyDetails.carpetArea || 0,
+          furnishing: furnishingRef.current?.value || '',
+          parking: parkingRef.current?.value || '',
+          amenities
+        } : null,
+        propertyDetails,
+        contactInfo: {
+          phone: contactInfo.phone,
+          email: contactInfo.email,
+          contactPerson: contactPersonRef.current?.value || ''
+        }
+      };
+      
+      // Add property data as JSON
+      formData.append('propertyData', JSON.stringify(propertyData));
       
       // Add images
-      propertyImages.forEach((image, index) => {
-        formData.append(`images[${index}]`, image);
+      propertyImages.forEach((image) => {
+        formData.append('images', image);
       });
       
       // Add videos
-      propertyVideos.forEach((video, index) => {
-        formData.append(`videos[${index}]`, video);
+      propertyVideos.forEach((video) => {
+        formData.append('videos', video);
       });
       
-      if (propertyType === 'residential') {
-        formData.append('bedrooms', bedrooms.toString());
-        formData.append('bathrooms', bathrooms.toString());
-      }
-      
-      console.log('Form submitted successfully!');
-      console.log('Form Data:', Object.fromEntries(formData));
-      
-      // Here you would typically send the formData to your backend
-      // Example: axios.post('/api/properties', formData, { headers: { 'Content-Type': 'multipart/form-data' } })
-      
+      // Send to backend
+      fetch('https://realestatebackend-8adg.onrender.com/api/properties', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          console.log('Property created successfully!', data);
+          alert('Property published successfully!');
+          // Reset form
+          setPropertyType('residential');
+          setPropertyCategory('');
+          setPropertySubCategory('');
+          setPropertyDetails({});
+          setPropertyImages([]);
+          setPropertyVideos([]);
+          setPriceValue('');
+          setPriceUnit('lakh');
+          setBedrooms(2);
+          setBathrooms(2);
+          setContactInfo({ phone: '', email: '' });
+          if (titleRef.current) titleRef.current.value = '';
+          if (descriptionRef.current) descriptionRef.current.value = '';
+          if (districtRef.current) districtRef.current.value = '';
+          if (localityRef.current) localityRef.current.value = '';
+          if (landmarkRef.current) landmarkRef.current.value = '';
+          if (pincodeRef.current) pincodeRef.current.value = '';
+          if (addressRef.current) addressRef.current.value = '';
+          if (contactPersonRef.current) contactPersonRef.current.value = '';
+        } else {
+          alert('Error: ' + data.message);
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to create property');
+      });
     } else {
       console.log('Form has validation errors');
     }
   };
 
   // Get current property details configuration
-  const currentPropertyDetails = propertyCategory ? propertyDetailsConfig[propertyCategory as keyof typeof propertyDetailsConfig] : null;
+  const currentPropertyDetails = propertyCategory ? propertyDetailsConfig[propertyCategory] : null;
 
   return (
     <div className="add-properties">
@@ -841,6 +938,7 @@ const AddProperties = () => {
                 type="text" 
                 className="form-input"
                 placeholder="e.g., Luxury 3 BHK Apartment in Chennai"
+                ref={titleRef}
               />
             </div>
 
@@ -883,7 +981,7 @@ const AddProperties = () => {
                 onChange={handleCategoryChange}
               >
                 <option value="">Select category</option>
-                {propertyCategories[propertyType as keyof typeof propertyCategories]?.map((category) => (
+                {propertyCategories[propertyType]?.map((category) => (
                   <option key={category.value} value={category.value}>
                     {category.label}
                   </option>
@@ -902,7 +1000,7 @@ const AddProperties = () => {
                 disabled={!propertyCategory}
               >
                 <option value="">Select sub-category</option>
-                {propertyCategory && propertySubCategories[propertyCategory as keyof typeof propertySubCategories]?.map((subCategory) => (
+                {propertyCategory && propertySubCategories[propertyCategory]?.map((subCategory) => (
                   <option key={subCategory} value={subCategory.toLowerCase().replace(/\s+/g, '-')}>
                     {subCategory}
                   </option>
@@ -944,6 +1042,7 @@ const AddProperties = () => {
                 className="form-textarea"
                 placeholder="Detailed description of the property..."
                 rows={4}
+                ref={descriptionRef}
               />
             </div>
           </div>
@@ -999,7 +1098,7 @@ const AddProperties = () => {
           <div className="form-grid">
             <div className="form-group">
               <label className="form-label">District <span className="required">*</span></label>
-              <select className="form-select">
+              <select className="form-select" ref={districtRef}>
                 <option value="">Select district</option>
                 {tamilNaduDistricts.map((district) => (
                   <option key={district} value={district.toLowerCase()}>
@@ -1015,6 +1114,7 @@ const AddProperties = () => {
                 type="text" 
                 className="form-input"
                 placeholder="e.g., T Nagar, Anna Nagar, Velachery"
+                ref={localityRef}
               />
             </div>
 
@@ -1024,6 +1124,7 @@ const AddProperties = () => {
                 type="text" 
                 className="form-input"
                 placeholder="Nearby landmark"
+                ref={landmarkRef}
               />
             </div>
 
@@ -1034,6 +1135,7 @@ const AddProperties = () => {
                 className="form-input"
                 placeholder="e.g., 600001"
                 maxLength={6}
+                ref={pincodeRef}
               />
             </div>
 
@@ -1043,6 +1145,7 @@ const AddProperties = () => {
                 className="form-textarea"
                 placeholder="Complete postal address..."
                 rows={3}
+                ref={addressRef}
               />
             </div>
           </div>
@@ -1063,6 +1166,7 @@ const AddProperties = () => {
                   className="form-input"
                   placeholder="Built-up area"
                   min="0"
+                  onChange={(e) => handlePropertyDetailChange('builtUpArea', Number(e.target.value))}
                 />
               </div>
 
@@ -1073,6 +1177,7 @@ const AddProperties = () => {
                   className="form-input"
                   placeholder="Carpet area"
                   min="0"
+                  onChange={(e) => handlePropertyDetailChange('carpetArea', Number(e.target.value))}
                 />
               </div>
 
@@ -1132,7 +1237,7 @@ const AddProperties = () => {
 
               <div className="form-group">
                 <label className="form-label">Furnishing</label>
-                <select className="form-select">
+                <select className="form-select" ref={furnishingRef}>
                   <option value="unfurnished">Unfurnished</option>
                   <option value="semi">Semi-Furnished</option>
                   <option value="full">Fully Furnished</option>
@@ -1141,7 +1246,7 @@ const AddProperties = () => {
 
               <div className="form-group">
                 <label className="form-label">Parking</label>
-                <select className="form-select">
+                <select className="form-select" ref={parkingRef}>
                   <option value="none">No Parking</option>
                   <option value="1">1 Vehicle</option>
                   <option value="2">2 Vehicles</option>
@@ -1403,6 +1508,7 @@ const AddProperties = () => {
                 type="text" 
                 className="form-input"
                 placeholder="Name of contact person"
+                ref={contactPersonRef}
               />
             </div>
 

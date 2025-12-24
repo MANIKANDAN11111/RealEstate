@@ -10,6 +10,41 @@ import './Buy.css';
 
 import AGLogo from '../../assets/AG_logo.jpeg';
 
+// Define Property Interface matching backend
+interface Property {
+  id: string;
+  propertyType: string;
+  propertyCategory: string;
+  propertySubCategory: string;
+  title: string;
+  description: string;
+  priceDetails?: {
+    price: number;
+    priceUnit: string;
+  };
+  location?: {
+    district: string;
+    locality: string;
+    landmark?: string;
+    fullAddress: string;
+  };
+  features?: {
+    bedrooms?: number;
+    bathrooms?: number;
+    builtUpArea?: number;
+    carpetArea?: number;
+    amenities?: string[];
+  };
+  images?: Array<{
+    fileName: string;
+    fileUrl: string;
+    fileType: string;
+    fileSize: number;
+  }>;
+  status: string;
+  createdAt: string;
+}
+
 // Header Component
 interface HeaderProps {
   currentPage: string;
@@ -31,8 +66,8 @@ function Header({ currentPage, scrolled }: HeaderProps) {
         <Link to="/" className="sell-logo-link">
           <img src={AGLogo} alt="PropFinder Logo" className="sell-logo-image" />
           <span className="sell-logo-text">DreamProperties</span>
-        </Link>
-
+        </Link> 
+        
         <nav className="sell-nav">
           {navItems.map((item) => (
             <Link
@@ -196,7 +231,7 @@ function QuickContactButtons() {
 
 // PropertyCard Component
 interface PropertyCardProps {
-  id: number;
+  id: string;
   image: string;
   price: string;
   title: string;
@@ -250,7 +285,7 @@ function PropertyCard(props: PropertyCardProps) {
           </div>
         </div>
         
-        <Link to={`/Property/`} className="view-details-btn">View Details </Link>
+      <Link to={`/property/${props.id}`} className="view-details-btn">View Details</Link>
       </div>
     </div>
   );
@@ -309,7 +344,7 @@ function SearchBar() {
             <option value="200+">Above ₹2 Cr</option>
           </select>
         </div>
-
+        
         <div className="search-select-group">
           <select 
             className="search-select"
@@ -366,11 +401,23 @@ function FilterSection() {
   );
 }
 
+// Loading Spinner Component
+function LoadingSpinner() {
+  return (
+    <div className="loading-spinner">
+      <div className="spinner"></div>
+      <p>Loading properties...</p>
+    </div>
+  );
+}
+
 // Main Buy Component
 export default function Buy() {
   const location = useLocation();
   const [scrolled, setScrolled] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [properties, setProperties] = useState<Property[]>([]);
+  const [loading, setLoading] = useState(true);
   const itemsPerPage = 6;
 
   const getCurrentPage = () => {
@@ -381,6 +428,129 @@ export default function Buy() {
     if (path === '/advertise') return 'advertise';
     if (path === '/contact') return 'contact';
     return 'home';
+  };
+
+  // Fetch properties from backend API
+  useEffect(() => {
+    const fetchProperties = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('https://realestatebackend-8adg.onrender.com/api/properties');
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data: Property[] = await response.json();
+        setProperties(data);
+      } catch (err) {
+        console.error('Error fetching properties:', err);
+        // If API fails, use fallback dummy properties
+        setProperties(getDummyProperties());
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProperties();
+  }, []);
+
+  // Helper function to convert backend property to frontend format
+  const convertToPropertyCardProps = (property: Property): PropertyCardProps => {
+    // Get image - use first image from backend or fallback
+    let image = 'https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg?auto=compress&cs=tinysrgb&w=800';
+    if (property.images && property.images.length > 0) {
+      image = property.images[0].fileUrl;
+    }
+    
+    // Format price
+    let price = 'Price not available';
+    if (property.priceDetails) {
+      const priceNum = property.priceDetails.price;
+      const unit = property.priceDetails.priceUnit;
+      
+      if (unit === 'lakh') {
+        price = `₹${(priceNum / 100000).toFixed(2)} Lakh`;
+      } else if (unit === 'crore') {
+        price = `₹${(priceNum / 10000000).toFixed(2)} Cr`;
+      } else if (unit === 'sqft') {
+        price = `₹${priceNum.toLocaleString()} per sq.ft`;
+      } else if (unit === 'month') {
+        price = `₹${priceNum.toLocaleString()} per month`;
+      } else {
+        price = `₹${priceNum.toLocaleString()}`;
+      }
+    }
+    
+    // Get title
+    const title = property.title || `${property.propertyType?.charAt(0).toUpperCase() + property.propertyType?.slice(1)} ${property.propertyCategory?.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}`;
+    
+    // Get location
+    let propLocation = 'Location not specified';
+    if (property.location) {
+      if (property.location.locality && property.location.district) {
+        propLocation = `${property.location.locality}, ${property.location.district}`;
+      } else if (property.location.fullAddress) {
+        propLocation = property.location.fullAddress;
+      }
+    }
+    
+    // Get bed/bath/sqft details
+    const beds = property.features?.bedrooms || 2;
+    const baths = property.features?.bathrooms || 2;
+    const sqft = property.features?.builtUpArea || property.features?.carpetArea || 1200;
+    
+    // Determine if featured (random for now, you can use status or other logic)
+    const featured = Math.random() > 0.7;
+    
+    return {
+      id: property.id,
+      image,
+      price,
+      title,
+      location: propLocation,
+      beds,
+      baths,
+      sqft,
+      type: 'sale' as const, // Default to sale, you can adjust based on your data
+      featured
+    };
+  };
+
+  // Dummy properties for fallback (same as original)
+  const getDummyProperties = (): Property[] => {
+    return Array.from({ length: 18 }, (_, i) => ({
+      id: (i + 1).toString(),
+      propertyType: i % 3 === 0 ? 'residential' : i % 3 === 1 ? 'commercial' : 'land',
+      propertyCategory: i % 5 === 0 ? 'apartment' : i % 5 === 1 ? 'villa' : i % 5 === 2 ? 'independent-house' : i % 5 === 3 ? 'warehouse' : 'plot',
+      propertySubCategory: 'standard',
+      title: ['Luxury Villa with Garden', 'Modern 2 BHK Apartment', 'Spacious Family Home'][i % 3],
+      description: 'Beautiful property description',
+      priceDetails: {
+        price: [12000000, 4500000, 8500000][i % 3],
+        priceUnit: 'lakh'
+      },
+      location: {
+        district: ['Chennai', 'Coimbatore', 'Madurai'][i % 3],
+        locality: ['Anna Nagar', 'T. Nagar', 'Saravanampatti'][i % 3],
+        fullAddress: 'Sample address'
+      },
+      features: {
+        bedrooms: [4, 2, 3][i % 3],
+        bathrooms: [3, 2, 2][i % 3],
+        builtUpArea: [2400, 1200, 1800][i % 3]
+      },
+      images: [{
+        fileName: 'property.jpg',
+        fileUrl: ['https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg', 
+                 'https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg',
+                 'https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg'][i % 3],
+        fileType: 'image/jpeg',
+        fileSize: 1024000
+      }],
+      status: 'PUBLISHED',
+      createdAt: new Date().toISOString()
+    }));
   };
 
   useEffect(() => {
@@ -397,214 +567,9 @@ export default function Buy() {
     };
   }, [scrolled]);
 
-  // Dummy properties data
-  const allProperties = [
-    {
-      id: 1,
-      image: 'https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg?auto=compress&cs=tinysrgb&w=800',
-      price: '₹1.2 Cr',
-      title: 'Luxury Villa with Garden',
-      location: 'Anna Nagar, Chennai',
-      beds: 4,
-      baths: 3,
-      sqft: 2400,
-      type: 'sale' as const,
-      featured: true,
-    },
-    {
-      id: 2,
-      image: 'https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?auto=compress&cs=tinysrgb&w=800',
-      price: '₹45 Lakhs',
-      title: 'Modern 2 BHK Apartment',
-      location: 'T. Nagar, Chennai',
-      beds: 2,
-      baths: 2,
-      sqft: 1200,
-      type: 'sale' as const,
-    },
-    {
-      id: 3,
-      image: 'https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=800',
-      price: '₹85 Lakhs',
-      title: 'Spacious Family Home',
-      location: 'Saravanampatti, Coimbatore',
-      beds: 3,
-      baths: 2,
-      sqft: 1800,
-      type: 'sale' as const,
-      featured: true,
-    },
-    {
-      id: 4,
-      image: 'https://images.pexels.com/photos/323780/pexels-photo-323780.jpeg?auto=compress&cs=tinysrgb&w=800',
-      price: '₹1.8 Cr',
-      title: 'Beachfront Villa',
-      location: 'ECR, Chennai',
-      beds: 5,
-      baths: 4,
-      sqft: 3200,
-      type: 'sale' as const,
-    },
-    {
-      id: 5,
-      image: 'https://images.pexels.com/photos/280222/pexels-photo-280222.jpeg?auto=compress&cs=tinysrgb&w=800',
-      price: '₹65 Lakhs',
-      title: 'Premium Apartment',
-      location: 'Nungambakkam, Chennai',
-      beds: 2,
-      baths: 2,
-      sqft: 1350,
-      type: 'sale' as const,
-    },
-    {
-      id: 6,
-      image: 'https://images.pexels.com/photos/1438832/pexels-photo-1438832.jpeg?auto=compress&cs=tinysrgb&w=800',
-      price: '₹95 Lakhs',
-      title: 'Contemporary Townhouse',
-      location: 'Gandhipuram, Coimbatore',
-      beds: 3,
-      baths: 2,
-      sqft: 1650,
-      type: 'sale' as const,
-      featured: true,
-    },
-    {
-      id: 7,
-      image: 'https://images.pexels.com/photos/1545749/pexels-photo-1545749.jpeg?auto=compress&cs=tinysrgb&w=800',
-      price: '₹1.5 Cr',
-      title: 'Elegant Bungalow',
-      location: 'Adyar, Chennai',
-      beds: 4,
-      baths: 3,
-      sqft: 2800,
-      type: 'sale' as const,
-    },
-    {
-      id: 8,
-      image: 'https://images.pexels.com/photos/1643383/pexels-photo-1643383.jpeg?auto=compress&cs=tinysrgb&w=800',
-      price: '₹38 Lakhs',
-      title: 'Compact Studio',
-      location: 'Velachery, Chennai',
-      beds: 1,
-      baths: 1,
-      sqft: 650,
-      type: 'sale' as const,
-    },
-    {
-      id: 9,
-      image: 'https://images.pexels.com/photos/1438834/pexels-photo-1438834.jpeg?auto=compress&cs=tinysrgb&w=800',
-      price: '₹72 Lakhs',
-      title: 'Garden View Apartment',
-      location: 'RS Puram, Coimbatore',
-      beds: 2,
-      baths: 2,
-      sqft: 1350,
-      type: 'sale' as const,
-    },
-    {
-      id: 10,
-      image: 'https://images.pexels.com/photos/276724/pexels-photo-276724.jpeg?auto=compress&cs=tinysrgb&w=800',
-      price: '₹2.1 Cr',
-      title: 'Sea View Penthouse',
-      location: 'Besant Nagar, Chennai',
-      beds: 5,
-      baths: 4,
-      sqft: 3200,
-      type: 'sale' as const,
-      featured: true,
-    },
-    {
-      id: 11,
-      image: 'https://images.pexels.com/photos/189296/pexels-photo-189296.jpeg?auto=compress&cs=tinysrgb&w=800',
-      price: '₹1.1 Cr',
-      title: 'Modern Villa',
-      location: 'Peelamedu, Coimbatore',
-      beds: 4,
-      baths: 3,
-      sqft: 2600,
-      type: 'sale' as const,
-    },
-    {
-      id: 12,
-      image: 'https://images.pexels.com/photos/259588/pexels-photo-259588.jpeg?auto=compress&cs=tinysrgb&w=800',
-      price: '₹58 Lakhs',
-      title: 'Affordable Apartment',
-      location: 'Ambattur, Chennai',
-      beds: 2,
-      baths: 1,
-      sqft: 1100,
-      type: 'sale' as const,
-    },
-    {
-      id: 13,
-      image: 'https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg?auto=compress&cs=tinysrgb&w=800',
-      price: '₹1.3 Cr',
-      title: 'Luxury Penthouse',
-      location: 'Alwarpet, Chennai',
-      beds: 3,
-      baths: 3,
-      sqft: 2200,
-      type: 'sale' as const,
-      featured: true,
-    },
-    {
-      id: 14,
-      image: 'https://images.pexels.com/photos/259962/pexels-photo-259962.jpeg?auto=compress&cs=tinysrgb&w=800',
-      price: '₹42 Lakhs',
-      title: 'Studio Apartment',
-      location: 'Kovilpatti, Tirunelveli',
-      beds: 1,
-      baths: 1,
-      sqft: 750,
-      type: 'sale' as const,
-    },
-    {
-      id: 15,
-      image: 'https://images.pexels.com/photos/1080721/pexels-photo-1080721.jpeg?auto=compress&cs=tinysrgb&w=800',
-      price: '₹68 Lakhs',
-      title: 'Family Apartment',
-      location: 'Trichy Main Road',
-      beds: 2,
-      baths: 2,
-      sqft: 1400,
-      type: 'sale' as const,
-    },
-    {
-      id: 16,
-      image: 'https://images.pexels.com/photos/1171370/pexels-photo-1171370.jpeg?auto=compress&cs=tinysrgb&w=800',
-      price: '₹82 Lakhs',
-      title: 'Modern Duplex',
-      location: 'Madurai City Center',
-      beds: 3,
-      baths: 2,
-      sqft: 1750,
-      type: 'sale' as const,
-      featured: true,
-    },
-    {
-      id: 17,
-      image: 'https://images.pexels.com/photos/2079234/pexels-photo-2079234.jpeg?auto=compress&cs=tinysrgb&w=800',
-      price: '₹1.6 Cr',
-      title: 'Farm House',
-      location: 'Kodaikanal Road',
-      beds: 4,
-      baths: 3,
-      sqft: 3000,
-      type: 'sale' as const,
-    },
-    {
-      id: 18,
-      image: 'https://images.pexels.com/photos/2102587/pexels-photo-2102587.jpeg?auto=compress&cs=tinysrgb&w=800',
-      price: '₹95 Lakhs',
-      title: 'Luxury Apartment',
-      location: 'Salem Main Road',
-      beds: 3,
-      baths: 3,
-      sqft: 1900,
-      type: 'sale' as const,
-    },
-  ];
-
+  // Convert all properties to card props
+  const allProperties = properties.map(convertToPropertyCardProps);
+  
   // Calculate total pages
   const totalPages = Math.ceil(allProperties.length / itemsPerPage);
   
@@ -662,47 +627,54 @@ export default function Buy() {
             </div>
           </div>
 
-          {/* Properties Grid */}
-          <div className="properties-grid-container">
-            <div className="properties-grid">
-              {currentProperties.map((property) => (
-                <PropertyCard key={property.id} {...property} />
-              ))}
-            </div>
-          </div>
+          {/* Loading State */}
+          {loading ? (
+            <LoadingSpinner />
+          ) : (
+            <>
+              {/* Properties Grid */}
+              <div className="properties-grid-container">
+                <div className="properties-grid">
+                  {currentProperties.map((property) => (
+                    <PropertyCard key={property.id} {...property} />
+                  ))}
+                </div>
+              </div>
 
-          {/* Pagination */}
-          <div className="pagination">
-            <button 
-              className="pagination-button prev"
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-            >
-              <ChevronLeft className="pagination-icon" />
-              Previous
-            </button>
-            
-            <div className="page-numbers">
-              {pageNumbers.map(number => (
-                <button
-                  key={number}
-                  className={`page-number ${currentPage === number ? 'active' : ''}`}
-                  onClick={() => handlePageChange(number)}
+              {/* Pagination */}
+              <div className="pagination">
+                <button 
+                  className="pagination-button prev"
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
                 >
-                  {number}
+                  <ChevronLeft className="pagination-icon" />
+                  Previous
                 </button>
-              ))}
-            </div>
-            
-            <button 
-              className="pagination-button next"
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
-            >
-              Next
-              <ChevronRight className="pagination-icon" />
-            </button>
-          </div>
+                
+                <div className="page-numbers">
+                  {pageNumbers.map(number => (
+                    <button
+                      key={number}
+                      className={`page-number ${currentPage === number ? 'active' : ''}`}
+                      onClick={() => handlePageChange(number)}
+                    >
+                      {number}
+                    </button>
+                  ))}
+                </div>
+                
+                <button 
+                  className="pagination-button next"
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                >
+                  Next
+                  <ChevronRight className="pagination-icon" />
+                </button>
+              </div>
+            </>
+          )}
         </div>
       </div>
 

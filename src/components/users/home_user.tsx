@@ -475,8 +475,8 @@ export default function HomePage() {
             </div>
           </div>
         </div> */}
-
-        {/* Featured Properties */}
+        
+        {/* Featured Properties */} 
         <section className="featured-properties">
           <div className="section-header">
             <div>
