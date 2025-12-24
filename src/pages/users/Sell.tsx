@@ -333,15 +333,15 @@ const Sell: React.FC = () => {
     setShowSuccess(true);
 
     setTimeout(() => {
-      setFormData({
-        name: '',
-        email: '',
-        mobileNo: '',
-        whatsappNo: '',
-        propertyType: '',
-        userType: '',
+      setFormData({  
+        name: '',  
+        email: '',   
+        mobileNo: '',  
+        whatsappNo: '',  
+        propertyType: '',  
+        userType: '',             
         propertyLocation: ''
-      });
+      } );
       setIsRobotVerified(false);
       setShowSuccess(false);
     }, 3000);
