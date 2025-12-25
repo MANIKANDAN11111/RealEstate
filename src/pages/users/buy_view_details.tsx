@@ -5,7 +5,7 @@ import {
   Calendar, Check, Car, Layers, Shield, TrendingUp, ArrowLeft, 
   Star, Download, Printer, Facebook, Twitter, Linkedin, Instagram, 
   Clock, Users, Building, Mountain, DollarSign, Megaphone,
-  X, User, MessageSquare
+  X, User, MessageSquare, AlertCircle
 } from 'lucide-react';
 import AGLogo from '../../assets/AG_logo.jpeg';
 import './buy_view_details.css';
@@ -78,6 +78,12 @@ interface InterestFormData {
   email: string;
   phone: string;
   message: string;
+}
+
+// Validation Errors Interface
+interface ValidationErrors {
+  email?: string;
+  phone?: string;
 }
 
 // Header Component
@@ -232,6 +238,9 @@ function InterestFormModal({ isOpen, onClose, onSubmit }: InterestFormModalProps
     message: ''
   });
 
+  const [errors, setErrors] = useState<ValidationErrors>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   // Handle body scroll when modal opens/closes
   useEffect(() => {
     if (isOpen) {
@@ -260,18 +269,79 @@ function InterestFormModal({ isOpen, onClose, onSubmit }: InterestFormModalProps
     };
   }, [isOpen]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Validation functions
+  const validateForm = (): boolean => {
+    const newErrors: ValidationErrors = {};
+    
+    // Phone validation - required
+    if (!formData.phone.trim()) {
+      newErrors.phone = 'Phone number is required';
+    } else {
+      const phoneRegex = /^[6-9]\d{9}$/; // Indian mobile numbers starting with 6-9
+      if (!phoneRegex.test(formData.phone)) {
+        newErrors.phone = 'Please enter a valid 10-digit Indian mobile number';
+      }
+    }
+    
+    // Email validation - optional but must be valid if provided
+    if (formData.email.trim()) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(formData.email)) {
+        newErrors.email = 'Please enter a valid email address';
+      }
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData);
+    
+    // Validate form
+    if (!validateForm()) {
+      return;
+    }
+    
+    setIsSubmitting(true);
+    
+    try {
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 500));
+      onSubmit(formData);
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      alert('Failed to submit interest. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    
+    // For phone input, allow only numbers and limit to 10 digits
+    if (name === 'phone') {
+      const numericValue = value.replace(/\D/g, '').slice(0, 10);
+      setFormData(prev => ({ ...prev, [name]: numericValue }));
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }));
+    }
   };
+
+  // Reset form when modal closes
+  useEffect(() => {
+    if (!isOpen) {
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        message: ''
+      });
+      setErrors({});
+      setIsSubmitting(false);
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -280,12 +350,13 @@ function InterestFormModal({ isOpen, onClose, onSubmit }: InterestFormModalProps
       <div className="pd5-modal-content">
         <div className="pd5-modal-header">
           <h2 className="pd5-modal-title">Send Your Interest</h2>
-          <button className="pd5-modal-close" onClick={onClose}>
+          <button className="pd5-modal-close" onClick={onClose} disabled={isSubmitting}>
             <X className="pd5-modal-close-icon" />
           </button>
         </div>
         
-        <form onSubmit={handleSubmit} className="pd5-interest-form">
+        <form onSubmit={handleSubmit} className="pd5-interest-form" noValidate>
+          {/* Name Field */}
           <div className="pd5-form-group">
             <label htmlFor="name" className="pd5-form-label">
               <User className="pd5-form-icon" />
@@ -299,10 +370,12 @@ function InterestFormModal({ isOpen, onClose, onSubmit }: InterestFormModalProps
               onChange={handleChange}
               className="pd5-form-input"
               placeholder="Enter your full name"
+              disabled={isSubmitting}
               required
             />
           </div>
 
+          {/* Email Field */}
           <div className="pd5-form-group">
             <label htmlFor="email" className="pd5-form-label">
               <Mail className="pd5-form-icon" />
@@ -314,11 +387,19 @@ function InterestFormModal({ isOpen, onClose, onSubmit }: InterestFormModalProps
               name="email"
               value={formData.email}
               onChange={handleChange}
-              className="pd5-form-input"
+              className={`pd5-form-input ${errors.email ? 'pd5-input-error' : ''}`}
               placeholder="Enter your email address"
+              disabled={isSubmitting}
             />
+            {errors.email && (
+              <div className="pd5-error-message">
+                <AlertCircle className="pd5-error-icon" />
+                {errors.email}
+              </div>
+            )}
           </div>
 
+          {/* Phone Field */}
           <div className="pd5-form-group">
             <label htmlFor="phone" className="pd5-form-label">
               <Phone className="pd5-form-icon" />
@@ -330,13 +411,21 @@ function InterestFormModal({ isOpen, onClose, onSubmit }: InterestFormModalProps
               name="phone"
               value={formData.phone}
               onChange={handleChange}
-              className="pd5-form-input"
+              className={`pd5-form-input ${errors.phone ? 'pd5-input-error' : ''}`}
               placeholder="Enter your 10-digit mobile number"
-              pattern="[0-9]{10}"
+              disabled={isSubmitting}
               required
+              maxLength={10}
             />
+            {errors.phone && (
+              <div className="pd5-error-message">
+                <AlertCircle className="pd5-error-icon" />
+                {errors.phone}
+              </div>
+            )}
           </div>
 
+          {/* Message Field */}
           <div className="pd5-form-group">
             <label htmlFor="message" className="pd5-form-label">
               <MessageSquare className="pd5-form-icon" />
@@ -351,16 +440,34 @@ function InterestFormModal({ isOpen, onClose, onSubmit }: InterestFormModalProps
               placeholder="Briefly describe your interest in this property..."
               rows={2}
               maxLength={200}
+              disabled={isSubmitting}
             />
             <div className="pd5-char-count">{formData.message.length}/200</div>
           </div>
 
+          {/* Form Actions */}
           <div className="pd5-form-actions">
-            <button type="button" className="pd5-form-cancel" onClick={onClose}>
+            <button 
+              type="button" 
+              className="pd5-form-cancel" 
+              onClick={onClose}
+              disabled={isSubmitting}
+            >
               Cancel
             </button>
-            <button type="submit" className="pd5-form-submit">
-              Submit Interest
+            <button 
+              type="submit" 
+              className="pd5-form-submit"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <>
+                  <div className="pd5-spinner-small"></div>
+                  Submitting...
+                </>
+              ) : (
+                'Submit Interest'
+              )}
             </button>
           </div>
         </form>
@@ -565,7 +672,6 @@ export default function PropertyDetails() {
     alert(`Contacting our team...\n\nCall us at:\n${contactNumbers[0].number} (${contactNumbers[0].name})\n${contactNumbers[1].number} (${contactNumbers[1].name})\n\nEmail: ${contactEmail}`);
   };
 
-
   const handleShare = () => {
     navigator.share?.({
       title: property?.title || 'Property',
@@ -581,41 +687,12 @@ export default function PropertyDetails() {
     setShowInterestForm(true);
   };
 
- const handleInterestSubmit = async (formData: InterestFormData) => {
-  if (!property) return;
-
-  const payload = {
-    propertyTitle: property.title,     // ✅ comes from property details
-    name: formData.name,
-    email: formData.email,
-    phoneNumber: formData.phone,
-    message: formData.message
-  };
-
-  try {
-    const response = await fetch("https://realestatebackend-8adg.onrender.com/api/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(payload)
-    });
-
-    if (!response.ok) {
-      const errText = await response.text();
-      throw new Error(errText || "Failed to submit interest");
-    }
-
-    console.log("Interest submitted:", payload);
-
+  const handleInterestSubmit = (formData: InterestFormData) => {
+    console.log('Interest form submitted:', formData);
+    // Here you would typically send the data to your backend
     setShowInterestForm(false);
     setShowSuccessModal(true);
-  } catch (error) {
-    console.error("Error submitting interest:", error);
-    alert("Failed to submit interest. Please try again.");
-  }
-};
-
+  };
 
   // Loading state
   if (loading) {
@@ -940,7 +1017,6 @@ export default function PropertyDetails() {
                   <Phone className="pd5-property-details-call-icon" />
                   Call Now
                 </button>
-              
               </div>
             </div>
 

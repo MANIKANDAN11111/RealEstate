@@ -627,13 +627,14 @@
   box-shadow: 0 5px 15px rgba(155, 89, 182, 0.3);
 }
 
-.pd5-property-details-call-btn,
-.pd5-property-details-visit-btn {
+.pd5-property-details-call-btn {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.75rem;
   padding: 1rem;
+  background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+  color: white;
   border: none;
   border-radius: 8px;
   font-weight: 600;
@@ -642,29 +643,13 @@
   transition: all 0.3s ease;
 }
 
-.pd5-property-details-call-btn {
-  background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
-  color: white;
-}
-
 .pd5-property-details-call-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 5px 15px rgba(39, 174, 96, 0.3);
 }
 
-.pd5-property-details-visit-btn {
-  background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
-  color: white;
-}
-
-.pd5-property-details-visit-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
-}
-
 .pd5-property-details-interest-icon,
-.pd5-property-details-call-icon,
-.pd5-property-details-visit-icon {
+.pd5-property-details-call-icon {
   width: 20px;
   height: 20px;
 }
@@ -1021,6 +1006,7 @@
   color: #3498db;
 }
 
+/* Input fields */
 .pd5-form-input,
 .pd5-form-textarea {
   width: 100%;
@@ -1029,21 +1015,55 @@
   border-radius: 8px;
   font-size: 1rem;
   transition: all 0.3s ease;
-  background: #f8fafc;
+  background: white !important;
+  color: #2c3e50 !important;
   font-family: inherit;
 }
 
+/* Error styling for email and phone */
+.pd5-input-error {
+  border-color: #e74c3c !important;
+  background-color: #fff5f5 !important;
+}
+
+/* Ensure placeholder text is visible but not too bright */
+.pd5-form-input::placeholder,
+.pd5-form-textarea::placeholder {
+  color: #94a3b8;
+  opacity: 0.8;
+}
+
+/* Ensure the text is visible when typing */
 .pd5-form-input:focus,
 .pd5-form-textarea:focus {
   outline: none;
   border-color: #3498db;
-  background: white;
+  background: white !important;
+  color: #2c3e50 !important;
   box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
 }
 
+/* Ensure textarea text is visible */
 .pd5-form-textarea {
   min-height: 80px;
   resize: vertical;
+}
+
+/* Error messages */
+.pd5-error-message {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #e74c3c;
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+  font-weight: 500;
+}
+
+.pd5-error-icon {
+  width: 16px;
+  height: 16px;
+  color: #e74c3c;
 }
 
 .pd5-char-count {
@@ -1069,6 +1089,10 @@
   font-size: 1rem;
   cursor: pointer;
   transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
 }
 
 .pd5-form-cancel {
@@ -1077,9 +1101,14 @@
   border: 2px solid #e0e0e0;
 }
 
-.pd5-form-cancel:hover {
+.pd5-form-cancel:hover:not(:disabled) {
   background: #e9ecef;
   border-color: #ced4da;
+}
+
+.pd5-form-cancel:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .pd5-form-submit {
@@ -1087,9 +1116,25 @@
   color: white;
 }
 
-.pd5-form-submit:hover {
+.pd5-form-submit:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 5px 15px rgba(39, 174, 96, 0.3);
+}
+
+.pd5-form-submit:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* Small spinner for submit button */
+.pd5-spinner-small {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid white;
+  border-radius: 50%;
+  animation: pd5-spin 1s linear infinite;
 }
 
 /* Success Modal Styles */
