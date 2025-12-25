@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   Home, Building2, DollarSign, Megaphone, Phone,
   Facebook, Twitter, Instagram, Linkedin, Upload,
   ShoppingBag, MessageCircle, MapPin
 } from 'lucide-react';
 import './Sell.css';
+
 import AGLogo from '../../assets/AG_logo.jpeg';
 
 // Header Component
@@ -211,6 +212,7 @@ const userTypes: UserType[] = ['Owner', 'Agent', 'Builder', 'Investor', 'NRI'];
 
 const Sell: React.FC = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(false);
   const formRef = useRef<HTMLDivElement>(null);
   
@@ -270,90 +272,89 @@ const Sell: React.FC = () => {
     }));
   };
 
- const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-  if (!isRobotVerified) {
-    alert('Please verify that you are not a robot');
-    return;
-  }
-
-  if (
-    !formData.name ||
-    !formData.mobileNo ||
-    !formData.propertyType ||
-    !formData.userType ||
-    !formData.propertyLocation
-  ) {
-    alert('Please fill all required fields');
-    return;
-  }
-
-  if (formData.mobileNo.length !== 10) {
-    alert('Please enter a valid 10-digit mobile number');
-    return;
-  }
-
-  if (formData.email) {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
-      alert('Please enter a valid email address');
+    if (!isRobotVerified) {
+      alert('Please verify that you are not a robot');
       return;
     }
-  }
 
-  setIsSubmitting(true);
-
-  const payload = {
-    name: formData.name,
-    email: formData.email || "NA",
-    mobileNo: formData.mobileNo,
-    whatsappNo: formData.whatsappNo || "NA",
-    propertyType: formData.propertyType,
-    userType: formData.userType,
-    propertyLocation: formData.propertyLocation
-  };
-
-  try {
-    const response = await fetch(
-      "https://realestatebackend-8adg.onrender.com/api/sell",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(payload)
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error("Failed to submit sell request");
+    if (
+      !formData.name ||
+      !formData.mobileNo ||
+      !formData.propertyType ||
+      !formData.userType ||
+      !formData.propertyLocation
+    ) {
+      alert('Please fill all required fields');
+      return;
     }
 
-    setShowSuccess(true);
+    if (formData.mobileNo.length !== 10) {
+      alert('Please enter a valid 10-digit mobile number');
+      return;
+    }
 
-    setTimeout(() => {
-      setFormData({  
-        name: '',  
-        email: '',   
-        mobileNo: '',  
-        whatsappNo: '',  
-        propertyType: '',  
-        userType: '',             
-        propertyLocation: ''
-      } );
-      setIsRobotVerified(false);
-      setShowSuccess(false);
-    }, 3000);
+    if (formData.email) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(formData.email)) {
+        alert('Please enter a valid email address');
+        return;
+      }
+    }
 
-  } catch (error) {
-    console.error('Error submitting form:', error);
-    alert('Error submitting form. Please try again.');
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+    setIsSubmitting(true);
 
+    const payload = {
+      name: formData.name,
+      email: formData.email || "NA",
+      mobileNo: formData.mobileNo,
+      whatsappNo: formData.whatsappNo || "NA",
+      propertyType: formData.propertyType,
+      userType: formData.userType,
+      propertyLocation: formData.propertyLocation
+    };
+
+    try {
+      const response = await fetch(
+        "https://realestatebackend-8adg.onrender.com/api/sell",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to submit sell request");
+      }
+
+      setShowSuccess(true);
+
+      setTimeout(() => {
+        setFormData({  
+          name: '',  
+          email: '',   
+          mobileNo: '',  
+          whatsappNo: '',  
+          propertyType: '',  
+          userType: '',             
+          propertyLocation: ''
+        });
+        setIsRobotVerified(false);
+        setShowSuccess(false);
+      }, 3000);
+
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      alert('Error submitting form. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const handleRobotCheck = () => {
     setIsRobotVerified(!isRobotVerified);
@@ -361,15 +362,24 @@ const Sell: React.FC = () => {
 
   const scrollToForm = () => {
     if (formRef.current) {
-      // Calculate position to scroll (accounting for header height)
-      const headerHeight = document.querySelector('.sell-header-container')?.clientHeight || 80;
-      const offsetTop = formRef.current.offsetTop - headerHeight - 20;
-      
-      window.scrollTo({
-        top: offsetTop,
-        behavior: 'smooth'
+      formRef.current.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'start'
       });
+      
+      setTimeout(() => {
+        const headerHeight = 80;
+        const currentScrollPos = window.pageYOffset;
+        window.scrollTo({
+          top: currentScrollPos - headerHeight - 20,
+          behavior: 'smooth'
+        });
+      }, 100);
     }
+  };
+
+  const handleViewProperties = () => {
+    navigate('/buy');
   };
 
   return (
@@ -394,7 +404,10 @@ const Sell: React.FC = () => {
               Quick Sell Form
             </button>
             
-            <button className="sell-hero-button secondary">
+            <button 
+              className="sell-hero-button secondary"
+              onClick={handleViewProperties}
+            >
               <ShoppingBag className="sell-hero-button-icon" />
               View Our Properties
             </button>

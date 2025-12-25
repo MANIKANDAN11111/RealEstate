@@ -4,7 +4,8 @@ import {
   Home, MapPin, Bed, Bath, Maximize, Heart, Share2, Phone, Mail, 
   Calendar, Check, Car, Layers, Shield, TrendingUp, ArrowLeft, 
   Star, Download, Printer, Facebook, Twitter, Linkedin, Instagram, 
-  Clock, Users, Building, Mountain, DollarSign, Megaphone 
+  Clock, Users, Building, Mountain, DollarSign, Megaphone,
+  X, User, MessageSquare
 } from 'lucide-react';
 import AGLogo from '../../assets/AG_logo.jpeg';
 import './buy_view_details.css';
@@ -69,6 +70,14 @@ interface Property {
   status: string;
   createdAt: string;
   updatedAt?: string;
+}
+
+// Interest Form Interface
+interface InterestFormData {
+  name: string;
+  email: string;
+  phone: string;
+  message: string;
 }
 
 // Header Component
@@ -208,6 +217,211 @@ function Footer() {
   );
 }
 
+// Interest Form Modal Component
+interface InterestFormModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmit: (formData: InterestFormData) => void;
+}
+
+function InterestFormModal({ isOpen, onClose, onSubmit }: InterestFormModalProps) {
+  const [formData, setFormData] = useState<InterestFormData>({
+    name: '',
+    email: '',
+    phone: '',
+    message: ''
+  });
+
+  // Handle body scroll when modal opens/closes
+  useEffect(() => {
+    if (isOpen) {
+      // Save the current scroll position
+      const scrollY = window.scrollY;
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = '100%';
+      document.body.style.overflow = 'hidden';
+    } else {
+      // Restore scroll position
+      const scrollY = document.body.style.top;
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      document.body.style.overflow = '';
+      window.scrollTo(0, parseInt(scrollY || '0') * -1);
+    }
+
+    // Cleanup function
+    return () => {
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit(formData);
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="pd5-modal-overlay">
+      <div className="pd5-modal-content">
+        <div className="pd5-modal-header">
+          <h2 className="pd5-modal-title">Send Your Interest</h2>
+          <button className="pd5-modal-close" onClick={onClose}>
+            <X className="pd5-modal-close-icon" />
+          </button>
+        </div>
+        
+        <form onSubmit={handleSubmit} className="pd5-interest-form">
+          <div className="pd5-form-group">
+            <label htmlFor="name" className="pd5-form-label">
+              <User className="pd5-form-icon" />
+              Your Name *
+            </label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              className="pd5-form-input"
+              placeholder="Enter your full name"
+              required
+            />
+          </div>
+
+          <div className="pd5-form-group">
+            <label htmlFor="email" className="pd5-form-label">
+              <Mail className="pd5-form-icon" />
+              Email Address (Optional)
+            </label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              className="pd5-form-input"
+              placeholder="Enter your email address"
+            />
+          </div>
+
+          <div className="pd5-form-group">
+            <label htmlFor="phone" className="pd5-form-label">
+              <Phone className="pd5-form-icon" />
+              Phone Number *
+            </label>
+            <input
+              type="tel"
+              id="phone"
+              name="phone"
+              value={formData.phone}
+              onChange={handleChange}
+              className="pd5-form-input"
+              placeholder="Enter your 10-digit mobile number"
+              pattern="[0-9]{10}"
+              required
+            />
+          </div>
+
+          <div className="pd5-form-group">
+            <label htmlFor="message" className="pd5-form-label">
+              <MessageSquare className="pd5-form-icon" />
+              Your Message (2 lines max)
+            </label>
+            <textarea
+              id="message"
+              name="message"
+              value={formData.message}
+              onChange={handleChange}
+              className="pd5-form-textarea"
+              placeholder="Briefly describe your interest in this property..."
+              rows={2}
+              maxLength={200}
+            />
+            <div className="pd5-char-count">{formData.message.length}/200</div>
+          </div>
+
+          <div className="pd5-form-actions">
+            <button type="button" className="pd5-form-cancel" onClick={onClose}>
+              Cancel
+            </button>
+            <button type="submit" className="pd5-form-submit">
+              Submit Interest
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+// Success Modal Component
+interface SuccessModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+function SuccessModal({ isOpen, onClose }: SuccessModalProps) {
+  // Handle body scroll when modal opens/closes
+  useEffect(() => {
+    if (isOpen) {
+      // Save the current scroll position
+      const scrollY = window.scrollY;
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = '100%';
+      document.body.style.overflow = 'hidden';
+    } else {
+      // Restore scroll position
+      const scrollY = document.body.style.top;
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      document.body.style.overflow = '';
+      window.scrollTo(0, parseInt(scrollY || '0') * -1);
+    }
+
+    // Cleanup function
+    return () => {
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="pd5-modal-overlay">
+      <div className="pd5-modal-content pd5-success-modal">
+        <div className="pd5-success-icon">✓</div>
+        <h2 className="pd5-success-title">Interest Submitted Successfully!</h2>
+        <p className="pd5-success-message">
+          Thank you for showing interest in this property. Our team will contact you shortly.
+        </p>
+        <button className="pd5-success-button" onClick={onClose}>
+          OK
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function PropertyDetails() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -217,6 +431,15 @@ export default function PropertyDetails() {
   const [property, setProperty] = useState<Property | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showInterestForm, setShowInterestForm] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+
+  // Static contact details
+  const contactNumbers = [
+    { number: '+91 6374656460', name: 'Esakky pandian' },
+    { number: '+91 8682800268', name: 'Rishi' }
+  ];
+  const contactEmail = 'ananthitechnologies@gmail.com';
 
   // Fetch property details from API
   useEffect(() => {
@@ -339,16 +562,9 @@ export default function PropertyDetails() {
   };
 
   const handleContactOwner = () => {
-    if (!property?.contactInfo) {
-      alert("Contact information not available");
-      return;
-    }
-    alert(`Contacting owner: ${property.contactInfo.ownerName}\nPhone: ${property.contactInfo.phone}\nEmail: ${property.contactInfo.email}`);
+    alert(`Contacting our team...\n\nCall us at:\n${contactNumbers[0].number} (${contactNumbers[0].name})\n${contactNumbers[1].number} (${contactNumbers[1].name})\n\nEmail: ${contactEmail}`);
   };
 
-  const handleScheduleVisit = () => {
-    alert("Schedule visit feature coming soon!");
-  };
 
   const handleShare = () => {
     navigator.share?.({
@@ -359,6 +575,17 @@ export default function PropertyDetails() {
       navigator.clipboard.writeText(window.location.href);
       alert("Link copied to clipboard!");
     });
+  };
+
+  const handleSendInterest = () => {
+    setShowInterestForm(true);
+  };
+
+  const handleInterestSubmit = (formData: InterestFormData) => {
+    console.log('Interest form submitted:', formData);
+    // Here you would typically send the data to your backend
+    setShowInterestForm(false);
+    setShowSuccessModal(true);
   };
 
   // Loading state
@@ -637,53 +864,54 @@ export default function PropertyDetails() {
 
           {/* Right Column - Contact & Info */}
           <div className="pd5-property-details-right-column">
-            {/* Owner Contact Card */}
+            {/* Static Owner Contact Card */}
             <div className="pd5-property-details-contact-card">
-              <h3 className="pd5-property-details-contact-title">Contact Owner</h3>
+              <h3 className="pd5-property-details-contact-title">Contact Our Team</h3>
               <div className="pd5-property-details-owner-info">
                 <div className="pd5-property-details-owner-header">
                   <div className="pd5-property-details-owner-avatar">
-                    {property.contactInfo?.ownerName?.charAt(0) || 'P'}
+                    DP
                   </div>
                   <div className="pd5-property-details-owner-details">
                     <div className="pd5-property-details-owner-name">
-                      {property.contactInfo?.ownerName || 'Property Owner'}
-                      {property.contactInfo?.phone && (
-                        <Shield className="pd5-property-details-verified-icon" title="Verified" />
-                      )}
+                      DreamProperties Team
+                      <Shield className="pd5-property-details-verified-icon" title="Verified" />
                     </div>
                     <div className="pd5-property-details-owner-rating">
                       <Star className="pd5-property-details-rating-icon" />
-                      4.8/5
+                      4.8/5 (Verified)
                     </div>
                   </div>
                 </div>
                 <div className="pd5-property-details-contact-info">
-                  {property.contactInfo?.phone && (
-                    <div className="pd5-property-details-contact-item">
+                  {contactNumbers.map((contact, index) => (
+                    <div key={index} className="pd5-property-details-contact-item">
                       <Phone className="pd5-property-details-contact-icon" />
-                      {property.contactInfo.phone}
+                      <div className="pd5-contact-details">
+                        <div className="pd5-contact-number">{contact.number}</div>
+                        <div className="pd5-contact-name">({contact.name})</div>
+                      </div>
                     </div>
-                  )}
-                  {property.contactInfo?.email && (
-                    <div className="pd5-property-details-contact-item">
-                      <Mail className="pd5-property-details-contact-icon" />
-                      {property.contactInfo.email}
+                  ))}
+                  <div className="pd5-property-details-contact-item">
+                    <Mail className="pd5-property-details-contact-icon" />
+                    <div className="pd5-contact-details">
+                      <div className="pd5-contact-email">{contactEmail}</div>
+                      <div className="pd5-contact-label">Email Address</div>
                     </div>
-                  )}
+                  </div>
                 </div>
               </div>
               <div className="pd5-property-details-contact-actions">
-                {property.contactInfo?.phone && (
-                  <button className="pd5-property-details-call-btn" onClick={handleContactOwner}>
-                    <Phone className="pd5-property-details-call-icon" />
-                    Call Owner
-                  </button>
-                )}
-                <button className="pd5-property-details-visit-btn" onClick={handleScheduleVisit}>
-                  <Calendar className="pd5-property-details-visit-icon" />
-                  Schedule Visit
+                <button className="pd5-property-details-interest-btn" onClick={handleSendInterest}>
+                  <MessageSquare className="pd5-property-details-interest-icon" />
+                  Send Interest
                 </button>
+                <button className="pd5-property-details-call-btn" onClick={handleContactOwner}>
+                  <Phone className="pd5-property-details-call-icon" />
+                  Call Now
+                </button>
+              
               </div>
             </div>
 
@@ -760,6 +988,19 @@ export default function PropertyDetails() {
           </div>
         </div>
       </main>
+  
+      {/* Interest Form Modal */}
+      <InterestFormModal
+        isOpen={showInterestForm}
+        onClose={() => setShowInterestForm(false)}
+        onSubmit={handleInterestSubmit}
+      />
+
+      {/* Success Modal */}
+      <SuccessModal
+        isOpen={showSuccessModal}
+        onClose={() => setShowSuccessModal(false)}
+      />
 
       <Footer />
     </div>

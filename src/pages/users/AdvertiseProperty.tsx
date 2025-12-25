@@ -353,20 +353,26 @@ const Advertise: React.FC = () => {
   }
 };
 
-
   const handleRobotCheck = () => {
     setIsRobotVerified(!isRobotVerified);
   };
 
   const scrollToForm = () => {
     if (formRef.current) {
-      const headerHeight = document.querySelector('.advertise-header-container')?.clientHeight || 80;
-      const offsetTop = formRef.current.offsetTop - headerHeight - 20;
-      
-      window.scrollTo({
-        top: offsetTop,
-        behavior: 'smooth'
+      formRef.current.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'start'
       });
+      
+      // Add a small delay then adjust for header
+      setTimeout(() => {
+        const headerHeight = 80;
+        const currentScrollPos = window.pageYOffset;
+        window.scrollTo({
+          top: currentScrollPos - headerHeight - 20,
+          behavior: 'smooth'
+        });
+      }, 100);
     }
   };
 
