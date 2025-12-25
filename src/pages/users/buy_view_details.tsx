@@ -581,12 +581,41 @@ export default function PropertyDetails() {
     setShowInterestForm(true);
   };
 
-  const handleInterestSubmit = (formData: InterestFormData) => {
-    console.log('Interest form submitted:', formData);
-    // Here you would typically send the data to your backend
+ const handleInterestSubmit = async (formData: InterestFormData) => {
+  if (!property) return;
+
+  const payload = {
+    propertyTitle: property.title,     // ✅ comes from property details
+    name: formData.name,
+    email: formData.email,
+    phoneNumber: formData.phone,
+    message: formData.message
+  };
+
+  try {
+    const response = await fetch("https://realestatebackend-8adg.onrender.com/api/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) {
+      const errText = await response.text();
+      throw new Error(errText || "Failed to submit interest");
+    }
+
+    console.log("Interest submitted:", payload);
+
     setShowInterestForm(false);
     setShowSuccessModal(true);
-  };
+  } catch (error) {
+    console.error("Error submitting interest:", error);
+    alert("Failed to submit interest. Please try again.");
+  }
+};
+
 
   // Loading state
   if (loading) {

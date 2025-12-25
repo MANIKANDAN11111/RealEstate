@@ -1,119 +1,161 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import './ManageInquiries.css';
 
-const ManageInquiries = () => {
-  const [inquiries, setInquiries] = useState([
-    {
-      id: 1,
-      property: 'Luxury 3 BHK in Bandra',
-      client: 'Rajesh Kumar',
-      email: 'rajesh@email.com',
-      phone: '+91 98765 43210',
-      date: '2024-01-15',
-      time: '14:30',
-      status: 'Pending',
-      type: 'Property Viewing',
-      notes: 'Interested in weekend viewing'
-    },
-    {
-      id: 2,
-      property: 'Office Space in BKC',
-      client: 'Priya Sharma',
-      email: 'priya@company.com',
-      phone: '+91 87654 32109',
-      date: '2024-01-14',
-      time: '11:15',
-      status: 'Responded',
-      type: 'Price Inquiry',
-      notes: 'Requested price negotiation'
-    },
-    {
-      id: 3,
-      property: 'Modern Villa in Whitefield',
-      client: 'Arun Patel',
-      email: 'arun@business.com',
-      phone: '+91 76543 21098',
-      date: '2024-01-13',
-      time: '09:45',
-      status: 'Follow-up',
-      type: 'Documentation',
+/* =======================
+   TYPES
+======================= */
+interface Inquiry {
+  id: string;
+  property: string;
+  client: string;
+  email: string;
+  phone: string;
+  date: string;
+  time: string;
+  status: 'Pending' | 'Responded' | 'Closed';
+  type: string;
+  notes: string;
+}
 
-      notes: 'Documents pending verification'
-    },
-    {
-      id: 4,
-      property: 'Retail Shop in CP',
-      client: 'Meera Gupta',
-      email: 'meera@retail.com',
-      phone: '+91 65432 10987',
-      date: '2024-01-12',
-      time: '16:20',
-      status: 'Closed',
-      type: 'Rental Inquiry',
-     
-      notes: 'Deal closed successfully'
-    },
-    {
-      id: 5,
-      property: '2 BHK in Hi-Tech City',
-      client: 'Sanjay Verma',
-      email: 'sanjay@tech.com',
-      phone: '+91 54321 09876',
-      date: '2024-01-11',
-      time: '13:10',
-      status: 'Pending',
-      type: 'Virtual Tour',
-    
-      notes: 'Scheduled for tomorrow'
-    }
-  ]);
+interface ApiMessage {
+  id: string;
+  propertyTitle: string;
+  name: string;
+  email: string;
+  phoneNumber: string;
+  message: string;
+  status: string;
+  dateTime: string;
+}
 
-  const [filter, setFilter] = useState('all');
-  const [search, setSearch] = useState('');
+/* =======================
+   COMPONENT
+======================= */
+const ManageInquiries: React.FC = () => {
 
-  const filteredInquiries = inquiries.filter(inquiry => {
-    const matchesFilter = filter === 'all' || inquiry.status.toLowerCase() === filter;
-    const matchesSearch = inquiry.property.toLowerCase().includes(search.toLowerCase()) ||
-                         inquiry.client.toLowerCase().includes(search.toLowerCase()) ||
-                         inquiry.type.toLowerCase().includes(search.toLowerCase());
+  const [inquiries, setInquiries] = useState<Inquiry[]>([]);
+  const [filter, setFilter] = useState<string>('all');
+  const [search, setSearch] = useState<string>('');
+
+  /* =======================
+     FETCH API DATA
+  ======================= */
+  useEffect(() => {
+    fetch('https://realestatebackend-8adg.onrender.com/api/messages')
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error('Failed to fetch inquiries');
+        }
+        return res.json();
+      })
+      .then((data: ApiMessage[]) => {
+        const mapped: Inquiry[] = data.map((item) => {
+          const dateObj = new Date(item.dateTime);
+
+          return {
+            id: item.id,
+            property: item.propertyTitle,
+            client: item.name,
+            email: item.email,
+            phone: item.phoneNumber,
+            date: dateObj.toISOString().split('T')[0],
+            time: dateObj.toTimeString().slice(0, 5),
+            status: (item.status as Inquiry['status']) || 'Pending',
+            type: 'Property Inquiry',
+            notes: item.message
+          };
+        });
+
+        setInquiries(mapped);
+      })
+      .catch((error) => {
+        console.error(error);
+        alert('Unable to load inquiries');
+      });
+  }, []);
+
+  /* =======================
+     FILTER + SEARCH
+  ======================= */
+  const filteredInquiries = inquiries.filter((inquiry) => {
+    const matchesFilter =
+      filter === 'all' || inquiry.status.toLowerCase() === filter;
+
+    const matchesSearch =
+      inquiry.property.toLowerCase().includes(search.toLowerCase()) ||
+      inquiry.client.toLowerCase().includes(search.toLowerCase()) ||
+      inquiry.type.toLowerCase().includes(search.toLowerCase());
+
     return matchesFilter && matchesSearch;
   });
 
-  const updateStatus = (id, newStatus) => {
-    setInquiries(inquiries.map(inquiry => 
-      inquiry.id === id ? { ...inquiry, status: newStatus } : inquiry
-    ));
-  };
+  /* =======================
+     UPDATE STATUS (UI ONLY)
+  ======================= */
+  const updateStatus = async (id: string, newStatus: Inquiry['status']) => {
+  try {
+    const res = await fetch(
+      `https://realestatebackend-8adg.onrender.com/api/messages/${id}/status?status=${newStatus}`,
+      {
+        method: 'PUT'
+      }
+    );
 
+    if (!res.ok) {
+      throw new Error('Failed to update status');
+    }
+
+    // update UI only after backend success
+    setInquiries((prev) =>
+      prev.map((inq) =>
+        inq.id === id ? { ...inq, status: newStatus } : inq
+      )
+    );
+  } catch (error) {
+    console.error(error);
+    alert('Status update failed');
+  }
+};
+
+  const totalCount = inquiries.length;
+  const pendingCount = inquiries.filter(i => i.status === 'Pending').length;
+  const respondedCount = inquiries.filter(i => i.status === 'Responded').length;
+
+  /* =======================
+     RENDER
+  ======================= */
   return (
     <div className="manage-inquiries">
-      {/* Page Header */}
+
+      {/* HEADER */}
       <div className="page-header">
         <div className="header-content">
           <h1>Manage Inquiries</h1>
           <h3 className="subtitle">Handle client inquiries and follow-ups</h3>
         </div>
-        
+
         <div className="header-stats">
           <div className="stat-card">
-            <span className="stat-number">{inquiries.length}</span>
+            <span className="stat-number">{totalCount}</span>
             <span className="stat-label">Total Inquiries</span>
           </div>
+
           <div className="stat-card">
-            <span className="stat-number">{inquiries.filter(i => i.status === 'Pending').length}</span>
+            <span className="stat-number">{pendingCount}</span>
             <span className="stat-label">Pending</span>
           </div>
+
           <div className="stat-card">
-            <span className="stat-number">{inquiries.filter(i => i.status === 'Responded').length}</span>
+            <span className="stat-number">{respondedCount}</span>
             <span className="stat-label">Responded</span>
           </div>
         </div>
       </div>
 
-      {/* Filters Section */}
+      {/* FILTERS */}
       <div className="filters-section">
         <div className="filters-grid">
-          {/* Search Box */}
+
           <div className="search-wrapper">
             <span className="search-icon">🔍</span>
             <input
@@ -125,22 +167,22 @@ const ManageInquiries = () => {
             />
           </div>
 
-          {/* Filter Chips */}
           <div className="filter-chips">
-            {['all', 'pending', 'responded', 'closed'].map((filterOption) => (
+            {['all', 'pending', 'responded', 'closed'].map((opt) => (
               <button
-                key={filterOption}
-                onClick={() => setFilter(filterOption)}
-                className={`filter-chip ${filter === filterOption ? 'active' : ''}`}
+                key={opt}
+                onClick={() => setFilter(opt)}
+                className={`filter-chip ${filter === opt ? 'active' : ''}`}
               >
-                {filterOption.charAt(0).toUpperCase() + filterOption.slice(1)}
+                {opt.charAt(0).toUpperCase() + opt.slice(1)}
               </button>
             ))}
           </div>
+
         </div>
       </div>
 
-      {/* Table */}
+      {/* TABLE */}
       <div className="table-container">
         <div className="table-scroll">
           <table className="inquiries-table">
@@ -155,52 +197,52 @@ const ManageInquiries = () => {
                 <th>Notes</th>
               </tr>
             </thead>
+
             <tbody>
               {filteredInquiries.map((inquiry) => (
                 <tr key={inquiry.id}>
-                  <td>
-                    <div className="property-name">{inquiry.property}</div>
-                  </td>
-                  <td>
-                    <div className="client-name">{inquiry.client}</div>
-                  </td>
+                  <td className="property-name">{inquiry.property}</td>
+                  <td className="client-name">{inquiry.client}</td>
+
                   <td>
                     <div className="contact-info">
-                      <div className="contact-email">{inquiry.email}</div>
-                      <div className="contact-phone">{inquiry.phone}</div>
+                      <div>{inquiry.email}</div>
+                      <div>{inquiry.phone}</div>
                     </div>
                   </td>
+
                   <td>
                     <span className="type-badge">{inquiry.type}</span>
                   </td>
-          
+
                   <td>
                     <div className="datetime-info">
                       <div>{inquiry.date}</div>
                       <div className="datetime-time">{inquiry.time}</div>
                     </div>
                   </td>
+
                   <td>
                     <select
                       value={inquiry.status}
-                      onChange={(e) => updateStatus(inquiry.id, e.target.value)}
+                      onChange={(e) =>
+                        updateStatus(inquiry.id, e.target.value as Inquiry['status'])
+                      }
                       className="status-dropdown"
                     >
                       <option value="Pending">Pending</option>
                       <option value="Responded">Responded</option>
-            
                       <option value="Closed">Closed</option>
                     </select>
                   </td>
-                  <td>
-                    <div className="notes-text">{inquiry.notes}</div>
-                  </td>
+
+                  <td className="notes-text">{inquiry.notes}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-        
+
         {filteredInquiries.length === 0 && (
           <div className="empty-state">
             <div className="empty-icon">📭</div>
@@ -210,7 +252,6 @@ const ManageInquiries = () => {
         )}
       </div>
 
-      
     </div>
   );
 };
