@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { 
   Home, MapPin, Bed, Bath, Maximize, Heart, Share2, Phone, Mail, 
-  Calendar, Check, Car, Layers, Shield, TrendingUp, ArrowLeft, 
-  Star, Download, Printer, Facebook, Twitter, Linkedin, Instagram, 
-  Clock, Users, Building, Mountain, DollarSign, Megaphone,
+   Check, Car, Layers, Shield, ArrowLeft, 
+  Star, Facebook, Twitter, Linkedin, Instagram, 
+  Building,  DollarSign, Megaphone,
   X, User, MessageSquare, AlertCircle
 } from 'lucide-react';
 import AGLogo from '../../assets/AG_logo.jpeg';
@@ -981,7 +981,7 @@ export default function PropertyDetails() {
                   <div className="pd5-property-details-owner-details">
                     <div className="pd5-property-details-owner-name">
                       DreamProperties Team
-                      <Shield className="pd5-property-details-verified-icon" title="Verified" />
+                      <Shield className="pd5-property-details-verified-icon" />
                     </div>
                     <div className="pd5-property-details-owner-rating">
                       <Star className="pd5-property-details-rating-icon" />

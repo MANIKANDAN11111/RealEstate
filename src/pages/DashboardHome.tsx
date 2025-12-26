@@ -2,10 +2,11 @@ import { useState, useEffect } from 'react';
 import './DashboardHome.css';
 
 const DashboardHome = () => {
-  const [isMobile, setIsMobile] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [adminName, setAdminName] = useState('Admin'); // Default fallback
+  const [adminName, setAdminName] = useState('Admin');
   const [isLoadingAdmin, setIsLoadingAdmin] = useState(true);
+  // const [_isMobile, setIsMobile] = useState(false); // ✅ ADD THIS
+
 
   // Fetch admin details on component mount
   useEffect(() => {
@@ -65,15 +66,16 @@ const DashboardHome = () => {
 
   // Check if mobile on mount and resize
   useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
+  const checkMobile = () => {
+    // setIsMobile(window.innerWidth < 768);
+  };
+
+  checkMobile();
+  window.addEventListener('resize', checkMobile);
+
+  return () => window.removeEventListener('resize', checkMobile);
+}, []);
+
 
   // Apply dark theme on mount
   useEffect(() => {
@@ -238,7 +240,9 @@ const DashboardHome = () => {
       icon: '🚫',
       color: 'gray'
     }
-  ];
+  ];  
+
+  console.log(propertyStatus)
 
   // Revenue Data for Chart
   const revenueData = {

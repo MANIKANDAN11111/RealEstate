@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
-  Home, Search, Building2, DollarSign, Megaphone, Phone,
+  Home, Building2, DollarSign, Megaphone, Phone,
   MapPin, ArrowRight, Bed, Bath, Maximize,
   Heart, Facebook, Twitter, Instagram, Linkedin,
   Upload, ShoppingBag, MessageCircle
 } from 'lucide-react';
 import './home_user.css';
 import AGLogo from '../../assets/AG_logo.jpeg';
-import HeroBackground from '../../assets/tvl_arch.jpeg';
+
 
 // Header Component
 interface HeaderProps {
@@ -289,7 +289,10 @@ export default function HomePage() {
   const [activeTab, setActiveTab] = useState('buy');
   const [locationInput, setLocationInput] = useState('');
   const [propertyType, setPropertyType] = useState('all');
-  const [priceRange, setPriceRange] = useState('all');
+  const [priceRange, setPriceRange] = useState('all'); 
+
+  console.log(setPropertyType)
+  console.log(setPriceRange)
 
   const handlePublish = () => {
     navigate('/advertise');
@@ -310,6 +313,8 @@ export default function HomePage() {
       }
     });
   };
+
+  console.log(handleSearch)
 
   const properties = [
     {

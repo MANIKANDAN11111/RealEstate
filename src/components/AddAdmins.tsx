@@ -464,9 +464,13 @@ const AddAdmins = () => {
     }
   };
 
+  console.log(toggleAdminStatus)
+
   const resendInvite = (email: string) => {
     alert(`Invitation resent to ${email}`);
   };
+
+  console.log(resendInvite)
 
   return (
     <div className="add-admins">

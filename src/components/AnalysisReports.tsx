@@ -6,6 +6,13 @@ const AnalysisReports = () => {
   const [timeRange, setTimeRange] = useState('30');
   const [compareMode, setCompareMode] = useState(false);
 
+  console.log(selectedReport)
+  console.log(timeRange)
+  console.log(compareMode)
+  console.log(setSelectedReport)
+  console.log(setTimeRange)
+  console.log(setCompareMode)
+
   const reports = [
     {
       id: 'overview',
@@ -56,6 +63,8 @@ const AnalysisReports = () => {
       frequency: 'On Demand'
     }
   ];
+
+  console.log(reports)
 
   // Chart Data
   const revenueData = [

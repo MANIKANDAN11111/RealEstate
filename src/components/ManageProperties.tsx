@@ -106,6 +106,7 @@ const ManageProperties = () => {
       return property;
     }));
   };
+  console.log(toggleStatus)
 
   return (
     <div className="manage-properties">

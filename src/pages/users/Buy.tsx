@@ -3,12 +3,14 @@ import { Link, useLocation } from 'react-router-dom';
 import {
   Home, Building2, DollarSign, Megaphone, Phone,
   Facebook, Twitter, Instagram, Linkedin,
-  MapPin, Bed, Bath, Maximize, Heart, Search,
-  ChevronLeft, ChevronRight, MessageCircle
+  MapPin, Bed, Bath, Maximize, Heart, Search,  
+  ChevronLeft, ChevronRight, MessageCircle  
 } from 'lucide-react';
 import './Buy.css';
 
 import AGLogo from '../../assets/AG_logo.jpeg';
+
+console.log(React)
 
 // Define Property Interface matching backend
 interface Property {
@@ -45,7 +47,6 @@ interface Property {
   createdAt: string;
 }
 
-// Header Component
 interface HeaderProps {
   currentPage: string;
   scrolled: boolean;
@@ -635,7 +636,7 @@ export default function Buy() {
               {/* Properties Grid */}
               <div className="properties-grid-container">
                 <div className="properties-grid">
-                  {currentProperties.map((property) => (
+                  {currentProperties.map((property: PropertyCardProps) => (
                     <PropertyCard key={property.id} {...property} />
                   ))}
                 </div>

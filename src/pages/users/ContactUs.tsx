@@ -2,8 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
   Home, Building2, DollarSign, Megaphone, Phone,
-  Facebook, Twitter, Instagram, Linkedin, Mail,
-  MessageSquare, Clock, MapPin, User, Smartphone,
+  Facebook, Twitter, Instagram, Linkedin,
+  MessageSquare, MapPin,
   MessageCircle
 } from 'lucide-react';
 import './ContactUs.css';
