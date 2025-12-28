@@ -126,7 +126,7 @@
   background: #2c3e50;
 }
 
-/* Header Styles - Matching Home Page */
+/* Header Styles */
 .sell-header-container {
   position: fixed;
   top: 0;
@@ -152,6 +152,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  position: relative;
 }
 
 .sell-logo-link {
@@ -159,6 +160,7 @@
   align-items: center;
   gap: 0.75rem;
   text-decoration: none;
+  z-index: 1001;
 }
 
 .sell-logo-image {
@@ -177,6 +179,23 @@
   -webkit-text-fill-color: transparent;
   background-clip: text;
   letter-spacing: -0.5px;
+}
+
+/* Mobile Menu Button */
+.sell-mobile-menu-button {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #2c3e50;
+  z-index: 1001;
+  padding: 0.5rem;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.sell-mobile-menu-button:hover {
+  background: rgba(44, 62, 80, 0.1);
 }
 
 .sell-nav {
@@ -231,9 +250,14 @@
 .sell-nav-icon {
   width: 18px;
   height: 18px;
+  flex-shrink: 0;
 }
 
-/* Hero Section - Matching Home Page Theme */
+.sell-nav-text {
+  white-space: nowrap;
+}
+
+/* Hero Section */
 .sell-hero-section {
   margin-top: 80px;
   padding: 6rem 2rem;
@@ -775,6 +799,7 @@
   color: #bdc3c7;
   font-size: 0.95rem;
   line-height: 1.6;
+  margin: 0;
 }
 
 .sell-footer-social {
@@ -850,6 +875,7 @@
   color: #95a5a6;
   font-size: 0.9rem;
   font-weight: 500;
+  margin: 0;
 }
 
 /* Animation for form elements */
@@ -879,14 +905,11 @@
 .sell-form-group:nth-child(6) { --sell-delay: 6; }
 .sell-form-group:nth-child(7) { --sell-delay: 7; }
 
-/* Responsive Design */
-@media (max-width: 1200px) {
-  .sell-footer-content {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 2rem;
-  }
-}
+/* =========================== */
+/* MOBILE RESPONSIVE BREAKPOINTS */
+/* =========================== */
 
+/* Large Tablets and Small Desktops (992px and below) */
 @media (max-width: 992px) {
   .sell-hero-title {
     font-size: 2.8rem;
@@ -909,27 +932,55 @@
     width: 55px;
     height: 55px;
   }
+  
+  .sell-footer-content {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+  }
 }
 
+/* Tablets and Large Phones (768px and below) */
 @media (max-width: 768px) {
   .sell-header-content {
     padding: 1rem;
-    flex-direction: column;
+    flex-direction: row;
     gap: 1rem;
   }
   
-  .sell-nav {
-    width: 100%;
-    overflow-x: auto;
-    padding-bottom: 0.5rem;
+  .sell-mobile-menu-button {
+    display: block;
   }
   
-  .sell-nav-item span {
-    display: none;
+  .sell-nav {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 280px;
+    height: 100vh;
+    background: white;
+    flex-direction: column;
+    padding: 80px 2rem 2rem;
+    gap: 0.5rem;
+    transition: right 0.3s ease;
+    box-shadow: -5px 0 25px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    align-items: stretch;
+  }
+  
+  .sell-nav.mobile-open {
+    right: 0;
   }
   
   .sell-nav-item {
-    padding: 0.5rem 1rem;
+    padding: 1rem;
+    border-radius: 8px;
+    justify-content: flex-start;
+    gap: 1rem;
+  }
+  
+  .sell-nav-item span {
+    display: block;
+    font-size: 1rem;
   }
   
   .sell-nav-icon {
@@ -939,7 +990,8 @@
   
   .sell-hero-section {
     padding: 4rem 1rem;
-    margin-top: 120px;
+    margin-top: 80px;
+    background-attachment: scroll;
   }
   
   .sell-hero-title {
@@ -976,6 +1028,7 @@
     min-width: auto;
     justify-content: flex-start;
     padding: 0.875rem 1rem;
+    width: 100%;
   }
   
   .sell-form-title {
@@ -989,6 +1042,7 @@
   .quick-contact-buttons {
     right: 15px;
     bottom: 15px;
+    gap: 10px;
   }
   
   .quick-contact-btn {
@@ -1000,8 +1054,32 @@
     width: 20px;
     height: 20px;
   }
+  
+  .quick-contact-tooltip {
+    display: none;
+  }
+  
+  .sell-footer-content {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    text-align: center;
+  }
+  
+  .sell-footer-social {
+    justify-content: center;
+  }
+  
+  .sell-success-message {
+    padding: 2rem;
+    width: 95%;
+  }
+  
+  .sell-success-message h3 {
+    font-size: 1.4rem;
+  }
 }
 
+/* Small Phones (480px and below) */
 @media (max-width: 480px) {
   .sell-form-header {
     padding: 2rem 1rem;
@@ -1015,24 +1093,18 @@
     padding: 1.5rem;
   }
   
-  .sell-footer-content {
-    grid-template-columns: 1fr;
+  .sell-logo-text {
+    font-size: 1.3rem;
   }
   
-  .sell-footer-section {
-    text-align: center;
+  .sell-logo-image {
+    height: 40px;
+    width: 40px;
   }
   
-  .sell-footer-social {
-    justify-content: center;
-  }
-  
-  .sell-success-message {
-    padding: 2rem;
-  }
-  
-  .sell-success-message h3 {
-    font-size: 1.4rem;
+  .sell-hero-button {
+    padding: 0.875rem 1.5rem;
+    font-size: 1rem;
   }
   
   .quick-contact-buttons {
@@ -1050,7 +1122,200 @@
     height: 18px;
   }
   
-  .quick-contact-tooltip {
+  .sell-success-icon {
+    width: 60px;
+    height: 60px;
+    font-size: 28px;
+  }
+  
+  .sell-footer-logo-text {
+    font-size: 1.4rem;
+  }
+  
+  .sell-footer-description {
+    font-size: 0.9rem;
+  }
+  
+  .sell-footer-links {
+    align-items: center;
+  }
+  
+  .sell-footer-bottom {
+    padding-top: 1rem;
+  }
+  
+  .sell-footer-copyright {
+    font-size: 0.8rem;
+    line-height: 1.4;
+  }
+}
+
+/* Extra Small Phones (360px and below) */
+@media (max-width: 360px) {
+  .sell-hero-title {
+    font-size: 1.8rem;
+  }
+  
+  .sell-hero-subtitle {
+    font-size: 1rem;
+  }
+  
+  .sell-form-title {
+    font-size: 1.4rem;
+  }
+  
+  .sell-form-subtitle {
+    font-size: 0.9rem;
+  }
+  
+  .sell-logo-text {
+    font-size: 1.1rem;
+  }
+  
+  .sell-logo-image {
+    height: 35px;
+    width: 35px;
+  }
+  
+  .sell-nav {
+    width: 100%;
+    right: -100%;
+  }
+  
+  .sell-nav.mobile-open {
+    right: 0;
+    width: 100%;
+  }
+  
+  .sell-hero-button {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Landscape Orientation for Mobile */
+@media (max-height: 600px) and (orientation: landscape) {
+  .sell-hero-section {
+    padding: 3rem 1rem;
+    margin-top: 70px;
+  }
+  
+  .sell-hero-title {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+  
+  .sell-hero-subtitle {
+    font-size: 1rem;
+    margin-bottom: 2rem;
+  }
+  
+  .sell-nav.mobile-open {
+    padding-top: 60px;
+    overflow-y: auto;
+  }
+  
+  .sell-nav-item {
+    padding: 0.75rem;
+  }
+  
+  .quick-contact-buttons {
+    bottom: 15px;
+  }
+}
+
+/* High DPI Screens */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .sell-logo-image {
+    border: 1.5px solid #2c3e50;
+  }
+  
+  .sell-form-input,
+  .sell-phone-input,
+  .sell-form-select {
+    border-width: 1.5px;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .quick-contact-buttons,
+  .sell-hero-button,
+  .sell-submit-btn,
+  .sell-robot-check-section,
+  .sell-mobile-menu-button {
     display: none;
+  }
+  
+  .sell-header-container {
+    position: static;
+    box-shadow: none;
+  }
+  
+  .sell-hero-section {
+    background: none;
+    color: black;
+    margin-top: 0;
+    padding: 2rem 0;
+  }
+  
+  .sell-hero-section::before {
+    display: none;
+  }
+  
+  .sell-form-card {
+    box-shadow: none;
+  }
+  
+  .sell-footer {
+    background: white;
+    color: black;
+  }
+}
+
+/* Touch Device Optimizations */
+@media (hover: none) and (pointer: coarse) {
+  .sell-nav-item:hover,
+  .sell-nav-item:active {
+    transform: none;
+    box-shadow: none;
+  }
+  
+  .sell-submit-btn:hover:not(:disabled) {
+    transform: none;
+  }
+  
+  .quick-contact-btn:hover {
+    transform: scale(1.05);
+  }
+  
+  .sell-form-input:focus,
+  .sell-phone-input:focus,
+  .sell-form-select:focus {
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.15);
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  .quick-contact-buttons {
+    animation: none;
+  }
+  
+  .sell-form-group {
+    animation: none;
+    opacity: 1;
+  }
+  
+  .sell-success-message {
+    animation: none;
   }
 }

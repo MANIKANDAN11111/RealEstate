@@ -47,7 +47,7 @@ const AddAdmins = () => {
   const [apiLoading, setApiLoading] = useState(false);
   const [fetchError, setFetchError] = useState('');
 
-  const [formData, setFormData] = useState<FormData>({
+  const [formData, setFormData] = useState<FormData>({ 
     name: '',
     email: '',
     mobileNumber: '',
@@ -78,6 +78,9 @@ const AddAdmins = () => {
     mobileNumber: '',
     password: ''
   });
+
+  // Mobile menu state
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Fetch admins from API
   useEffect(() => {
@@ -472,6 +475,11 @@ const AddAdmins = () => {
 
   console.log(resendInvite)
 
+  // Mobile menu toggle
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
   return (
     <div className="add-admins">
       {/* Edit Admin Modal */}
@@ -554,7 +562,7 @@ const AddAdmins = () => {
                   >
                     {apiLoading ? (
                       <>
-                        <span className="loading-spinner"></span>
+                        <span className="loading-spinner2"></span>
                         Updating...
                       </>
                     ) : (
@@ -595,17 +603,37 @@ const AddAdmins = () => {
       </div>
 
       <div className="admin-tabs">
-        <div className="tab-buttons">
+        {/* Mobile Menu Button */}
+        <div className="mobile-tab-menu">
+          <button 
+            className="mobile-menu-button"
+            onClick={toggleMobileMenu}
+            aria-label="Toggle menu"
+          >
+            {isMobileMenuOpen ? '×' : '☰'}
+          </button>
+          <span className="mobile-tab-title">
+            {activeTab === 'add' ? 'Add New Admin' : 'Manage Admins'}
+          </span>
+        </div>
+
+        <div className={`tab-buttons ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
           <button 
             className={`tab-btn ${activeTab === 'add' ? 'active' : ''}`}
-            onClick={() => setActiveTab('add')}
+            onClick={() => {
+              setActiveTab('add');
+              setIsMobileMenuOpen(false);
+            }}
           >
             <span className="tab-icon">➕</span>
             Add New Admin
           </button>
           <button 
             className={`tab-btn ${activeTab === 'manage' ? 'active' : ''}`}
-            onClick={() => setActiveTab('manage')}
+            onClick={() => {
+              setActiveTab('manage');
+              setIsMobileMenuOpen(false);
+            }}
           >
             <span className="tab-icon">👥</span>
             Manage Admins
@@ -727,7 +755,7 @@ const AddAdmins = () => {
                   >
                     {apiLoading ? (
                       <>
-                        <span className="loading-spinner"></span>
+                        <span className="loading-spinner2"></span>
                         Adding Admin...
                       </>
                     ) : (
@@ -753,10 +781,10 @@ const AddAdmins = () => {
 
               <div className="admins-table-container">
                 {loading ? (
-                  <div className="loading-container">
-                    <div className="loading-spinner"></div>
+                  <div className="loading-container2">
+                    <div className="loading-spinner2"></div>
                     <p>Loading admins...</p>
-                    <p className="loading-hint">Fetching from: https://realestatebackend-8adg.onrender.com/getalladmin</p>
+                    <p className="loading-hint2">Fetching from: https://realestatebackend-8adg.onrender.com/getalladmin</p>
                   </div>
                 ) : fetchError ? (
                   <div className="no-data error">
@@ -783,73 +811,77 @@ const AddAdmins = () => {
                     <div className="table-info">
                       <p>Showing {admins.length} admin(s)</p>
                     </div>
-                    <table className="admins-table">
-                      <thead>
-                        <tr>
-                          <th>ADMIN</th>
-                          <th>NAME</th>
-                          <th>ROLE</th>
-                          <th>STATUS</th>
-                          <th>EMAIL</th>
-                          <th>MOBILE NUMBER</th>
-                          <th>ACTIONS</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {admins.map((admin) => (
-                          <tr key={admin.id}>
-                            <td className="admin-cell">
-                              <div className="admin-info">
-                                <div className="admin-avatar">
-                                  {admin.avatar}
-                                </div>
-                              </div>
-                            </td>
-                            <td>
-                              <span className="admin-name-text">{admin.name}</span>
-                            </td>
-                            <td>
-                              <span className={`role-badge ${admin.role.toLowerCase().replace(' ', '-')}`}>
-                                {admin.role}
-                              </span>
-                            </td>
-                            <td>
-                              <span className={`status-badge ${admin.status.toLowerCase()}`}>
-                                {admin.status}
-                              </span>
-                            </td>
-                            <td>
-                              <span className="admin-email">{admin.email}</span>
-                            </td>
-                            <td>
-                              <span className="mobile-number">
-                                {admin.mobileNumber === "0" || admin.mobileNumber === "Not provided" 
-                                  ? "Not provided" 
-                                  : admin.mobileNumber}
-                              </span>
-                            </td>
-                            <td>
-                              <div className="action-buttons">
-                                <button 
-                                  className="action-btn edit-btn"
-                                  onClick={() => openEditModal(admin)}
-                                  title="Edit Admin"
-                                >
-                                  ✏️
-                                </button>
-                                <button 
-                                  className="action-btn delete-btn"
-                                  onClick={() => deleteAdmin(admin.email)}
-                                  title="Delete Admin"
-                                >
-                                  🗑️
-                                </button>
-                              </div>
-                            </td>
+                    <div className="mobile-table-wrapper">
+                      <table className="admins-table">
+                        <thead>
+                          <tr>
+                            <th>ADMIN</th>
+                            <th>NAME</th>
+                            <th>ROLE</th>
+                            <th>STATUS</th>
+                            <th>EMAIL</th>
+                            <th>MOBILE NUMBER</th>
+                            <th>ACTIONS</th>
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                        </thead>
+                        <tbody>
+                          {admins.map((admin) => (
+                            <tr key={admin.id}>
+                              <td className="admin-cell">
+                                <div className="admin-info">
+                                  <div className="admin-avatar">
+                                    {admin.avatar}
+                                  </div>
+                                </div>
+                              </td>
+                              <td>
+                                <span className="admin-name-text">{admin.name}</span>
+                              </td>
+                              <td>
+                                <span className={`role-badge ${admin.role.toLowerCase().replace(' ', '-')}`}>
+                                  {admin.role}
+                                </span>
+                              </td>
+                              <td>
+                                <span className={`status-badge ${admin.status.toLowerCase()}`}>
+                                  {admin.status}
+                                </span>
+                              </td>
+                              <td>
+                                <span className="admin-email">{admin.email}</span>
+                              </td>
+                              <td>
+                                <span className="mobile-number">
+                                  {admin.mobileNumber === "0" || admin.mobileNumber === "Not provided" 
+                                    ? "Not provided" 
+                                    : admin.mobileNumber}
+                                </span>
+                              </td>
+                              <td>
+                                <div className="action-buttons">
+                                  <button 
+                                    className="action-btn edit-btn"
+                                    onClick={() => openEditModal(admin)}
+                                    title="Edit Admin"
+                                    aria-label={`Edit ${admin.name}`}
+                                  >
+                                    ✏️
+                                  </button>
+                                  <button 
+                                    className="action-btn delete-btn"
+                                    onClick={() => deleteAdmin(admin.email)}
+                                    title="Delete Admin"
+                                    aria-label={`Delete ${admin.name}`}
+                                  >
+                                    🗑️
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
                   </>
                 )}
               </div>

@@ -152,6 +152,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  position: relative;
 }
 
 .contact-logo-link {
@@ -159,6 +160,7 @@
   align-items: center;
   gap: 0.75rem;
   text-decoration: none;
+  z-index: 1001;
 }
 
 .contact-logo-image {
@@ -177,6 +179,23 @@
   -webkit-text-fill-color: transparent;
   background-clip: text;
   letter-spacing: -0.5px;
+}
+
+/* Mobile Menu Button */
+.contact-mobile-menu-button {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #2c3e50;
+  z-index: 1001;
+  padding: 0.5rem;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.contact-mobile-menu-button:hover {
+  background: rgba(44, 62, 80, 0.1);
 }
 
 .contact-nav {
@@ -231,6 +250,11 @@
 .contact-nav-icon {
   width: 18px;
   height: 18px;
+  flex-shrink: 0;
+}
+
+.contact-nav-text {
+  white-space: nowrap;
 }
 
 /* Hero Section */
@@ -995,14 +1019,11 @@
   margin: 0;
 }
 
-/* Responsive Design */
-@media (max-width: 1200px) {
-  .contact-footer-content {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 2rem;
-  }
-}
+/* =========================== */
+/* MOBILE RESPONSIVE BREAKPOINTS */
+/* =========================== */
 
+/* Large Tablets and Small Desktops (992px and below) */
 @media (max-width: 992px) {
   .contact-hero-title {
     font-size: 2.8rem;
@@ -1030,27 +1051,55 @@
     width: 55px;
     height: 55px;
   }
+  
+  .contact-footer-content {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+  }
 }
 
+/* Tablets and Large Phones (768px and below) */
 @media (max-width: 768px) {
   .contact-header-content {
     padding: 1rem;
-    flex-direction: column;
+    flex-direction: row;
     gap: 1rem;
   }
   
-  .contact-nav {
-    width: 100%;
-    overflow-x: auto;
-    padding-bottom: 0.5rem;
+  .contact-mobile-menu-button {
+    display: block;
   }
   
-  .contact-nav-item span {
-    display: none;
+  .contact-nav {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 280px;
+    height: 100vh;
+    background: white;
+    flex-direction: column;
+    padding: 80px 2rem 2rem;
+    gap: 0.5rem;
+    transition: right 0.3s ease;
+    box-shadow: -5px 0 25px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    align-items: stretch;
+  }
+  
+  .contact-nav.mobile-open {
+    right: 0;
   }
   
   .contact-nav-item {
-    padding: 0.5rem 1rem;
+    padding: 1rem;
+    border-radius: 8px;
+    justify-content: flex-start;
+    gap: 1rem;
+  }
+  
+  .contact-nav-item span {
+    display: block;
+    font-size: 1rem;
   }
   
   .contact-nav-icon {
@@ -1060,7 +1109,8 @@
   
   .contact-hero-section {
     padding: 4rem 1rem;
-    margin-top: 120px;
+    margin-top: 80px;
+    background-attachment: scroll;
   }
   
   .contact-hero-title {
@@ -1075,10 +1125,6 @@
     padding: 2rem 1rem;
   }
   
-  .contact-form-content {
-    padding: 2rem;
-  }
-  
   .contact-main-content {
     padding: 2rem;
   }
@@ -1091,6 +1137,7 @@
     min-width: auto;
     justify-content: flex-start;
     padding: 0.875rem 1rem;
+    width: 100%;
   }
   
   .contact-form-title {
@@ -1113,6 +1160,7 @@
   .quick-contact-buttons {
     right: 15px;
     bottom: 15px;
+    gap: 10px;
   }
   
   .quick-contact-btn {
@@ -1124,26 +1172,14 @@
     width: 20px;
     height: 20px;
   }
-}
-
-@media (max-width: 480px) {
-  .contact-form-header {
-    padding: 2rem 1rem;
-  }
   
-  .contact-form-title {
-    font-size: 1.6rem;
-  }
-  
-  .contact-form-content {
-    padding: 1.5rem;
+  .quick-contact-tooltip {
+    display: none;
   }
   
   .contact-footer-content {
     grid-template-columns: 1fr;
-  }
-  
-  .contact-footer-section {
+    gap: 2rem;
     text-align: center;
   }
   
@@ -1153,10 +1189,26 @@
   
   .contact-success-message {
     padding: 2rem;
+    width: 95%;
   }
   
   .contact-success-message h3 {
     font-size: 1.4rem;
+  }
+}
+
+/* Small Phones (480px and below) */
+@media (max-width: 480px) {
+  .contact-form-header {
+    padding: 2rem 1rem;
+  }
+  
+  .contact-form-title {
+    font-size: 1.6rem;
+  }
+  
+  .contact-main-content {
+    padding: 1.5rem;
   }
   
   .contact-owner-card {
@@ -1165,12 +1217,15 @@
   
   .owner-card-title {
     font-size: 1.4rem;
+    flex-direction: column;
+    gap: 0.5rem;
   }
   
   .owner-contact-item {
     flex-direction: column;
     text-align: center;
     align-items: center;
+    padding: 1rem;
   }
   
   .owner-contact-icon {
@@ -1179,16 +1234,47 @@
     font-size: 1.5rem;
   }
   
+  .owner-contact-info {
+    text-align: center;
+  }
+  
+  .owner-contact-numbers {
+    align-items: center;
+  }
+  
+  .owner-contact-number {
+    font-size: 1.1rem;
+  }
+  
   .owner-working-hours {
     flex-direction: column;
     text-align: center;
     align-items: center;
+    padding: 1rem;
   }
   
   .owner-hours-icon {
     width: 40px;
     height: 40px;
     font-size: 1.5rem;
+  }
+  
+  .owner-hours-info {
+    text-align: center;
+  }
+  
+  .contact-logo-text {
+    font-size: 1.3rem;
+  }
+  
+  .contact-logo-image {
+    height: 40px;
+    width: 40px;
+  }
+  
+  .contact-hero-button {
+    padding: 0.875rem 1.5rem;
+    font-size: 1rem;
   }
   
   .quick-contact-buttons {
@@ -1206,8 +1292,158 @@
     height: 18px;
   }
   
-  .quick-contact-tooltip {
+  .contact-success-icon {
+    width: 60px;
+    height: 60px;
+    font-size: 28px;
+  }
+  
+  .contact-footer-logo-text {
+    font-size: 1.4rem;
+  }
+  
+  .contact-footer-description {
+    font-size: 0.9rem;
+  }
+  
+  .contact-footer-links {
+    align-items: center;
+  }
+  
+  .contact-footer-bottom {
+    padding-top: 1rem;
+  }
+  
+  .contact-footer-copyright {
+    font-size: 0.8rem;
+    line-height: 1.4;
+  }
+}
+
+/* Extra Small Phones (360px and below) */
+@media (max-width: 360px) {
+  .contact-hero-title {
+    font-size: 1.8rem;
+  }
+  
+  .contact-hero-subtitle {
+    font-size: 1rem;
+  }
+  
+  .contact-form-title {
+    font-size: 1.4rem;
+  }
+  
+  .contact-form-subtitle {
+    font-size: 0.9rem;
+  }
+  
+  .owner-card-title {
+    font-size: 1.2rem;
+  }
+  
+  .contact-logo-text {
+    font-size: 1.1rem;
+  }
+  
+  .contact-logo-image {
+    height: 35px;
+    width: 35px;
+  }
+  
+  .contact-nav {
+    width: 100%;
+    right: -100%;
+  }
+  
+  .contact-nav.mobile-open {
+    right: 0;
+    width: 100%;
+  }
+  
+  .contact-hero-button {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Landscape Orientation for Mobile */
+@media (max-height: 600px) and (orientation: landscape) {
+  .contact-hero-section {
+    padding: 3rem 1rem;
+    margin-top: 70px;
+  }
+  
+  .contact-hero-title {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+  
+  .contact-hero-subtitle {
+    font-size: 1rem;
+    margin-bottom: 2rem;
+  }
+  
+  .contact-nav.mobile-open {
+    padding-top: 60px;
+    overflow-y: auto;
+  }
+  
+  .contact-nav-item {
+    padding: 0.75rem;
+  }
+  
+  .quick-contact-buttons {
+    bottom: 15px;
+  }
+}
+
+/* High DPI Screens */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .contact-logo-image {
+    border: 1.5px solid #2c3e50;
+  }
+  
+  .contact-form-input,
+  .contact-phone-input,
+  .contact-form-textarea {
+    border-width: 1.5px;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .quick-contact-buttons,
+  .contact-hero-button,
+  .contact-submit-btn,
+  .contact-robot-check-section,
+  .contact-mobile-menu-button {
     display: none;
+  }
+  
+  .contact-header-container {
+    position: static;
+    box-shadow: none;
+  }
+  
+  .contact-hero-section {
+    background: none;
+    color: black;
+    margin-top: 0;
+    padding: 2rem 0;
+  }
+  
+  .contact-hero-section::before {
+    display: none;
+  }
+  
+  .contact-form-card {
+    box-shadow: none;
+  }
+  
+  .contact-footer {
+    background: white;
+    color: black;
   }
 }
 
@@ -1240,3 +1476,56 @@
 .owner-contact-item:nth-child(1) { --contact-delay: 1; }
 .owner-contact-item:nth-child(2) { --contact-delay: 2; }
 .owner-working-hours { --contact-delay: 3; }
+
+/* Touch Device Optimizations */
+@media (hover: none) and (pointer: coarse) {
+  .contact-nav-item:hover,
+  .contact-nav-item:active {
+    transform: none;
+    box-shadow: none;
+  }
+  
+  .contact-submit-btn:hover:not(:disabled) {
+    transform: none;
+  }
+  
+  .quick-contact-btn:hover {
+    transform: scale(1.05);
+  }
+  
+  .contact-form-input:focus,
+  .contact-phone-input:focus,
+  .contact-form-textarea:focus {
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.15);
+  }
+  
+  .owner-contact-item:active {
+    transform: scale(0.98);
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  .quick-contact-buttons {
+    animation: none;
+  }
+  
+  .contact-form-group,
+  .owner-contact-item,
+  .owner-working-hours {
+    animation: none;
+    opacity: 1;
+  }
+  
+  .contact-success-message {
+    animation: none;
+  }
+}

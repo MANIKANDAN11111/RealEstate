@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { 
   Home, MapPin, Bed, Bath, Maximize, Heart, Share2, Phone, Mail, 
-   Check, Car, Layers, Shield, ArrowLeft, 
+  Check, Car, Layers, Shield, ArrowLeft, 
   Star, Facebook, Twitter, Linkedin, Instagram, 
-  Building,  DollarSign, Megaphone,
+  Building, DollarSign, Megaphone,
   X, User, MessageSquare, AlertCircle
 } from 'lucide-react';
 import AGLogo from '../../assets/AG_logo.jpeg';
@@ -92,7 +92,6 @@ interface HeaderProps {
 }
 
 function Header({ scrolled }: HeaderProps) {
-  
   const navItems = [
     { name: 'Home', icon: Home, path: '/' },
     { name: 'Buy', icon: Building, path: '/buy' },
@@ -114,9 +113,10 @@ function Header({ scrolled }: HeaderProps) {
               key={item.name}
               to={item.path}
               className="pd5-property-details-nav-item"
+              aria-label={item.name}
             >
               <item.icon className="pd5-property-details-nav-icon" />
-              <span>{item.name}</span>
+              <span className="pd5-nav-item-text">{item.name}</span>
             </Link>
           ))}
         </nav>
@@ -143,16 +143,16 @@ function Footer() {
               estate easy.
             </p>
             <div className="pd5-contact-footer-social">
-              <a href="#" className="pd5-contact-social-link">
+              <a href="#" className="pd5-contact-social-link" aria-label="Facebook">
                 <Facebook className="pd5-contact-social-icon" />
               </a>
-              <a href="#" className="pd5-contact-social-link">
+              <a href="#" className="pd5-contact-social-link" aria-label="Twitter">
                 <Twitter className="pd5-contact-social-icon" />
               </a>
-              <a href="#" className="pd5-contact-social-link">
+              <a href="#" className="pd5-contact-social-link" aria-label="Instagram">
                 <Instagram className="pd5-contact-social-icon" />
               </a>
-              <a href="#" className="pd5-contact-social-link">
+              <a href="#" className="pd5-contact-social-link" aria-label="LinkedIn">
                 <Linkedin className="pd5-contact-social-icon" />
               </a>
             </div>
@@ -244,14 +244,12 @@ function InterestFormModal({ isOpen, onClose, onSubmit }: InterestFormModalProps
   // Handle body scroll when modal opens/closes
   useEffect(() => {
     if (isOpen) {
-      // Save the current scroll position
       const scrollY = window.scrollY;
       document.body.style.position = 'fixed';
       document.body.style.top = `-${scrollY}px`;
       document.body.style.width = '100%';
       document.body.style.overflow = 'hidden';
     } else {
-      // Restore scroll position
       const scrollY = document.body.style.top;
       document.body.style.position = '';
       document.body.style.top = '';
@@ -260,7 +258,6 @@ function InterestFormModal({ isOpen, onClose, onSubmit }: InterestFormModalProps
       window.scrollTo(0, parseInt(scrollY || '0') * -1);
     }
 
-    // Cleanup function
     return () => {
       document.body.style.position = '';
       document.body.style.top = '';
@@ -277,7 +274,7 @@ function InterestFormModal({ isOpen, onClose, onSubmit }: InterestFormModalProps
     if (!formData.phone.trim()) {
       newErrors.phone = 'Phone number is required';
     } else {
-      const phoneRegex = /^[6-9]\d{9}$/; // Indian mobile numbers starting with 6-9
+      const phoneRegex = /^[6-9]\d{9}$/;
       if (!phoneRegex.test(formData.phone)) {
         newErrors.phone = 'Please enter a valid 10-digit Indian mobile number';
       }
@@ -298,7 +295,6 @@ function InterestFormModal({ isOpen, onClose, onSubmit }: InterestFormModalProps
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validate form
     if (!validateForm()) {
       return;
     }
@@ -306,7 +302,6 @@ function InterestFormModal({ isOpen, onClose, onSubmit }: InterestFormModalProps
     setIsSubmitting(true);
     
     try {
-      // Simulate API call delay
       await new Promise(resolve => setTimeout(resolve, 500));
       onSubmit(formData);
     } catch (error) {
@@ -320,7 +315,6 @@ function InterestFormModal({ isOpen, onClose, onSubmit }: InterestFormModalProps
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     
-    // For phone input, allow only numbers and limit to 10 digits
     if (name === 'phone') {
       const numericValue = value.replace(/\D/g, '').slice(0, 10);
       setFormData(prev => ({ ...prev, [name]: numericValue }));
@@ -350,7 +344,12 @@ function InterestFormModal({ isOpen, onClose, onSubmit }: InterestFormModalProps
       <div className="pd5-modal-content">
         <div className="pd5-modal-header">
           <h2 className="pd5-modal-title">Send Your Interest</h2>
-          <button className="pd5-modal-close" onClick={onClose} disabled={isSubmitting}>
+          <button 
+            className="pd5-modal-close" 
+            onClick={onClose} 
+            disabled={isSubmitting}
+            aria-label="Close modal"
+          >
             <X className="pd5-modal-close-icon" />
           </button>
         </div>
@@ -372,6 +371,7 @@ function InterestFormModal({ isOpen, onClose, onSubmit }: InterestFormModalProps
               placeholder="Enter your full name"
               disabled={isSubmitting}
               required
+              aria-required="true"
             />
           </div>
 
@@ -390,9 +390,10 @@ function InterestFormModal({ isOpen, onClose, onSubmit }: InterestFormModalProps
               className={`pd5-form-input ${errors.email ? 'pd5-input-error' : ''}`}
               placeholder="Enter your email address"
               disabled={isSubmitting}
+              aria-describedby={errors.email ? "email-error" : undefined}
             />
             {errors.email && (
-              <div className="pd5-error-message">
+              <div id="email-error" className="pd5-error-message" role="alert">
                 <AlertCircle className="pd5-error-icon" />
                 {errors.email}
               </div>
@@ -416,9 +417,11 @@ function InterestFormModal({ isOpen, onClose, onSubmit }: InterestFormModalProps
               disabled={isSubmitting}
               required
               maxLength={10}
+              inputMode="numeric"
+              aria-describedby={errors.phone ? "phone-error" : undefined}
             />
             {errors.phone && (
-              <div className="pd5-error-message">
+              <div id="phone-error" className="pd5-error-message" role="alert">
                 <AlertCircle className="pd5-error-icon" />
                 {errors.phone}
               </div>
@@ -441,8 +444,9 @@ function InterestFormModal({ isOpen, onClose, onSubmit }: InterestFormModalProps
               rows={2}
               maxLength={200}
               disabled={isSubmitting}
+              aria-describedby="char-count"
             />
-            <div className="pd5-char-count">{formData.message.length}/200</div>
+            <div id="char-count" className="pd5-char-count">{formData.message.length}/200</div>
           </div>
 
           {/* Form Actions */}
@@ -459,11 +463,12 @@ function InterestFormModal({ isOpen, onClose, onSubmit }: InterestFormModalProps
               type="submit" 
               className="pd5-form-submit"
               disabled={isSubmitting}
+              aria-busy={isSubmitting}
             >
               {isSubmitting ? (
                 <>
-                  <div className="pd5-spinner-small"></div>
-                  Submitting...
+                  <div className="pd5-spinner-small" aria-hidden="true"></div>
+                  <span className="pd5-submit-text">Submitting...</span>
                 </>
               ) : (
                 'Submit Interest'
@@ -483,17 +488,14 @@ interface SuccessModalProps {
 }
 
 function SuccessModal({ isOpen, onClose }: SuccessModalProps) {
-  // Handle body scroll when modal opens/closes
   useEffect(() => {
     if (isOpen) {
-      // Save the current scroll position
       const scrollY = window.scrollY;
       document.body.style.position = 'fixed';
       document.body.style.top = `-${scrollY}px`;
       document.body.style.width = '100%';
       document.body.style.overflow = 'hidden';
     } else {
-      // Restore scroll position
       const scrollY = document.body.style.top;
       document.body.style.position = '';
       document.body.style.top = '';
@@ -502,7 +504,6 @@ function SuccessModal({ isOpen, onClose }: SuccessModalProps) {
       window.scrollTo(0, parseInt(scrollY || '0') * -1);
     }
 
-    // Cleanup function
     return () => {
       document.body.style.position = '';
       document.body.style.top = '';
@@ -516,12 +517,12 @@ function SuccessModal({ isOpen, onClose }: SuccessModalProps) {
   return (
     <div className="pd5-modal-overlay">
       <div className="pd5-modal-content pd5-success-modal">
-        <div className="pd5-success-icon">✓</div>
+        <div className="pd5-success-icon" aria-hidden="true">✓</div>
         <h2 className="pd5-success-title">Interest Submitted Successfully!</h2>
         <p className="pd5-success-message">
           Thank you for showing interest in this property. Our team will contact you shortly.
         </p>
-        <button className="pd5-success-button" onClick={onClose}>
+        <button className="pd5-success-button" onClick={onClose} autoFocus>
           OK
         </button>
       </div>
@@ -579,18 +580,14 @@ export default function PropertyDetails() {
         const data = await response.json();
         console.log('API Response Data:', data);
         
-        // Check if we got a success response with property data
         if (data && typeof data === 'object') {
-          // If the response has a success property (like in error responses)
           if (data.success === false) {
             throw new Error(data.message || 'Failed to fetch property');
           }
           
-          // If the response has a property field
           if (data.property) {
             setProperty(data.property);
           } else {
-            // If the response IS the property
             setProperty(data);
           }
         } else {
@@ -687,12 +684,41 @@ export default function PropertyDetails() {
     setShowInterestForm(true);
   };
 
-  const handleInterestSubmit = (formData: InterestFormData) => {
-    console.log('Interest form submitted:', formData);
-    // Here you would typically send the data to your backend
+  const handleInterestSubmit = async (formData: InterestFormData) => {
+  try {
+    const payload = {
+      propertyTitle: property?.title || 'Property',
+      name: formData.name,
+      email: formData.email,
+      phoneNumber: formData.phone,
+      message: formData.message
+    };
+
+    const response = await fetch(
+      'https://realestatebackend-8adg.onrender.com/api/messages',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(errorText || 'Failed to submit interest');
+    }
+
     setShowInterestForm(false);
     setShowSuccessModal(true);
-  };
+    
+  } catch (error) {
+    console.error('Interest submission error:', error);
+    alert('Failed to submit interest. Please try again.');
+  }
+};
+
 
   // Loading state
   if (loading) {
@@ -700,7 +726,7 @@ export default function PropertyDetails() {
       <div className="pd5-property-details-page">
         <Header scrolled={scrolled} />
         <div className="pd5-loading-container">
-          <div className="pd5-spinner"></div>
+          <div className="pd5-spinner" aria-hidden="true"></div>
           <p>Loading property details...</p>
         </div>
         <Footer />
@@ -751,7 +777,7 @@ export default function PropertyDetails() {
       <div className="pd5-property-details-back-container">
         <button className="pd5-property-details-back-btn" onClick={() => navigate('/buy')}>
           <ArrowLeft className="pd5-property-details-back-icon" />
-          Back to Properties
+          <span className="pd5-back-btn-text">Back to Properties</span>
         </button>
       </div>
 
@@ -762,7 +788,7 @@ export default function PropertyDetails() {
             <h1 className="pd5-property-details-title">{property.title}</h1>
             <div className="pd5-property-details-location">
               <MapPin className="pd5-property-details-location-icon" />
-              {getLocation()}
+              <span className="pd5-location-text">{getLocation()}</span>
             </div>
           </div>
           <div className="pd5-property-details-price-section">
@@ -776,22 +802,24 @@ export default function PropertyDetails() {
         {/* Image Gallery */}
         <div className="pd5-property-details-gallery">
           <div className="pd5-property-details-main-image">
-            <img
+            <img 
               src={property.images && property.images.length > 0 ? property.images[activeImage].fileUrl : 'https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg'}
-              alt="Property"
+              alt={property.title}
               className="pd5-property-details-active-image"
+              loading="lazy"
             />
             <div className="pd5-property-details-image-actions">
               <button
                 className={`pd5-property-details-favorite-btn ${isFavorite ? 'pd5-active' : ''}`}
                 onClick={() => setIsFavorite(!isFavorite)}
+                aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
               >
                 <Heart className="pd5-property-details-favorite-icon" />
-                {isFavorite ? 'Saved' : 'Save'}
+                <span className="pd5-favorite-text">{isFavorite ? 'Saved' : 'Save'}</span>
               </button>
-              <button className="pd5-property-details-share-btn" onClick={handleShare}>
+              <button className="pd5-property-details-share-btn" onClick={handleShare} aria-label="Share property">
                 <Share2 className="pd5-property-details-share-icon" />
-                Share
+                <span className="pd5-share-text">Share</span>
               </button>
             </div>
           </div>
@@ -802,8 +830,12 @@ export default function PropertyDetails() {
                   key={index}
                   className={`pd5-property-details-thumbnail ${activeImage === index ? 'pd5-active' : ''}`}
                   onClick={() => setActiveImage(index)}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`View image ${index + 1}`}
+                  onKeyDown={(e) => e.key === 'Enter' && setActiveImage(index)}
                 >
-                  <img src={img.fileUrl} alt={`Thumbnail ${index + 1}`} />
+                  <img src={img.fileUrl} alt={`Thumbnail ${index + 1}`} loading="lazy" />
                 </div>
               ))
             ) : (
@@ -958,7 +990,7 @@ export default function PropertyDetails() {
                   property.features.amenities.map((amenity, index) => (
                     <div key={index} className="pd5-property-details-amenity">
                       <Check className="pd5-property-details-amenity-icon" />
-                      {amenity}
+                      <span className="pd5-amenity-text">{amenity}</span>
                     </div>
                   ))
                 ) : (
@@ -980,12 +1012,12 @@ export default function PropertyDetails() {
                   </div>
                   <div className="pd5-property-details-owner-details">
                     <div className="pd5-property-details-owner-name">
-                      DreamProperties Team
+                      <span className="pd5-owner-name-text">DreamProperties Team</span>
                       <Shield className="pd5-property-details-verified-icon" />
                     </div>
                     <div className="pd5-property-details-owner-rating">
                       <Star className="pd5-property-details-rating-icon" />
-                      4.8/5 (Verified)
+                      <span className="pd5-rating-text">4.8/5 (Verified)</span>
                     </div>
                   </div>
                 </div>
@@ -1011,11 +1043,11 @@ export default function PropertyDetails() {
               <div className="pd5-property-details-contact-actions">
                 <button className="pd5-property-details-interest-btn" onClick={handleSendInterest}>
                   <MessageSquare className="pd5-property-details-interest-icon" />
-                  Send Interest
+                  <span className="pd5-interest-text">Send Interest</span>
                 </button>
                 <button className="pd5-property-details-call-btn" onClick={handleContactOwner}>
                   <Phone className="pd5-property-details-call-icon" />
-                  Call Now
+                  <span className="pd5-call-text">Call Now</span>
                 </button>
               </div>
             </div>

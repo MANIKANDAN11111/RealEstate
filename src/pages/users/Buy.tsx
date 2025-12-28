@@ -4,7 +4,8 @@ import {
   Home, Building2, DollarSign, Megaphone, Phone,
   Facebook, Twitter, Instagram, Linkedin,
   MapPin, Bed, Bath, Maximize, Heart, Search,  
-  ChevronLeft, ChevronRight, MessageCircle  
+  ChevronLeft, ChevronRight, MessageCircle,
+  Menu, X  
 } from 'lucide-react';
 import './Buy.css';
 
@@ -53,6 +54,8 @@ interface HeaderProps {
 }
 
 function Header({ currentPage, scrolled }: HeaderProps) {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  
   const navItems = [
     { name: 'Home', icon: Home, page: 'home', path: '/' },
     { name: 'Buy', icon: Building2, page: 'buy', path: '/buy' },
@@ -61,23 +64,38 @@ function Header({ currentPage, scrolled }: HeaderProps) {
     { name: 'Contact Us', icon: Phone, page: 'contact', path: '/contact' },
   ];
 
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
   return (
     <header className={`sell-header-container ${scrolled ? 'scrolled' : ''}`}>
       <div className="sell-header-content">
         <Link to="/" className="sell-logo-link">
           <img src={AGLogo} alt="PropFinder Logo" className="sell-logo-image" />
           <span className="sell-logo-text">DreamProperties</span>
-        </Link> 
-        
-        <nav className="sell-nav">
+        </Link>
+
+        {/* Mobile Menu Button */}
+        <button 
+          className="sell-mobile-menu-button"
+          onClick={toggleMobileMenu}
+          aria-label="Toggle menu"
+        >
+          {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
+
+        <nav className={`sell-nav ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
           {navItems.map((item) => (
             <Link
               key={item.page}
               to={item.path}
               className={`sell-nav-item ${currentPage === item.page ? 'active' : ''}`}
+              onClick={() => setIsMobileMenuOpen(false)}
+              aria-label={item.name}
             >
               <item.icon className="sell-nav-icon" />
-              <span>{item.name}</span>
+              <span className="sell-nav-text">{item.name}</span>
             </Link>
           ))}
         </nav>
@@ -104,16 +122,16 @@ function Footer() {
               estate easy.
             </p>
             <div className="sell-footer-social">
-              <a href="#" className="sell-social-link">
+              <a href="#" className="sell-social-link" aria-label="Facebook">
                 <Facebook className="sell-social-icon" />
               </a>
-              <a href="#" className="sell-social-link">
+              <a href="#" className="sell-social-link" aria-label="Twitter">
                 <Twitter className="sell-social-icon" />
               </a>
-              <a href="#" className="sell-social-link">
+              <a href="#" className="sell-social-link" aria-label="Instagram">
                 <Instagram className="sell-social-icon" />
               </a>
-              <a href="#" className="sell-social-link">
+              <a href="#" className="sell-social-link" aria-label="LinkedIn">
                 <Linkedin className="sell-social-icon" />
               </a>
             </div>
@@ -204,6 +222,7 @@ function QuickContactButtons() {
         className="quick-contact-btn whatsapp-btn"
         onClick={handleWhatsAppClick}
         title="Chat on WhatsApp"
+        aria-label="Chat on WhatsApp"
       >
         <MessageCircle className="quick-contact-icon" />
         <span className="quick-contact-tooltip">Chat on WhatsApp</span>
@@ -213,6 +232,7 @@ function QuickContactButtons() {
         className="quick-contact-btn call-btn"
         onClick={handleCallClick}
         title="Call Now"
+        aria-label="Call Now"
       >
         <Phone className="quick-contact-icon" />
         <span className="quick-contact-tooltip">Call Now</span>
@@ -222,6 +242,7 @@ function QuickContactButtons() {
         className="quick-contact-btn location-btn"
         onClick={handleLocationClick}
         title="Our Location"
+        aria-label="Our Location"
       >
         <MapPin className="quick-contact-icon" />
         <span className="quick-contact-tooltip">Our Location</span>
@@ -250,7 +271,12 @@ function PropertyCard(props: PropertyCardProps) {
   return (
     <div className="property-card buy-property-card">
       <div className="property-image-container">
-        <img src={props.image} alt={props.title} className="property-image" />
+        <img 
+          src={props.image} 
+          alt={props.title} 
+          className="property-image"
+          loading="lazy"
+        />
         {props.featured && (
           <div className="property-badge featured">Featured</div>
         )}
@@ -260,6 +286,7 @@ function PropertyCard(props: PropertyCardProps) {
         <button 
           className={`favorite-button ${isFavorite ? 'active' : ''}`}
           onClick={() => setIsFavorite(!isFavorite)}
+          aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
         >
           <Heart className="favorite-icon" />
         </button>
@@ -269,24 +296,26 @@ function PropertyCard(props: PropertyCardProps) {
         <h3 className="property-title">{props.title}</h3>
         <div className="property-location">
           <MapPin className="location-icon" />
-          <span>{props.location}</span>
+          <span className="property-location-text">{props.location}</span>
         </div>
         <div className="property-features">
           <div className="feature">
             <Bed className="feature-icon" />
-            <span>{props.beds} Beds</span>
+            <span className="feature-text">{props.beds} Beds</span>
           </div>
           <div className="feature">
             <Bath className="feature-icon" />
-            <span>{props.baths} Baths</span>
+            <span className="feature-text">{props.baths} Baths</span>
           </div>
           <div className="feature">
             <Maximize className="feature-icon" />
-            <span>{props.sqft} sqft</span>
+            <span className="feature-text">{props.sqft} sqft</span>
           </div>
         </div>
         
-      <Link to={`/property/${props.id}`} className="view-details-btn">View Details</Link>
+      <Link to={`/property/${props.id}`} className="view-details-btn">
+        <span className="view-details-text">View Details</span>
+      </Link>
       </div>
     </div>
   );
@@ -314,6 +343,7 @@ function SearchBar() {
             placeholder="Search by city, area or landmark"
             value={location}
             onChange={(e) => setLocation(e.target.value)}
+            aria-label="Search location"
           />
         </div>
 
@@ -322,6 +352,7 @@ function SearchBar() {
             className="search-select"
             value={propertyType}
             onChange={(e) => setPropertyType(e.target.value)}
+            aria-label="Property type filter"
           >
             <option value="all">Property Type</option>
             <option value="apartment">Apartment</option>
@@ -337,6 +368,7 @@ function SearchBar() {
             className="search-select"
             value={priceRange}
             onChange={(e) => setPriceRange(e.target.value)}
+            aria-label="Price range filter"
           >
             <option value="all">Price Range</option>
             <option value="0-50">Under ₹50 L</option>
@@ -351,6 +383,7 @@ function SearchBar() {
             className="search-select"
             value={bedrooms}
             onChange={(e) => setBedrooms(e.target.value)}
+            aria-label="Bedrooms filter"
           >
             <option value="any">Bedrooms</option>
             <option value="1">1 BHK</option>
@@ -360,9 +393,9 @@ function SearchBar() {
           </select>
         </div>
 
-        <button className="search-button" onClick={handleSearch}>
+        <button className="search-button" onClick={handleSearch} aria-label="Search properties">
           <Search className="search-icon" />
-          Search
+          <span className="search-button-text">Search</span>
         </button>
       </div>
     </div>
@@ -382,19 +415,23 @@ function FilterSection() {
   return (
     <div className="filter-section">
       <div className="filter-cities">
-        <h4>Popular Cities</h4>
+        <h4 className="filter-title">Popular Cities</h4>
         <div className="city-tags">
           {cities.map(city => (
-            <button key={city} className="city-tag">{city}</button>
+            <button key={city} className="city-tag" aria-label={`Filter by ${city}`}>
+              <span className="city-tag-text">{city}</span>
+            </button>
           ))}
         </div>
       </div>
       
       <div className="filter-types">
-        <h4>Property Types</h4>
+        <h4 className="filter-title">Property Types</h4>
         <div className="type-tags">
           {propertyTypes.map(type => (
-            <button key={type} className="type-tag">{type}</button>
+            <button key={type} className="type-tag" aria-label={`Filter by ${type}`}>
+              <span className="type-tag-text">{type}</span>
+            </button>
           ))}
         </div>
       </div>
@@ -405,9 +442,9 @@ function FilterSection() {
 // Loading Spinner Component
 function LoadingSpinner() {
   return (
-    <div className="loading-spinner">
-      <div className="spinner"></div>
-      <p>Loading properties...</p>
+    <div className="loading-spinner1">
+      <div className="spinner1" aria-hidden="true"></div>
+      <p className="loading-text1">Loading properties...</p>
     </div>
   );
 }
@@ -615,11 +652,11 @@ export default function Buy() {
         <div className="buy-properties-section">
           <div className="properties-header">
             <h2 className="properties-title">
-              Properties for Sale
+              <span className="properties-title-text">Properties for Sale</span>
               <span className="properties-count"> ({allProperties.length} properties)</span>
             </h2>
             <div className="properties-sort">
-              <select className="sort-select">
+              <select className="sort-select" aria-label="Sort properties">
                 <option value="newest">Sort by: Newest</option>
                 <option value="price-low">Price: Low to High</option>
                 <option value="price-high">Price: High to Low</option>
@@ -648,9 +685,10 @@ export default function Buy() {
                   className="pagination-button prev"
                   onClick={() => handlePageChange(currentPage - 1)}
                   disabled={currentPage === 1}
+                  aria-label="Previous page"
                 >
                   <ChevronLeft className="pagination-icon" />
-                  Previous
+                  <span className="pagination-text">Previous</span>
                 </button>
                 
                 <div className="page-numbers">
@@ -659,8 +697,10 @@ export default function Buy() {
                       key={number}
                       className={`page-number ${currentPage === number ? 'active' : ''}`}
                       onClick={() => handlePageChange(number)}
+                      aria-label={`Go to page ${number}`}
+                      aria-current={currentPage === number ? 'page' : undefined}
                     >
-                      {number}
+                      <span className="page-number-text">{number}</span>
                     </button>
                   ))}
                 </div>
@@ -669,8 +709,9 @@ export default function Buy() {
                   className="pagination-button next"
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={currentPage === totalPages}
+                  aria-label="Next page"
                 >
-                  Next
+                  <span className="pagination-text">Next</span>
                   <ChevronRight className="pagination-icon" />
                 </button>
               </div>

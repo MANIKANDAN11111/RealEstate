@@ -333,74 +333,7 @@ const DashboardHome = () => {
 
       {/* Main Content Area */}
       <div className="main-content-area">
-        {/* Revenue Chart Card */}
-        <div className="card revenue-card full-width">
-          <div className="card-header">
-            <div className="card-title-section">
-              <h3>Revenue Overview</h3>
-              <p>Monthly revenue trends</p>
-            </div>
-            {/* <div className="card-actions">
-              <div className="time-select-wrapper">
-                <select className="time-select">
-                  <option>Last 30 days</option>
-                  <option>Last 90 days</option>
-                  <option>This Year</option>
-                  <option>Last Year</option>
-                  <option>Custom Range</option>
-                </select>
-                <span className="select-arrow">▼</span>
-              </div>
-            </div> */}
-          </div>
-          <div className="card-content">
-            <div className="revenue-chart">
-              <div className="chart-bars">
-                {revenueData.current.map((value, index) => (
-                  <div key={index} className="chart-bar-group">
-                    <div className="bar-container">
-                      <div 
-                        className="bar previous" 
-                        style={{ height: `${revenueData.previous[index]}%` }}
-                        title={`Previous: $${revenueData.previous[index]}k`}
-                      ></div>
-                      <div 
-                        className="bar current" 
-                        style={{ height: `${value}%` }}
-                        title={`Current: $${value}k`}
-                      ></div>
-                    </div>
-                    <span className="bar-label">{revenueData.labels[index]}</span>
-                  </div>
-                ))}
-              </div>
-              <div className="chart-legend">
-                <div className="legend-item">
-                  <span className="legend-dot current"></span>
-                  <span className="legend-text">Current Month</span>
-                </div>
-                <div className="legend-item">
-                  <span className="legend-dot previous"></span>
-                  <span className="legend-text">Previous Month</span>
-                </div>
-              </div>
-            </div>
-            <div className="revenue-summary">
-              <div className="summary-item">
-                <span className="summary-label">Total Revenue</span>
-                <span className="summary-value">$845,250</span>
-              </div>
-              <div className="summary-item">
-                <span className="summary-label">Growth Rate</span>
-                <span className="summary-value positive">+12.8%</span>
-              </div>
-              <div className="summary-item">
-                <span className="summary-label">Avg. Monthly</span>
-                <span className="summary-value">$70,438</span>
-              </div>
-            </div>
-          </div>
-        </div>
+       
 
         {/* First Row: Quick Links and System Overview */}
         <div className="combined-cards-row">

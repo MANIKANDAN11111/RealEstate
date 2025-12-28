@@ -3,7 +3,8 @@ import { Link, useLocation } from 'react-router-dom';
 import {
   Home, Building2, DollarSign, Megaphone, Phone,
   Facebook, Twitter, Instagram, Linkedin, Upload,
-  MessageCircle, MapPin
+  MessageCircle, MapPin,
+  Menu, X
 } from 'lucide-react';
 import './AdvertiseProperty.css';
 import AGLogo from '../../assets/AG_logo.jpeg';
@@ -15,6 +16,8 @@ interface HeaderProps {
 }
 
 function Header({ currentPage, scrolled }: HeaderProps) {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  
   const navItems = [
     { name: 'Home', icon: Home, page: 'home', path: '/' },
     { name: 'Buy', icon: Building2, page: 'buy', path: '/buy' },
@@ -22,6 +25,10 @@ function Header({ currentPage, scrolled }: HeaderProps) {
     { name: 'Advertise Property', icon: Megaphone, page: 'advertise', path: '/advertise' },
     { name: 'Contact Us', icon: Phone, page: 'contact', path: '/contact' },
   ];
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
 
   return (
     <header className={`advertise-header-container ${scrolled ? 'scrolled' : ''}`}>
@@ -31,15 +38,26 @@ function Header({ currentPage, scrolled }: HeaderProps) {
           <span className="advertise-logo-text">DreamProperties</span>
         </Link>
 
-        <nav className="advertise-nav">
+        {/* Mobile Menu Button */}
+        <button 
+          className="advertise-mobile-menu-button"
+          onClick={toggleMobileMenu}
+          aria-label="Toggle menu"
+        >
+          {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
+
+        <nav className={`advertise-nav ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
           {navItems.map((item) => (
             <Link
               key={item.page}
               to={item.path}
               className={`advertise-nav-item ${currentPage === item.page ? 'active' : ''}`}
+              onClick={() => setIsMobileMenuOpen(false)}
+              aria-label={item.name}
             >
               <item.icon className="advertise-nav-icon" />
-              <span>{item.name}</span>
+              <span className="advertise-nav-text">{item.name}</span>
             </Link>
           ))}
         </nav>
@@ -66,16 +84,16 @@ function Footer() {
               estate easy.
             </p>
             <div className="advertise-footer-social">
-              <a href="#" className="advertise-social-link">
+              <a href="#" className="advertise-social-link" aria-label="Facebook">
                 <Facebook className="advertise-social-icon" />
               </a>
-              <a href="#" className="advertise-social-link">
+              <a href="#" className="advertise-social-link" aria-label="Twitter">
                 <Twitter className="advertise-social-icon" />
               </a>
-              <a href="#" className="advertise-social-link">
+              <a href="#" className="advertise-social-link" aria-label="Instagram">
                 <Instagram className="advertise-social-icon" />
               </a>
-              <a href="#" className="advertise-social-link">
+              <a href="#" className="advertise-social-link" aria-label="LinkedIn">
                 <Linkedin className="advertise-social-icon" />
               </a>
             </div>
@@ -166,6 +184,7 @@ function QuickContactButtons() {
         className="quick-contact-btn whatsapp-btn"
         onClick={handleWhatsAppClick}
         title="Chat on WhatsApp"
+        aria-label="Chat on WhatsApp"
       >
         <MessageCircle className="quick-contact-icon" />
         <span className="quick-contact-tooltip">Chat on WhatsApp</span>
@@ -175,6 +194,7 @@ function QuickContactButtons() {
         className="quick-contact-btn call-btn"
         onClick={handleCallClick}
         title="Call Now"
+        aria-label="Call Now"
       >
         <Phone className="quick-contact-icon" />
         <span className="quick-contact-tooltip">Call Now</span>
@@ -184,6 +204,7 @@ function QuickContactButtons() {
         className="quick-contact-btn location-btn"
         onClick={handleLocationClick}
         title="Our Location"
+        aria-label="Our Location"
       >
         <MapPin className="quick-contact-icon" />
         <span className="quick-contact-tooltip">Our Location</span>
@@ -270,88 +291,88 @@ const Advertise: React.FC = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (!isRobotVerified) {
-    alert('Please verify that you are not a robot');
-    return;
-  }
-
-  if (
-    !formData.name ||
-    !formData.mobileNo ||
-    !formData.propertyType ||
-    !formData.userType ||
-    !formData.propertyLocation
-  ) {
-    alert('Please fill all required fields');
-    return;
-  }
-
-  if (formData.mobileNo.length !== 10) {
-    alert('Please enter a valid 10-digit mobile number');
-    return;
-  }
-
-  if (formData.email) {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
-      alert('Please enter a valid email address');
+    if (!isRobotVerified) {
+      alert('Please verify that you are not a robot');
       return;
     }
-  }
 
-  setIsSubmitting(true);
-
-  const payload = {
-    name: formData.name,
-    email: formData.email || "NA",
-    mobileNo: formData.mobileNo,
-    whatsappNo: formData.whatsappNo || "NA",
-    propertyType: formData.propertyType,
-    userType: formData.userType,
-    propertyLocation: formData.propertyLocation
-  };
-
-  try {
-    const response = await fetch(
-      "https://realestatebackend-8adg.onrender.com/api/sell",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(payload)
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error("Failed to submit sell request");
+    if (
+      !formData.name ||
+      !formData.mobileNo ||
+      !formData.propertyType ||
+      !formData.userType ||
+      !formData.propertyLocation
+    ) {
+      alert('Please fill all required fields');
+      return;
     }
 
-    setShowSuccess(true);
+    if (formData.mobileNo.length !== 10) {
+      alert('Please enter a valid 10-digit mobile number');
+      return;
+    }
 
-    setTimeout(() => {
-      setFormData({
-        name: '',
-        email: '',
-        mobileNo: '',
-        whatsappNo: '',
-        propertyType: '',
-        userType: '',
-        propertyLocation: ''
-      });
-      setIsRobotVerified(false);
-      setShowSuccess(false);
-    }, 3000);
+    if (formData.email) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(formData.email)) {
+        alert('Please enter a valid email address');
+        return;
+      }
+    }
 
-  } catch (error) {
-    console.error('Error submitting form:', error);
-    alert('Error submitting form. Please try again.');
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+    setIsSubmitting(true);
+
+    const payload = {
+      name: formData.name,
+      email: formData.email || "NA",
+      mobileNo: formData.mobileNo,
+      whatsappNo: formData.whatsappNo || "NA",
+      propertyType: formData.propertyType,
+      userType: formData.userType,
+      propertyLocation: formData.propertyLocation
+    };
+
+    try {
+      const response = await fetch(
+        "https://realestatebackend-8adg.onrender.com/api/sell",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to submit sell request");
+      }
+
+      setShowSuccess(true);
+
+      setTimeout(() => {
+        setFormData({
+          name: '',
+          email: '',
+          mobileNo: '',
+          whatsappNo: '',
+          propertyType: '',
+          userType: '',
+          propertyLocation: ''
+        });
+        setIsRobotVerified(false);
+        setShowSuccess(false);
+      }, 3000);
+
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      alert('Error submitting form. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const handleRobotCheck = () => {
     setIsRobotVerified(!isRobotVerified);
@@ -359,20 +380,14 @@ const Advertise: React.FC = () => {
 
   const scrollToForm = () => {
     if (formRef.current) {
-      formRef.current.scrollIntoView({ 
-        behavior: 'smooth', 
-        block: 'start'
+      const headerHeight = document.querySelector('.advertise-header-container')?.clientHeight || 80;
+      const elementPosition = formRef.current.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - headerHeight - 20;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
       });
-      
-      // Add a small delay then adjust for header
-      setTimeout(() => {
-        const headerHeight = 80;
-        const currentScrollPos = window.pageYOffset;
-        window.scrollTo({
-          top: currentScrollPos - headerHeight - 20,
-          behavior: 'smooth'
-        });
-      }, 100);
     }
   };
 
@@ -394,9 +409,10 @@ const Advertise: React.FC = () => {
           <button 
             className="advertise-hero-button primary"
             onClick={scrollToForm}
+            aria-label="Start listing your property"
           >
             <Upload className="advertise-hero-button-icon" />
-            Start Listing Now
+            <span className="advertise-hero-button-text">Start Listing Now</span>
           </button>
         </div>
       </div>
@@ -406,7 +422,7 @@ const Advertise: React.FC = () => {
         <div className="advertise-container">
           {/* Success Message */}
           {showSuccess && (
-            <div className="advertise-success-message">
+            <div className="advertise-success-message" role="alert" aria-live="polite">
               <div className="advertise-success-icon">✓</div>
               <h3>Form Submitted Successfully!</h3>
               <p>Our team will contact you within 24 hours.</p>
@@ -419,7 +435,7 @@ const Advertise: React.FC = () => {
               <p className="advertise-form-subtitle">Fill the form below and get the best offers from verified buyers</p>
             </div>
 
-            <form className="advertise-form-content" onSubmit={handleSubmit}>
+            <form className="advertise-form-content" onSubmit={handleSubmit} noValidate>
               {/* Form Fields Grid */}
               <div className="advertise-form-grid">
                 {/* Name Field */}
@@ -428,7 +444,7 @@ const Advertise: React.FC = () => {
                     Your Name *
                   </label>
                   <div className="advertise-input-wrapper">
-                    <div className="advertise-input-icon">👤</div>
+                    <div className="advertise-input-icon" aria-hidden="true">👤</div>
                     <input
                       type="text"
                       id="name"
@@ -438,6 +454,7 @@ const Advertise: React.FC = () => {
                       value={formData.name}
                       onChange={handleChange}
                       required
+                      aria-required="true"
                     />
                   </div>
                 </div>
@@ -449,7 +466,7 @@ const Advertise: React.FC = () => {
                     <span className="advertise-optional-label">(Optional)</span>
                   </label>
                   <div className="advertise-input-wrapper">
-                    <div className="advertise-input-icon">✉️</div>
+                    <div className="advertise-input-icon" aria-hidden="true">✉️</div>
                     <input
                       type="email"
                       id="email"
@@ -458,8 +475,10 @@ const Advertise: React.FC = () => {
                       placeholder="Email Address"
                       value={formData.email}
                       onChange={handleChange}
+                      aria-describedby="email-hint"
                     />
                   </div>
+                  <p id="email-hint" className="advertise-input-hint advertise-optional">Optional - For updates and notifications</p>
                 </div>
 
                 {/* Mobile Number */}
@@ -468,7 +487,7 @@ const Advertise: React.FC = () => {
                     Mobile No *
                   </label>
                   <div className="advertise-phone-input-wrapper">
-                    <div className="advertise-country-code">
+                    <div className="advertise-country-code" aria-hidden="true">
                       <span className="advertise-country-flag">🇮🇳</span>
                       <span className="advertise-country-number">+91</span>
                     </div>
@@ -481,9 +500,13 @@ const Advertise: React.FC = () => {
                       value={formData.mobileNo}
                       onChange={(e) => handlePhoneChange(e, 'mobileNo')}
                       required
+                      aria-required="true"
+                      pattern="[0-9]{10}"
+                      inputMode="numeric"
+                      aria-describedby="mobile-hint"
                     />
                   </div>
-                  <p className="advertise-input-hint">10-digit mobile number</p>
+                  <p id="mobile-hint" className="advertise-input-hint">10-digit mobile number</p>
                 </div>
 
                 {/* WhatsApp Number */}
@@ -493,7 +516,7 @@ const Advertise: React.FC = () => {
                     <span className="advertise-optional-label">(For Quick Response)</span>
                   </label>
                   <div className="advertise-phone-input-wrapper">
-                    <div className="advertise-country-code">
+                    <div className="advertise-country-code" aria-hidden="true">
                       <span className="advertise-country-flag">📱</span>
                       <span className="advertise-country-number">+91</span>
                     </div>
@@ -505,9 +528,12 @@ const Advertise: React.FC = () => {
                       placeholder="98765 43210"
                       value={formData.whatsappNo}
                       onChange={(e) => handlePhoneChange(e, 'whatsappNo')}
+                      pattern="[0-9]{10}"
+                      inputMode="numeric"
+                      aria-describedby="whatsapp-hint"
                     />
                   </div>
-                  <p className="advertise-input-hint advertise-optional">Optional</p>
+                  <p id="whatsapp-hint" className="advertise-input-hint advertise-optional">Optional - For WhatsApp communication</p>
                 </div>
 
                 {/* Property Type */}
@@ -516,7 +542,7 @@ const Advertise: React.FC = () => {
                     Property Type *
                   </label>
                   <div className="advertise-select-wrapper">
-                    <div className="advertise-select-icon">🏠</div>
+                    <div className="advertise-select-icon" aria-hidden="true">🏠</div>
                     <select
                       id="propertyType"
                       name="propertyType"
@@ -524,13 +550,14 @@ const Advertise: React.FC = () => {
                       value={formData.propertyType}
                       onChange={handleChange}
                       required
+                      aria-required="true"
                     >
                       <option value="">- Select Property Type -</option>
                       {propertyTypes.map(type => (
                         <option key={type} value={type}>{type}</option>
                       ))}
                     </select>
-                    <div className="advertise-select-arrow">▼</div>
+                    <div className="advertise-select-arrow" aria-hidden="true">▼</div>
                   </div>
                 </div>
 
@@ -540,7 +567,7 @@ const Advertise: React.FC = () => {
                     You are *
                   </label>
                   <div className="advertise-select-wrapper">
-                    <div className="advertise-select-icon">👥</div>
+                    <div className="advertise-select-icon" aria-hidden="true">👥</div>
                     <select
                       id="userType"
                       name="userType"
@@ -548,13 +575,14 @@ const Advertise: React.FC = () => {
                       value={formData.userType}
                       onChange={handleChange}
                       required
+                      aria-required="true"
                     >
                       <option value="">- Select Your Role -</option>
                       {userTypes.map(type => (
                         <option key={type} value={type}>{type}</option>
                       ))}
                     </select>
-                    <div className="advertise-select-arrow">▼</div>
+                    <div className="advertise-select-arrow" aria-hidden="true">▼</div>
                   </div>
                 </div>
 
@@ -564,7 +592,7 @@ const Advertise: React.FC = () => {
                     Property Location *
                   </label>
                   <div className="advertise-input-wrapper">
-                    <div className="advertise-input-icon">📍</div>
+                    <div className="advertise-input-icon" aria-hidden="true">📍</div>
                     <input
                       type="text"
                       id="propertyLocation"
@@ -574,6 +602,7 @@ const Advertise: React.FC = () => {
                       value={formData.propertyLocation}
                       onChange={handleChange}
                       required
+                      aria-required="true"
                     />
                   </div>
                 </div>
@@ -584,9 +613,16 @@ const Advertise: React.FC = () => {
                 <div 
                   className={`advertise-robot-checkbox ${isRobotVerified ? 'checked' : ''}`}
                   onClick={handleRobotCheck}
-                  role="button"
+                  role="checkbox"
                   tabIndex={0}
-                  onKeyDown={(e) => e.key === 'Enter' && handleRobotCheck()}
+                  aria-checked={isRobotVerified}
+                  aria-label="I'm not a robot verification"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      handleRobotCheck();
+                    }
+                  }}
                 >
                   <div className="advertise-robot-checkmark">✓</div>
                 </div>
@@ -598,11 +634,12 @@ const Advertise: React.FC = () => {
                 type="submit" 
                 className={`advertise-submit-btn ${isSubmitting ? 'submitting' : ''}`}
                 disabled={isSubmitting || !isRobotVerified}
+                aria-busy={isSubmitting}
               >
                 {isSubmitting ? (
                   <>
-                    <span className="advertise-spinner"></span>
-                    SENDING...
+                    <span className="advertise-spinner" aria-hidden="true"></span>
+                    <span className="advertise-submit-text">SENDING...</span>
                   </>
                 ) : (
                   'SUBMIT ADVERTISE REQUEST'

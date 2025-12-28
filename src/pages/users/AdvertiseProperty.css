@@ -1,3 +1,5 @@
+/* AdvertiseProperty.css - Full Mobile Responsive Styles */
+
 /* Reset and Base Styles */
 * {
   margin: 0;
@@ -10,6 +12,8 @@
   display: flex;
   flex-direction: column;
   background: #f8f9fa;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* Quick Contact Floating Buttons */
@@ -50,6 +54,9 @@
   font-size: 1.4rem;
   color: white;
   overflow: hidden;
+  min-width: 60px;
+  min-height: 60px;
+  touch-action: manipulation;
 }
 
 .quick-contact-btn::before {
@@ -138,6 +145,8 @@
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  will-change: transform;
+  backface-visibility: hidden;
 }
 
 .advertise-header-container.scrolled {
@@ -152,6 +161,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  position: relative;
+  flex-wrap: wrap;
 }
 
 .advertise-logo-link {
@@ -159,6 +170,8 @@
   align-items: center;
   gap: 0.75rem;
   text-decoration: none;
+  z-index: 1001;
+  min-width: max-content;
 }
 
 .advertise-logo-image {
@@ -167,6 +180,7 @@
   border-radius: 8px;
   object-fit: cover;
   border: 2px solid #2c3e50;
+  flex-shrink: 0;
 }
 
 .advertise-logo-text {
@@ -177,12 +191,42 @@
   -webkit-text-fill-color: transparent;
   background-clip: text;
   letter-spacing: -0.5px;
+  white-space: nowrap;
+}
+
+/* Mobile Menu Button */
+.advertise-mobile-menu-button {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #2c3e50;
+  z-index: 1001;
+  padding: 0.5rem;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  min-width: 44px;
+  min-height: 44px;
+  touch-action: manipulation;
+}
+
+.advertise-mobile-menu-button:hover {
+  background: rgba(44, 62, 80, 0.1);
 }
 
 .advertise-nav {
   display: flex;
   gap: 0.5rem;
   align-items: center;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-bottom: 0.5rem;
+}
+
+.advertise-nav::-webkit-scrollbar {
+  display: none;
 }
 
 .advertise-nav-item {
@@ -198,6 +242,10 @@
   font-size: 0.95rem;
   position: relative;
   overflow: hidden;
+  flex-shrink: 0;
+  min-height: 44px;
+  min-width: 44px;
+  touch-action: manipulation;
 }
 
 .advertise-nav-item::before {
@@ -231,6 +279,11 @@
 .advertise-nav-icon {
   width: 18px;
   height: 18px;
+  flex-shrink: 0;
+}
+
+.advertise-nav-text {
+  white-space: nowrap;
 }
 
 /* Hero Section */
@@ -246,6 +299,8 @@
   text-align: center;
   position: relative;
   overflow: hidden;
+  will-change: transform;
+  backface-visibility: hidden;
 }
 
 .advertise-hero-section::before {
@@ -272,6 +327,7 @@
   margin-bottom: 1.5rem;
   line-height: 1.2;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  -webkit-text-size-adjust: 100%;
 }
 
 .advertise-hero-subtitle {
@@ -279,6 +335,7 @@
   margin-bottom: 3rem;
   color: #ecf0f1;
   line-height: 1.6;
+  -webkit-text-size-adjust: 100%;
 }
 
 .advertise-hero-button {
@@ -294,6 +351,9 @@
   transition: all 0.3s ease;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  min-height: 44px;
+  min-width: 44px;
+  touch-action: manipulation;
 }
 
 .advertise-hero-button.primary {
@@ -314,17 +374,26 @@
 .advertise-hero-button-icon {
   width: 20px;
   height: 20px;
+  flex-shrink: 0;
+}
+
+.advertise-hero-button-text {
+  white-space: nowrap;
 }
 
 /* Form Section */
 .advertise-form-section {
   padding: 4rem 2rem;
   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  min-height: calc(100vh - 80px);
+  display: flex;
+  align-items: center;
 }
 
 .advertise-container {
   max-width: 1200px;
   margin: 0 auto;
+  width: 100%;
 }
 
 /* Form Card */
@@ -334,6 +403,7 @@
   box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   transition: transform 0.3s ease;
+  will-change: transform;
 }
 
 .advertise-form-card:hover {
@@ -355,6 +425,8 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  -webkit-text-size-adjust: 100%;
+  line-height: 1.2;
 }
 
 .advertise-form-subtitle {
@@ -363,6 +435,7 @@
   max-width: 600px;
   margin: 0 auto;
   line-height: 1.6;
+  -webkit-text-size-adjust: 100%;
 }
 
 /* Form Content */
@@ -398,6 +471,7 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  flex-wrap: wrap;
 }
 
 .advertise-optional-label {
@@ -422,6 +496,7 @@
   color: #3498db;
   font-size: 1.1rem;
   z-index: 1;
+  pointer-events: none;
 }
 
 .advertise-form-input {
@@ -434,6 +509,8 @@
   background: #f8f9fa;
   color: #2c3e50;
   font-weight: 500;
+  min-height: 48px;
+  touch-action: manipulation;
 }
 
 .advertise-form-input:focus {
@@ -451,6 +528,7 @@
 .advertise-phone-input-wrapper {
   display: flex;
   gap: 0.5rem;
+  align-items: center;
 }
 
 .advertise-country-code {
@@ -465,6 +543,7 @@
   color: white;
   min-width: 100px;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .advertise-country-flag {
@@ -485,6 +564,9 @@
   background: #f8f9fa;
   color: #2c3e50;
   font-weight: 500;
+  min-height: 48px;
+  touch-action: manipulation;
+  width: 100%;
 }
 
 .advertise-phone-input:focus {
@@ -499,6 +581,7 @@
   color: #95a5a6;
   margin-top: 0.25rem;
   margin-left: 0.5rem;
+  line-height: 1.4;
 }
 
 .advertise-optional {
@@ -518,6 +601,7 @@
   color: #3498db;
   font-size: 1.1rem;
   z-index: 1;
+  pointer-events: none;
 }
 
 .advertise-form-select {
@@ -532,6 +616,8 @@
   cursor: pointer;
   transition: all 0.3s ease;
   font-weight: 500;
+  min-height: 48px;
+  touch-action: manipulation;
 }
 
 .advertise-form-select:focus {
@@ -561,6 +647,9 @@
   cursor: pointer;
   transition: background-color 0.3s ease;
   border: 2px solid #e0e0e0;
+  touch-action: manipulation;
+  min-height: 44px;
+  min-width: 44px;
 }
 
 .advertise-robot-check-section:hover {
@@ -577,6 +666,9 @@
   justify-content: center;
   transition: all 0.3s ease;
   background: white;
+  flex-shrink: 0;
+  min-width: 28px;
+  min-height: 28px;
 }
 
 .advertise-robot-checkbox.checked {
@@ -601,6 +693,7 @@
   color: #2c3e50;
   font-weight: 600;
   user-select: none;
+  line-height: 1.4;
 }
 
 /* Submit Button */
@@ -622,6 +715,8 @@
   letter-spacing: 0.5px;
   text-transform: uppercase;
   box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+  min-height: 48px;
+  touch-action: manipulation;
 }
 
 .advertise-submit-btn:hover:not(:disabled) {
@@ -648,10 +743,15 @@
   border-top-color: white;
   border-radius: 50%;
   animation: advertise-spin 0.8s linear infinite;
+  flex-shrink: 0;
 }
 
 @keyframes advertise-spin {
   to { transform: rotate(360deg); }
+}
+
+.advertise-submit-text {
+  white-space: nowrap;
 }
 
 /* Success Message */
@@ -670,6 +770,7 @@
   border: 3px solid #2ecc71;
   max-width: 500px;
   width: 90%;
+  will-change: transform;
 }
 
 @keyframes advertise-fadeIn {
@@ -690,6 +791,7 @@
   font-weight: bold;
   margin: 0 auto 1.5rem;
   box-shadow: 0 10px 25px rgba(46, 204, 113, 0.3);
+  flex-shrink: 0;
 }
 
 .advertise-success-message h3 {
@@ -697,12 +799,16 @@
   margin-bottom: 0.5rem;
   font-size: 1.8rem;
   font-weight: 700;
+  line-height: 1.2;
+  -webkit-text-size-adjust: 100%;
 }
 
 .advertise-success-message p {
   color: #7f8c8d;
   font-size: 1.1rem;
   font-weight: 500;
+  line-height: 1.4;
+  -webkit-text-size-adjust: 100%;
 }
 
 /* Footer Styles */
@@ -744,6 +850,7 @@
   -webkit-text-fill-color: transparent;
   background-clip: text;
   letter-spacing: -0.5px;
+  line-height: 1.2;
 }
 
 .advertise-footer-description {
@@ -756,6 +863,7 @@
   display: flex;
   gap: 1rem;
   margin-top: 1rem;
+  flex-wrap: wrap;
 }
 
 .advertise-social-link {
@@ -767,6 +875,9 @@
   background: rgba(255, 255, 255, 0.1);
   border-radius: 50%;
   transition: all 0.3s ease;
+  min-width: 40px;
+  min-height: 40px;
+  touch-action: manipulation;
 }
 
 .advertise-social-link:hover {
@@ -786,6 +897,7 @@
   font-weight: 700;
   margin-bottom: 1rem;
   color: white;
+  line-height: 1.2;
 }
 
 .advertise-footer-links {
@@ -808,6 +920,12 @@
   font-size: 0.95rem;
   transition: all 0.3s ease;
   font-weight: 500;
+  line-height: 1.4;
+  min-height: 44px;
+  min-width: 44px;
+  display: flex;
+  align-items: center;
+  touch-action: manipulation;
 }
 
 .advertise-footer-link:hover {
@@ -825,9 +943,14 @@
   color: #95a5a6;
   font-size: 0.9rem;
   font-weight: 500;
+  line-height: 1.4;
 }
 
-/* Responsive Design */
+/* ================================ */
+/* RESPONSIVE MEDIA QUERIES */
+/* ================================ */
+
+/* Tablet Landscape (1200px and below) */
 @media (max-width: 1200px) {
   .advertise-footer-content {
     grid-template-columns: repeat(2, 1fr);
@@ -842,42 +965,94 @@
   .quick-contact-btn {
     width: 55px;
     height: 55px;
+    min-width: 55px;
+    min-height: 55px;
+  }
+  
+  .advertise-form-content {
+    padding: 2.5rem;
   }
 }
 
+/* Tablet Portrait (992px and below) */
 @media (max-width: 992px) {
   .advertise-hero-title {
     font-size: 2.8rem;
+    margin-bottom: 1.25rem;
   }
   
   .advertise-form-title {
     font-size: 2.2rem;
+    line-height: 1.2;
   }
   
   .advertise-form-grid {
     grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+  
+  .advertise-form-group {
+    gap: 0.4rem;
+  }
+  
+  .advertise-form-content {
+    padding: 2rem;
+  }
+  
+  .advertise-phone-input-wrapper {
+    align-items: stretch;
+  }
+  
+  .advertise-country-code {
+    min-width: 90px;
+    padding: 0.875rem 0.75rem;
   }
 }
 
+/* Tablet and Mobile (768px and below) */
 @media (max-width: 768px) {
   .advertise-header-content {
     padding: 1rem;
-    flex-direction: column;
+    flex-direction: row;
     gap: 1rem;
   }
   
-  .advertise-nav {
-    width: 100%;
-    overflow-x: auto;
-    padding-bottom: 0.5rem;
+  .advertise-mobile-menu-button {
+    display: block;
   }
   
-  .advertise-nav-item span {
-    display: none;
+  .advertise-nav {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 280px;
+    height: 100vh;
+    background: white;
+    flex-direction: column;
+    padding: 80px 2rem 2rem;
+    gap: 0.5rem;
+    transition: right 0.3s ease;
+    box-shadow: -5px 0 25px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    align-items: stretch;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .advertise-nav.mobile-open {
+    right: 0;
   }
   
   .advertise-nav-item {
-    padding: 0.5rem 1rem;
+    padding: 1rem;
+    border-radius: 8px;
+    justify-content: flex-start;
+    gap: 1rem;
+  }
+  
+  .advertise-nav-item span {
+    display: block;
+    font-size: 1rem;
   }
   
   .advertise-nav-icon {
@@ -887,100 +1062,205 @@
   
   .advertise-hero-section {
     padding: 4rem 1rem;
-    margin-top: 120px;
+    margin-top: 80px;
+    background-attachment: scroll;
   }
   
   .advertise-hero-title {
     font-size: 2.2rem;
+    line-height: 1.2;
   }
   
   .advertise-hero-subtitle {
     font-size: 1.1rem;
+    line-height: 1.5;
+  }
+  
+  .advertise-hero-button {
+    padding: 0.875rem 1.5rem;
+    font-size: 1rem;
+    min-height: 44px;
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+  }
+  
+  .advertise-hero-button-text {
+    font-size: 0.95rem;
   }
   
   .advertise-form-section {
     padding: 2rem 1rem;
-  }
-  
-  .advertise-form-content {
-    padding: 2rem;
-  }
-  
-  .advertise-phone-input-wrapper {
-    flex-direction: column;
-  }
-  
-  .advertise-country-code {
-    min-width: auto;
-    justify-content: flex-start;
-    padding: 0.875rem 1rem;
-  }
-  
-  .advertise-form-title {
-    font-size: 1.8rem;
-  }
-  
-  .advertise-form-subtitle {
-    font-size: 1rem;
-  }
-  
-  .quick-contact-buttons {
-    right: 15px;
-    bottom: 15px;
-  }
-  
-  .quick-contact-btn {
-    width: 50px;
-    height: 50px;
-  }
-  
-  .quick-contact-icon {
-    width: 20px;
-    height: 20px;
-  }
-}
-
-@media (max-width: 480px) {
-  .advertise-form-header {
-    padding: 2rem 1rem;
-  }
-  
-  .advertise-form-title {
-    font-size: 1.6rem;
+    min-height: auto;
   }
   
   .advertise-form-content {
     padding: 1.5rem;
   }
   
+  .advertise-form-header {
+    padding: 2rem 1.5rem;
+  }
+  
+  .advertise-form-title {
+    font-size: 1.8rem;
+    line-height: 1.2;
+  }
+  
+  .advertise-form-subtitle {
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+  
+  .advertise-phone-input-wrapper {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .advertise-country-code {
+    min-width: auto;
+    justify-content: flex-start;
+    padding: 0.875rem 1rem;
+    width: 100%;
+    max-width: 150px;
+  }
+  
+  .advertise-phone-input {
+    width: 100%;
+  }
+  
+  .advertise-form-input,
+  .advertise-phone-input,
+  .advertise-form-select {
+    font-size: 16px; /* Prevent iOS zoom */
+    min-height: 48px;
+  }
+  
+  .quick-contact-buttons {
+    right: 15px;
+    bottom: 70px;
+  }
+  
+  .quick-contact-btn {
+    width: 50px;
+    height: 50px;
+    min-width: 50px;
+    min-height: 50px;
+  }
+  
+  .quick-contact-icon {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .quick-contact-tooltip {
+    display: none;
+  }
+  
+  .advertise-form-group {
+    gap: 0.5rem;
+  }
+  
+  .advertise-form-label {
+    font-size: 0.85rem;
+    line-height: 1.2;
+  }
+  
+  .advertise-input-hint {
+    font-size: 0.7rem;
+    line-height: 1.3;
+  }
+  
+  .advertise-robot-check-section {
+    padding: 1.25rem;
+    margin: 1.5rem 0;
+    flex-wrap: wrap;
+  }
+  
+  .advertise-robot-text {
+    font-size: 0.95rem;
+    line-height: 1.3;
+  }
+  
+  .advertise-submit-btn {
+    padding: 1rem 1.5rem;
+    font-size: 1rem;
+    min-height: 44px;
+  }
+}
+
+/* Mobile Portrait (480px and below) */
+@media (max-width: 480px) {
+  .advertise-form-header {
+    padding: 1.5rem 1rem;
+  }
+  
+  .advertise-form-title {
+    font-size: 1.6rem;
+    line-height: 1.2;
+  }
+  
+  .advertise-form-subtitle {
+    font-size: 0.95rem;
+    line-height: 1.4;
+  }
+  
+  .advertise-form-content {
+    padding: 1.25rem;
+  }
+  
   .advertise-footer-content {
     grid-template-columns: 1fr;
+    gap: 2rem;
   }
   
   .advertise-footer-section {
     text-align: center;
+    align-items: center;
   }
   
   .advertise-footer-social {
     justify-content: center;
   }
   
+  .advertise-footer-links {
+    align-items: center;
+  }
+  
+  .advertise-footer-link {
+    justify-content: center;
+  }
+  
   .advertise-success-message {
-    padding: 2rem;
+    padding: 2rem 1.5rem;
   }
   
   .advertise-success-message h3 {
     font-size: 1.4rem;
+    line-height: 1.2;
+  }
+  
+  .advertise-success-message p {
+    font-size: 1rem;
+    line-height: 1.4;
+  }
+  
+  .advertise-success-icon {
+    width: 60px;
+    height: 60px;
+    font-size: 28px;
   }
   
   .quick-contact-buttons {
     right: 10px;
-    bottom: 10px;
+    bottom: 70px;
   }
   
   .quick-contact-btn {
     width: 45px;
     height: 45px;
+    min-width: 45px;
+    min-height: 45px;
   }
   
   .quick-contact-icon {
@@ -988,7 +1268,179 @@
     height: 18px;
   }
   
-  .quick-contact-tooltip {
+  .advertise-form-grid {
+    gap: 1rem;
+  }
+  
+  .advertise-form-label {
+    font-size: 0.8rem;
+  }
+  
+  .advertise-optional-label {
+    font-size: 0.7rem;
+  }
+  
+  .advertise-input-icon,
+  .advertise-select-icon {
+    left: 12px;
+    font-size: 1rem;
+  }
+  
+  .advertise-form-input,
+  .advertise-phone-input,
+  .advertise-form-select {
+    padding-left: 2.5rem;
+    padding-right: 1rem;
+  }
+  
+  .advertise-form-select {
+    padding-right: 2.5rem;
+  }
+  
+  .advertise-select-arrow {
+    right: 12px;
+  }
+  
+  .advertise-country-code {
+    padding: 0.75rem 0.875rem;
+    max-width: 120px;
+  }
+  
+  .advertise-country-flag {
+    font-size: 1rem;
+  }
+  
+  .advertise-country-number {
+    font-size: 0.9rem;
+  }
+}
+
+/* Small Mobile (360px and below) */
+@media (max-width: 360px) {
+  .advertise-logo-text {
+    font-size: 1.3rem;
+  }
+  
+  .advertise-nav {
+    width: 100%;
+    right: -100%;
+  }
+  
+  .advertise-nav.mobile-open {
+    right: 0;
+    width: 100%;
+  }
+  
+  .advertise-hero-title {
+    font-size: 1.8rem;
+  }
+  
+  .advertise-hero-subtitle {
+    font-size: 1rem;
+  }
+  
+  .advertise-form-title {
+    font-size: 1.4rem;
+  }
+  
+  .advertise-form-subtitle {
+    font-size: 0.9rem;
+  }
+  
+  .advertise-form-input,
+  .advertise-phone-input,
+  .advertise-form-select {
+    font-size: 14px;
+    min-height: 44px;
+    padding: 0.875rem 0.875rem 0.875rem 2.25rem;
+  }
+  
+  .advertise-input-icon,
+  .advertise-select-icon {
+    left: 10px;
+    font-size: 0.9rem;
+  }
+  
+  .advertise-submit-btn {
+    font-size: 0.95rem;
+    padding: 0.875rem 1rem;
+  }
+  
+  .advertise-robot-checkbox {
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
+    min-height: 24px;
+  }
+  
+  .advertise-robot-checkmark {
+    font-size: 14px;
+  }
+  
+  .advertise-robot-text {
+    font-size: 0.9rem;
+  }
+}
+
+/* iOS-specific optimizations */
+@supports (-webkit-touch-callout: none) {
+  .advertise-hero-section {
+    background-attachment: scroll;
+  }
+  
+  .advertise-form-input,
+  .advertise-phone-input,
+  .advertise-form-select {
+    font-size: 16px;
+  }
+  
+  .advertise-hero-title,
+  .advertise-form-title,
+  .advertise-form-label {
+    -webkit-text-size-adjust: 100%;
+  }
+  
+  .advertise-nav,
+  .advertise-form-content {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* High DPI Screens */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .advertise-form-card,
+  .advertise-success-message {
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.15);
+  }
+}
+
+/* Dark mode support (optional) */
+@media (prefers-color-scheme: dark) {
+  .advertise-form-card {
+    background: #ffffff;
+  }
+  
+  .advertise-form-input,
+  .advertise-phone-input,
+  .advertise-form-select {
+    background: #ffffff;
+    color: #2c3e50;
+  }
+}
+
+/* Print styles */
+@media print {
+  .quick-contact-buttons,
+  .advertise-success-message {
     display: none;
+  }
+  
+  .advertise-page-wrapper {
+    background: white;
+  }
+  
+  .advertise-form-card {
+    box-shadow: none;
+    border: 1px solid #ddd;
   }
 }

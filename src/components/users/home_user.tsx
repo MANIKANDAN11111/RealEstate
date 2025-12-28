@@ -1,14 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   Home, Building2, DollarSign, Megaphone, Phone,
   MapPin, ArrowRight, Bed, Bath, Maximize,
   Heart, Facebook, Twitter, Instagram, Linkedin,
-  Upload, ShoppingBag, MessageCircle
+  Upload, ShoppingBag, MessageCircle, Search,
+  Menu, X
 } from 'lucide-react';
 import './home_user.css';
 import AGLogo from '../../assets/AG_logo.jpeg';
-
 
 // Header Component
 interface HeaderProps {
@@ -17,6 +17,8 @@ interface HeaderProps {
 }
 
 function Header({ currentPage, scrolled }: HeaderProps) {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  
   const navItems = [
     { name: 'Home', icon: Home, page: 'home', path: '/' },
     { name: 'Buy', icon: Building2, page: 'buy', path: '/buy' },
@@ -24,6 +26,10 @@ function Header({ currentPage, scrolled }: HeaderProps) {
     { name: 'Advertise Property', icon: Megaphone, page: 'advertise', path: '/advertise' },
     { name: 'Contact Us', icon: Phone, page: 'contact', path: '/contact' },
   ];
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
 
   return (
     <header className={`sell-header-container ${scrolled ? 'scrolled' : ''}`}>
@@ -33,15 +39,26 @@ function Header({ currentPage, scrolled }: HeaderProps) {
           <span className="sell-logo-text">DreamProperties</span>
         </Link>
 
-        <nav className="sell-nav">
+        {/* Mobile Menu Button */}
+        <button 
+          className="sell-mobile-menu-button"
+          onClick={toggleMobileMenu}
+          aria-label="Toggle menu"
+        >
+          {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
+
+        <nav className={`sell-nav ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
           {navItems.map((item) => (
             <Link
               key={item.page}
               to={item.path}
               className={`sell-nav-item ${currentPage === item.page ? 'active' : ''}`}
+              onClick={() => setIsMobileMenuOpen(false)}
+              aria-label={item.name}
             >
               <item.icon className="sell-nav-icon" />
-              <span>{item.name}</span>
+              <span className="sell-nav-text">{item.name}</span>
             </Link>
           ))}
         </nav>
@@ -68,16 +85,16 @@ function Footer() {
               estate easy.
             </p>
             <div className="sell-footer-social">
-              <a href="#" className="sell-social-link">
+              <a href="#" className="sell-social-link" aria-label="Facebook">
                 <Facebook className="sell-social-icon" />
               </a>
-              <a href="#" className="sell-social-link">
+              <a href="#" className="sell-social-link" aria-label="Twitter">
                 <Twitter className="sell-social-icon" />
               </a>
-              <a href="#" className="sell-social-link">
+              <a href="#" className="sell-social-link" aria-label="Instagram">
                 <Instagram className="sell-social-icon" />
               </a>
-              <a href="#" className="sell-social-link">
+              <a href="#" className="sell-social-link" aria-label="LinkedIn">
                 <Linkedin className="sell-social-icon" />
               </a>
             </div>
@@ -168,6 +185,7 @@ function QuickContactButtons() {
         className="quick-contact-btn whatsapp-btn"
         onClick={handleWhatsAppClick}
         title="Chat on WhatsApp"
+        aria-label="Chat on WhatsApp"
       >
         <MessageCircle className="quick-contact-icon" />
         <span className="quick-contact-tooltip">Chat on WhatsApp</span>
@@ -177,6 +195,7 @@ function QuickContactButtons() {
         className="quick-contact-btn call-btn"
         onClick={handleCallClick}
         title="Call Now"
+        aria-label="Call Now"
       >
         <Phone className="quick-contact-icon" />
         <span className="quick-contact-tooltip">Call Now</span>
@@ -186,6 +205,7 @@ function QuickContactButtons() {
         className="quick-contact-btn location-btn"
         onClick={handleLocationClick}
         title="Our Location"
+        aria-label="Our Location"
       >
         <MapPin className="quick-contact-icon" />
         <span className="quick-contact-tooltip">Our Location</span>
@@ -211,9 +231,14 @@ function PropertyCard(props: PropertyCardProps) {
   const [isFavorite, setIsFavorite] = useState(false);
 
   return (
-    <div className="property-card">
+    <div className="property-card" role="article">
       <div className="property-image-container">
-        <img src={props.image} alt={props.title} className="property-image" />
+        <img 
+          src={props.image} 
+          alt={props.title} 
+          className="property-image"
+          loading="lazy"
+        />
         {props.featured && (
           <div className="property-badge featured">Featured</div>
         )}
@@ -223,6 +248,7 @@ function PropertyCard(props: PropertyCardProps) {
         <button 
           className={`favorite-button ${isFavorite ? 'active' : ''}`}
           onClick={() => setIsFavorite(!isFavorite)}
+          aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
         >
           <Heart className="favorite-icon" />
         </button>
@@ -289,10 +315,7 @@ export default function HomePage() {
   const [activeTab, setActiveTab] = useState('buy');
   const [locationInput, setLocationInput] = useState('');
   const [propertyType, setPropertyType] = useState('all');
-  const [priceRange, setPriceRange] = useState('all'); 
-
-  console.log(setPropertyType)
-  console.log(setPriceRange)
+  const [priceRange, setPriceRange] = useState('all');
 
   const handlePublish = () => {
     navigate('/advertise');
@@ -303,7 +326,6 @@ export default function HomePage() {
   };
 
   const handleSearch = () => {
-    // Navigate to buy page with search parameters
     navigate('/buy', { 
       state: { 
         location: locationInput,
@@ -313,8 +335,6 @@ export default function HomePage() {
       }
     });
   };
-
-  console.log(handleSearch)
 
   const properties = [
     {
@@ -389,7 +409,7 @@ export default function HomePage() {
       <QuickContactButtons />
       
       <div className="home-page">
-        {/* Hero Section - Matching Sell Page Theme */}
+        {/* Hero Section */}
         <section className="sell-hero-section home-hero">
           <div className="sell-hero-content">
             <h1 className="sell-hero-title">Find Your Dream Property</h1>
@@ -399,6 +419,7 @@ export default function HomePage() {
               <button 
                 className="sell-hero-button primary"
                 onClick={handlePublish}
+                aria-label="Publish your properties"
               >
                 <Upload className="sell-hero-button-icon" />
                 Publish Your Properties
@@ -407,6 +428,7 @@ export default function HomePage() {
               <button 
                 className="sell-hero-button secondary"
                 onClick={handleBuy}
+                aria-label="Buy our property"
               >
                 <ShoppingBag className="sell-hero-button-icon" />
                 Buy Our Property
@@ -415,79 +437,13 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Search Bar
-        <div className="search-bar-container1">
-          <div className="search-bar1">
-            <div className="search-tabs1">
-              <button 
-                className={`search-tab1 ${activeTab === 'buy' ? 'active' : ''}`}
-                onClick={() => setActiveTab('buy')}
-              >
-                Buy
-              </button>
-              <button 
-                className={`search-tab1 ${activeTab === 'rent' ? 'active' : ''}`}
-                onClick={() => setActiveTab('rent')}
-              >
-                Sell
-              </button>
-            </div>
-
-            <div className="search-inputs">
-              <div className="search-input-group">
-                <MapPin className="input-icon" />
-                <input
-                  className="search-input1"
-                  type="text"
-                  placeholder="Enter location or district"
-                  value={locationInput}
-                  onChange={(e) => setLocationInput(e.target.value)}
-                />
-              </div>
-
-              <div className="search-select-group">
-                <select 
-                  className="search-select1"
-                  value={propertyType}
-                  onChange={(e) => setPropertyType(e.target.value)}
-                >
-                  <option value="all">Property Type</option>
-                  <option value="villa">Villa</option>
-                  <option value="apartment">Apartment</option>
-                  <option value="house">House</option>
-                  <option value="commercial">Commercial</option>
-                </select>
-              </div>
-
-              <div className="search-select-group">
-                <select 
-                  className="search-select1"
-                  value={priceRange}
-                  onChange={(e) => setPriceRange(e.target.value)}
-                >
-                  <option value="all">Price Range</option>
-                  <option value="0-50">Under ₹50 L</option>
-                  <option value="50-100">₹50L - ₹1 Cr</option>
-                  <option value="100-200">₹1 Cr - ₹2 Cr</option>
-                  <option value="200+">Above ₹2 Cr</option>
-                </select>
-              </div>
-
-              <button className="search-button" onClick={handleSearch}>
-                <Search className="search-icon" />
-                Search Properties
-              </button>
-            </div>
-          </div>
-        </div> */}
-        
-        {/* Featured Properties */} 
-        <section className="featured-properties">
+        {/* Featured Properties */}
+        <section className="featured-properties" aria-labelledby="featured-properties-title">
           <div className="section-header">
             <div>
-              <h2 className="section-title">Featured Properties</h2>
+              <h2 id="featured-properties-title" className="section-title">Featured Properties</h2>
             </div>
-            <button className="view-all-button" onClick={handleBuy}>
+            <button className="view-all-button" onClick={handleBuy} aria-label="View all properties">
               View All
               <ArrowRight className="arrow-icon" />
             </button>
@@ -511,26 +467,27 @@ export default function HomePage() {
         </section>
 
         {/* Districts Section */}
-        <section className="districts-section">
+        <section className="districts-section" aria-labelledby="districts-title">
           <div className="districts-container">
-            <h2 className="section-title center">Explore by District</h2>
+            <h2 id="districts-title" className="section-title center">Explore by District</h2>
             <p className="section-subtitle center">Find properties across major districts of Tamil Nadu</p>
             
             <div className="districts-grid">
               {districts.map((district, index) => {
                 const Icon = district.icon;
                 return (
-                  <div 
+                  <button 
                     key={index} 
                     className="district-card" 
                     onClick={() => handleDistrictClick(district.name)}
+                    aria-label={`Explore properties in ${district.name}`}
                   >
                     <div className="district-icon-wrapper">
                       <Icon className="district-icon" />
                     </div>
                     <h3 className="district-name">{district.name}</h3>
                     <p className="district-properties">{district.properties} Properties</p>
-                  </div>
+                  </button>
                 );
               })}
             </div>

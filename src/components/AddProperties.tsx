@@ -163,17 +163,17 @@ interface PropertyDetailsType {
   [key: string]: PropertyDetailsConfig;
 }
 
-// Property details configuration for each category
+// UPDATED Property details configuration for each category
 const propertyDetailsConfig: PropertyDetailsType = {
   'residential-plot': {
     mandatory: [
       { type: 'select', label: 'Facing', name: 'facing', options: ['North', 'South', 'East', 'West', 'North-East', 'North-West', 'South-East', 'South-West'] },
-      { type: 'number', label: 'Plot Area (in Sq. Ft.)', name: 'plotArea', placeholder: 'Enter plot area', min: 0 },
-      { type: 'text', label: 'Dimensions (Length x Width)', name: 'dimensions', placeholder: 'e.g., 60x40 ft' },
-      { type: 'select', label: 'Soil Type', name: 'soilType', options: ['Red Soil', 'Black Soil', 'Alluvial Soil', 'Laterite Soil', 'Sandy Soil'] },
-      { type: 'number', label: 'Road Width (in Feet)', name: 'roadWidth', placeholder: 'Road width in front', min: 0 }
+      { type: 'number', label: 'Plot Area (in Sq. Ft.)', name: 'plotArea', placeholder: 'Enter plot area', min: 0 }
     ],
     optional: [
+      { type: 'text', label: 'Dimensions (Length x Width)', name: 'dimensions', placeholder: 'e.g., 60x40 ft' },
+      { type: 'select', label: 'Soil Type', name: 'soilType', options: ['Red Soil', 'Black Soil', 'Alluvial Soil', 'Laterite Soil', 'Sandy Soil'] },
+      { type: 'number', label: 'Road Width (in Feet)', name: 'roadWidth', placeholder: 'Road width in front', min: 0 },
       { type: 'number', label: 'Number of Openings', name: 'openings', placeholder: 'Number of road openings', min: 0 },
       { type: 'checkbox', label: 'Corner Plot', name: 'cornerPlot' },
       { type: 'checkbox', label: 'Approved Layout', name: 'approvedLayout' },
@@ -190,11 +190,11 @@ const propertyDetailsConfig: PropertyDetailsType = {
     mandatory: [
       { type: 'number', label: 'Total Land Area (in Acres)', name: 'totalArea', placeholder: 'Enter land area in acres', min: 0, step: 0.01 },
       { type: 'select', label: 'Land Type', name: 'landType', options: ['Agricultural', 'Plantation', 'Orchard', 'Barren', 'Cultivable'] },
-      { type: 'select', label: 'Water Source', name: 'waterSource', options: ['Borewell', 'Well', 'Canal', 'River', 'Rain-fed'] },
-      { type: 'number', label: 'Number of Wells/Borewells', name: 'wellsCount', placeholder: 'Number of water sources', min: 0 },
-      { type: 'select', label: 'Soil Type', name: 'soilType', options: ['Red Soil', 'Black Soil', 'Alluvial Soil', 'Laterite Soil', 'Sandy Soil', 'Clay Soil'] }
+      { type: 'select', label: 'Water Source', name: 'waterSource', options: ['Borewell', 'Well', 'Canal', 'River', 'Rain-fed'] }
     ],
     optional: [
+      { type: 'number', label: 'Number of Wells/Borewells', name: 'wellsCount', placeholder: 'Number of water sources', min: 0 },
+      { type: 'select', label: 'Soil Type', name: 'soilType', options: ['Red Soil', 'Black Soil', 'Alluvial Soil', 'Laterite Soil', 'Sandy Soil', 'Clay Soil'] },
       { type: 'checkbox', label: 'Has Farm House', name: 'hasFarmHouse' },
       { type: 'checkbox', label: 'Has Irrigation Facilities', name: 'hasIrrigation' },
       { type: 'checkbox', label: 'Has Fencing', name: 'hasFencing' },
@@ -404,6 +404,24 @@ const validateImageFormat = (file: File): { isValid: boolean; error?: string } =
   return { isValid: true };
 };
 
+// Success Popup Component
+const SuccessPopup = ({ onClose }: { onClose: () => void }) => {
+  return (
+    <div className="success-popup-overlay">
+      <div className="success-popup">
+        <div className="success-icon">✓</div>
+        <h3 className="success-title">Property Published Successfully!</h3>
+        <p className="success-message">
+          Your property has been published and is now live on the platform.
+        </p>
+        <button className="success-close-btn" onClick={onClose}>
+          OK
+        </button>
+      </div>
+    </div>
+  );
+};
+
 const AddProperties = () => {
   const [propertyType, setPropertyType] = useState<'residential' | 'commercial' | 'land'>('residential');
   const [propertyCategory, setPropertyCategory] = useState<string>('');
@@ -418,6 +436,8 @@ const AddProperties = () => {
   const [bedrooms, setBedrooms] = useState(2);
   const [bathrooms, setBathrooms] = useState(2);
   const [uploadProgress, setUploadProgress] = useState<Record<number, number>>({});
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   // New state for contact validation
   const [contactInfo, setContactInfo] = useState({
@@ -560,6 +580,9 @@ const AddProperties = () => {
       if (Object.keys(newImageErrors).length > 0) {
         setImageErrors(prev => ({ ...prev, ...newImageErrors }));
       }
+      
+      // Reset the input value to allow same file selection again
+      e.target.value = '';
     }
   };
 
@@ -596,6 +619,21 @@ const AddProperties = () => {
       if (Object.keys(newVideoErrors).length > 0) {
         setVideoErrors(prev => ({ ...prev, ...newVideoErrors }));
       }
+      
+      // Reset the input value to allow same file selection again
+      e.target.value = '';
+    }
+  };
+
+  const handleImageBoxClick = () => {
+    if (imageUploadRef.current) {
+      imageUploadRef.current.click();
+    }
+  };
+
+  const handleVideoBoxClick = () => {
+    if (videoUploadRef.current) {
+      videoUploadRef.current.click();
     }
   };
 
@@ -616,14 +654,12 @@ const AddProperties = () => {
     newImages.splice(index, 1);
     setPropertyImages(newImages);
     
-    // Remove any associated errors
     setImageErrors(prev => {
       const newErrors = { ...prev };
       delete newErrors[index];
       return newErrors;
     });
     
-    // Remove upload progress
     setUploadProgress(prev => {
       const newProgress = { ...prev };
       delete newProgress[index];
@@ -636,14 +672,12 @@ const AddProperties = () => {
     newVideos.splice(index, 1);
     setPropertyVideos(newVideos);
     
-    // Remove any associated errors
     setVideoErrors(prev => {
       const newErrors = { ...prev };
       delete newErrors[index];
       return newErrors;
     });
     
-    // Remove upload progress
     setUploadProgress(prev => {
       const newProgress = { ...prev };
       delete newProgress[index];
@@ -694,7 +728,6 @@ const AddProperties = () => {
     }
   };
 
-  // Phone number validation
   const validatePhoneNumber = (phone: string): string => {
     if (!phone.trim()) {
       return 'Phone number is required';
@@ -714,7 +747,6 @@ const AddProperties = () => {
     return '';
   };
 
-  // Email validation
   const validateEmail = (email: string): string => {
     if (!email.trim()) {
       return 'Email is required';
@@ -794,8 +826,34 @@ const AddProperties = () => {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
-  // Handle form submission
-  const handleSubmit = () => {
+  const resetForm = () => {
+    setPropertyType('residential');
+    setPropertyCategory('');
+    setPropertySubCategory('');
+    setPropertyDetails({});
+    setPropertyImages([]);
+    setPropertyVideos([]);
+    setPriceValue('');
+    setPriceUnit('lakh');
+    setBedrooms(2);
+    setBathrooms(2);
+    setContactInfo({ phone: '', email: '' });
+    
+    if (titleRef.current) titleRef.current.value = '';
+    if (descriptionRef.current) descriptionRef.current.value = '';
+    if (districtRef.current) districtRef.current.value = '';
+    if (localityRef.current) localityRef.current.value = '';
+    if (landmarkRef.current) landmarkRef.current.value = '';
+    if (pincodeRef.current) pincodeRef.current.value = '';
+    if (addressRef.current) addressRef.current.value = '';
+    if (contactPersonRef.current) contactPersonRef.current.value = '';
+    if (furnishingRef.current) furnishingRef.current.value = 'unfurnished';
+    if (parkingRef.current) parkingRef.current.value = 'none';
+  };
+
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+    
     // Validate phone and email
     const phoneError = validatePhoneNumber(contactInfo.phone);
     const emailError = validateEmail(contactInfo.email);
@@ -805,7 +863,12 @@ const AddProperties = () => {
       email: emailError
     });
     
-    if (!phoneError && !emailError) {
+    if (phoneError || emailError) {
+      setIsSubmitting(false);
+      return;
+    }
+
+    try {
       const formData = new FormData();
       
       // Collect amenities from checkboxes
@@ -864,46 +927,26 @@ const AddProperties = () => {
         formData.append('videos', video);
       });
       
-      // Send to backend
-      fetch('https://realestatebackend-8adg.onrender.com/api/properties', {
+      // Send to backend - Using the same API endpoint from first code
+      const response = await fetch('https://realestatebackend-8adg.onrender.com/api/properties', {
         method: 'POST',
         body: formData
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          console.log('Property created successfully!', data);
-          alert('Property published successfully!');
-          // Reset form
-          setPropertyType('residential');
-          setPropertyCategory('');
-          setPropertySubCategory('');
-          setPropertyDetails({});
-          setPropertyImages([]);
-          setPropertyVideos([]);
-          setPriceValue('');
-          setPriceUnit('lakh');
-          setBedrooms(2);
-          setBathrooms(2);
-          setContactInfo({ phone: '', email: '' });
-          if (titleRef.current) titleRef.current.value = '';
-          if (descriptionRef.current) descriptionRef.current.value = '';
-          if (districtRef.current) districtRef.current.value = '';
-          if (localityRef.current) localityRef.current.value = '';
-          if (landmarkRef.current) landmarkRef.current.value = '';
-          if (pincodeRef.current) pincodeRef.current.value = '';
-          if (addressRef.current) addressRef.current.value = '';
-          if (contactPersonRef.current) contactPersonRef.current.value = '';
-        } else {
-          alert('Error: ' + data.message);
-        }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        alert('Failed to create property');
       });
-    } else {
-      console.log('Form has validation errors');
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        console.log('Property created successfully!', data);
+        setShowSuccessPopup(true);
+        resetForm();
+      } else {
+        alert('Error: ' + (data.message || 'Failed to create property'));
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Failed to create property. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -912,6 +955,8 @@ const AddProperties = () => {
 
   return (
     <div className="add-properties">
+      {showSuccessPopup && <SuccessPopup onClose={() => setShowSuccessPopup(false)} />}
+      
       <div className="page-header">
         <div className="header-content">
           <h1>Add New Property</h1>
@@ -1151,7 +1196,6 @@ const AddProperties = () => {
           </div>
         </div>
 
-        {/* Property Specifications - Conditional based on type */}
         {propertyType === 'residential' && (
           <div className="form-section">
             <div className="section-header">
@@ -1237,7 +1281,7 @@ const AddProperties = () => {
 
               <div className="form-group">
                 <label className="form-label">Furnishing</label>
-                <select className="form-select" ref={furnishingRef}>
+                <select className="form-select" ref={furnishingRef} defaultValue="unfurnished">
                   <option value="unfurnished">Unfurnished</option>
                   <option value="semi">Semi-Furnished</option>
                   <option value="full">Fully Furnished</option>
@@ -1246,7 +1290,7 @@ const AddProperties = () => {
 
               <div className="form-group">
                 <label className="form-label">Parking</label>
-                <select className="form-select" ref={parkingRef}>
+                <select className="form-select" ref={parkingRef} defaultValue="none">
                   <option value="none">No Parking</option>
                   <option value="1">1 Vehicle</option>
                   <option value="2">2 Vehicles</option>
@@ -1318,7 +1362,19 @@ const AddProperties = () => {
           </div>
           
           <div className="image-upload-section">
-            <div className="image-upload-box" onClick={() => imageUploadRef.current?.click()}>
+            <div 
+              className="image-upload-box" 
+              onClick={handleImageBoxClick}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  handleImageBoxClick();
+                }
+              }}
+              role="button"
+              tabIndex={0}
+              aria-label="Upload images"
+            >
               <div className="upload-icon">📷</div>
               <p className="upload-text">Click to upload images</p>
               <p className="upload-subtext">JPEG, PNG, GIF up to 10MB each</p>
@@ -1330,6 +1386,7 @@ const AddProperties = () => {
                 multiple
                 accept="image/*"
                 onChange={handleImageUpload}
+                onClick={(e) => e.stopPropagation()}
               />
             </div>
 
@@ -1382,7 +1439,7 @@ const AddProperties = () => {
                   <p>{propertyImages.length} image{propertyImages.length !== 1 ? 's' : ''} uploaded</p>
                   <button 
                     className="add-more-btn"
-                    onClick={() => imageUploadRef.current?.click()}
+                    onClick={handleImageBoxClick}
                     type="button"
                   >
                     + Add More Images
@@ -1416,7 +1473,19 @@ const AddProperties = () => {
           </div>
           
           <div className="video-upload-section">
-            <div className="video-upload-box" onClick={() => videoUploadRef.current?.click()}>
+            <div 
+              className="video-upload-box" 
+              onClick={handleVideoBoxClick}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  handleVideoBoxClick();
+                }
+              }}
+              role="button"
+              tabIndex={0}
+              aria-label="Upload videos"
+            >
               <div className="upload-icon">🎥</div>
               <p className="upload-text">Click to upload videos</p>
               <p className="upload-subtext">MP4, WebM, OGG up to 500MB each</p>
@@ -1428,6 +1497,7 @@ const AddProperties = () => {
                 multiple
                 accept="video/*"
                 onChange={handleVideoUpload}
+                onClick={(e) => e.stopPropagation()}
               />
             </div>
 
@@ -1484,7 +1554,7 @@ const AddProperties = () => {
                   <p>{propertyVideos.length} video{propertyVideos.length !== 1 ? 's' : ''} uploaded</p>
                   <button 
                     className="add-more-btn"
-                    onClick={() => videoUploadRef.current?.click()}
+                    onClick={handleVideoBoxClick}
                     type="button"
                   >
                     + Add More Videos
@@ -1551,14 +1621,22 @@ const AddProperties = () => {
         </div>
 
         <div className="form-actions">
-          <button className="cancel-btn" type="button">Cancel</button>
+          <button className="cancel-btn" type="button" onClick={resetForm}>Cancel</button>
           <button className="save-btn" type="button">Save as Draft</button>
           <button 
             className="submit-btn" 
             type="button"
             onClick={handleSubmit}
+            disabled={isSubmitting}
           >
-            Publish Property
+            {isSubmitting ? (
+              <>
+                <span className="loading-spinner"></span>
+                Publishing...
+              </>
+            ) : (
+              'Publish Property'
+            )}
           </button>
         </div>
       </div>

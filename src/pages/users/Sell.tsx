@@ -3,7 +3,8 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   Home, Building2, DollarSign, Megaphone, Phone,
   Facebook, Twitter, Instagram, Linkedin, Upload,
-  ShoppingBag, MessageCircle, MapPin
+  ShoppingBag, MessageCircle, MapPin,
+  Menu, X
 } from 'lucide-react';
 import './Sell.css';
 
@@ -16,6 +17,8 @@ interface HeaderProps {
 }
 
 function Header({ currentPage, scrolled }: HeaderProps) {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  
   const navItems = [
     { name: 'Home', icon: Home, page: 'home', path: '/' },
     { name: 'Buy', icon: Building2, page: 'buy', path: '/buy' },
@@ -23,6 +26,10 @@ function Header({ currentPage, scrolled }: HeaderProps) {
     { name: 'Advertise Property', icon: Megaphone, page: 'advertise', path: '/advertise' },
     { name: 'Contact Us', icon: Phone, page: 'contact', path: '/contact' },
   ];
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
 
   return (
     <header className={`sell-header-container ${scrolled ? 'scrolled' : ''}`}>
@@ -32,15 +39,25 @@ function Header({ currentPage, scrolled }: HeaderProps) {
           <span className="sell-logo-text">DreamProperties</span>
         </Link>
 
-        <nav className="sell-nav">
+        {/* Mobile Menu Button */}
+        <button 
+          className="sell-mobile-menu-button"
+          onClick={toggleMobileMenu}
+          aria-label="Toggle menu"
+        >
+          {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
+
+        <nav className={`sell-nav ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
           {navItems.map((item) => (
             <Link
               key={item.page}
               to={item.path}
               className={`sell-nav-item ${currentPage === item.page ? 'active' : ''}`}
+              onClick={() => setIsMobileMenuOpen(false)}
             >
               <item.icon className="sell-nav-icon" />
-              <span>{item.name}</span>
+              <span className="sell-nav-text">{item.name}</span>
             </Link>
           ))}
         </nav>
@@ -167,6 +184,7 @@ function QuickContactButtons() {
         className="quick-contact-btn whatsapp-btn"
         onClick={handleWhatsAppClick}
         title="Chat on WhatsApp"
+        aria-label="Chat on WhatsApp"
       >
         <MessageCircle className="quick-contact-icon" />
         <span className="quick-contact-tooltip">Chat on WhatsApp</span>
@@ -176,6 +194,7 @@ function QuickContactButtons() {
         className="quick-contact-btn call-btn"
         onClick={handleCallClick}
         title="Call Now"
+        aria-label="Call Now"
       >
         <Phone className="quick-contact-icon" />
         <span className="quick-contact-tooltip">Call Now</span>
@@ -185,6 +204,7 @@ function QuickContactButtons() {
         className="quick-contact-btn location-btn"
         onClick={handleLocationClick}
         title="Our Location"
+        aria-label="Our Location"
       >
         <MapPin className="quick-contact-icon" />
         <span className="quick-contact-tooltip">Our Location</span>
@@ -399,6 +419,7 @@ const Sell: React.FC = () => {
             <button 
               className="sell-hero-button primary"
               onClick={scrollToForm}
+              aria-label="Scroll to sell form"
             >
               <Upload className="sell-hero-button-icon" />
               Quick Sell Form
@@ -407,6 +428,7 @@ const Sell: React.FC = () => {
             <button 
               className="sell-hero-button secondary"
               onClick={handleViewProperties}
+              aria-label="View properties for sale"
             >
               <ShoppingBag className="sell-hero-button-icon" />
               View Our Properties
@@ -452,6 +474,7 @@ const Sell: React.FC = () => {
                       value={formData.name}
                       onChange={handleChange}
                       required
+                      aria-required="true"
                     />
                   </div>
                 </div>
@@ -472,6 +495,7 @@ const Sell: React.FC = () => {
                       placeholder="Email Address"
                       value={formData.email}
                       onChange={handleChange}
+                      aria-label="Email address"
                     />
                   </div>
                 </div>
@@ -495,6 +519,7 @@ const Sell: React.FC = () => {
                       value={formData.mobileNo}
                       onChange={(e) => handlePhoneChange(e, 'mobileNo')}
                       required
+                      aria-required="true"
                     />
                   </div>
                   <p className="sell-input-hint">10-digit mobile number</p>
@@ -519,6 +544,7 @@ const Sell: React.FC = () => {
                       placeholder="98765 43210"
                       value={formData.whatsappNo}
                       onChange={(e) => handlePhoneChange(e, 'whatsappNo')}
+                      aria-label="WhatsApp number (optional)"
                     />
                   </div>
                   <p className="sell-input-hint sell-optional">Optional</p>
@@ -538,6 +564,7 @@ const Sell: React.FC = () => {
                       value={formData.propertyType}
                       onChange={handleChange}
                       required
+                      aria-required="true"
                     >
                       <option value="">- Select Property Type -</option>
                       {propertyTypes.map(type => (
@@ -562,6 +589,7 @@ const Sell: React.FC = () => {
                       value={formData.userType}
                       onChange={handleChange}
                       required
+                      aria-required="true"
                     >
                       <option value="">- Select Your Role -</option>
                       {userTypes.map(type => (
@@ -588,6 +616,7 @@ const Sell: React.FC = () => {
                       value={formData.propertyLocation}
                       onChange={handleChange}
                       required
+                      aria-required="true"
                     />
                   </div>
                 </div>
@@ -601,6 +630,8 @@ const Sell: React.FC = () => {
                   role="button"
                   tabIndex={0}
                   onKeyDown={(e) => e.key === 'Enter' && handleRobotCheck()}
+                  aria-label={isRobotVerified ? "Robot verification checked" : "Robot verification unchecked"}
+                  aria-checked={isRobotVerified}
                 >
                   <div className="sell-robot-checkmark">✓</div>
                 </div>
@@ -612,6 +643,7 @@ const Sell: React.FC = () => {
                 type="submit" 
                 className={`sell-submit-btn ${isSubmitting ? 'submitting' : ''}`}
                 disabled={isSubmitting || !isRobotVerified}
+                aria-label={isSubmitting ? "Sending sell request" : "Submit sell request"}
               >
                 {isSubmitting ? (
                   <>

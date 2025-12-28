@@ -4,7 +4,7 @@ import {
   Home, Building2, DollarSign, Megaphone, Phone,
   Facebook, Twitter, Instagram, Linkedin,
   MessageSquare, MapPin,
-  MessageCircle
+  MessageCircle, Menu, X
 } from 'lucide-react';
 import './ContactUs.css';
 import AGLogo from '../../assets/AG_logo.jpeg';
@@ -16,6 +16,8 @@ interface HeaderProps {
 }
 
 function Header({ currentPage, scrolled }: HeaderProps) {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  
   const navItems = [
     { name: 'Home', icon: Home, page: 'home', path: '/' },
     { name: 'Buy', icon: Building2, page: 'buy', path: '/buy' },
@@ -23,6 +25,10 @@ function Header({ currentPage, scrolled }: HeaderProps) {
     { name: 'Advertise Property', icon: Megaphone, page: 'advertise', path: '/advertise' },
     { name: 'Contact Us', icon: Phone, page: 'contact', path: '/contact' },
   ];
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
 
   return (
     <header className={`contact-header-container ${scrolled ? 'scrolled' : ''}`}>
@@ -32,15 +38,25 @@ function Header({ currentPage, scrolled }: HeaderProps) {
           <span className="contact-logo-text">DreamProperties</span>
         </Link>
 
-        <nav className="contact-nav">
+        {/* Mobile Menu Button */}
+        <button 
+          className="contact-mobile-menu-button"
+          onClick={toggleMobileMenu}
+          aria-label="Toggle menu"
+        >
+          {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
+
+        <nav className={`contact-nav ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
           {navItems.map((item) => (
             <Link
               key={item.page}
               to={item.path}
               className={`contact-nav-item ${currentPage === item.page ? 'active' : ''}`}
+              onClick={() => setIsMobileMenuOpen(false)}
             >
               <item.icon className="contact-nav-icon" />
-              <span>{item.name}</span>
+              <span className="contact-nav-text">{item.name}</span>
             </Link>
           ))}
         </nav>
@@ -167,6 +183,7 @@ function QuickContactButtons() {
         className="quick-contact-btn whatsapp-btn"
         onClick={handleWhatsAppClick}
         title="Chat on WhatsApp"
+        aria-label="Chat on WhatsApp"
       >
         <MessageCircle className="quick-contact-icon" />
         <span className="quick-contact-tooltip">Chat on WhatsApp</span>
@@ -176,6 +193,7 @@ function QuickContactButtons() {
         className="quick-contact-btn call-btn"
         onClick={handleCallClick}
         title="Call Now"
+        aria-label="Call Now"
       >
         <Phone className="quick-contact-icon" />
         <span className="quick-contact-tooltip">Call Now</span>
@@ -185,6 +203,7 @@ function QuickContactButtons() {
         className="quick-contact-btn location-btn"
         onClick={handleLocationClick}
         title="Our Location"
+        aria-label="Our Location"
       >
         <MapPin className="quick-contact-icon" />
         <span className="quick-contact-tooltip">Our Location</span>
@@ -385,6 +404,7 @@ const ContactUs: React.FC = () => {
           <button 
             className="contact-hero-button primary"
             onClick={scrollToForm}
+            aria-label="Scroll to contact form"
           >
             <MessageSquare className="contact-hero-button-icon" />
             Send Message
@@ -478,6 +498,7 @@ const ContactUs: React.FC = () => {
                         value={formData.name}
                         onChange={handleChange}
                         required
+                        aria-required="true"
                       />
                     </div>
                   </div>
@@ -497,6 +518,7 @@ const ContactUs: React.FC = () => {
                         placeholder="Email Address"
                         value={formData.email}
                         onChange={handleChange}
+                        aria-label="Email address"
                       />
                     </div>
                   </div>
@@ -520,6 +542,7 @@ const ContactUs: React.FC = () => {
                         value={formData.mobileNo}
                         onChange={handlePhoneChange}
                         required
+                        aria-required="true"
                       />
                     </div>
                     <p className="contact-input-hint">10-digit mobile number</p>
@@ -540,6 +563,7 @@ const ContactUs: React.FC = () => {
                         placeholder="What is the purpose of your contact?"
                         value={formData.subject}
                         onChange={handleChange}
+                        aria-label="Message subject"
                       />
                     </div>
                   </div>
@@ -558,6 +582,7 @@ const ContactUs: React.FC = () => {
                         value={formData.message}
                         onChange={handleChange}
                         rows={5}
+                        aria-label="Your message"
                       />
                     </div>
                   </div>
@@ -571,6 +596,8 @@ const ContactUs: React.FC = () => {
                     role="button"
                     tabIndex={0}
                     onKeyDown={(e) => e.key === 'Enter' && handleRobotCheck()}
+                    aria-label={isRobotVerified ? "Robot verification checked" : "Robot verification unchecked"}
+                    aria-checked={isRobotVerified}
                   >
                     <div className="contact-robot-checkmark">✓</div>
                   </div>
@@ -582,6 +609,7 @@ const ContactUs: React.FC = () => {
                   type="submit" 
                   className={`contact-submit-btn ${isSubmitting ? 'submitting' : ''}`}
                   disabled={isSubmitting || !isRobotVerified}
+                  aria-label={isSubmitting ? "Sending message" : "Send message"}
                 >
                   {isSubmitting ? (
                     <>

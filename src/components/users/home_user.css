@@ -1,3 +1,5 @@
+/* home_user.css - Full Mobile Responsive Styles */
+
 /* Reset and Base Styles */
 * {
   margin: 0;
@@ -10,6 +12,8 @@ body {
   color: #2c3e50;
   line-height: 1.5;
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* Home Page Wrapper */
@@ -18,6 +22,162 @@ body {
   display: flex;
   flex-direction: column;
   background: #f8f9fa;
+}
+
+/* ==================== */
+/* HEADER STYLES */
+/* ==================== */
+.sell-header-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+.sell-header-container.scrolled {
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.sell-header-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  flex-wrap: wrap;
+}
+
+/* Logo Styles */
+.sell-logo-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+  z-index: 1001;
+  min-width: max-content;
+}
+
+.sell-logo-image {
+  height: 45px;
+  width: 45px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 2px solid #2c3e50;
+  flex-shrink: 0;
+}
+
+.sell-logo-text {
+  font-size: 1.6rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.5px;
+  white-space: nowrap;
+}
+
+/* Mobile Menu Button */
+.sell-mobile-menu-button {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #2c3e50;
+  z-index: 1001;
+  padding: 0.5rem;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  min-width: 44px;
+  min-height: 44px;
+  touch-action: manipulation;
+}
+
+.sell-mobile-menu-button:hover {
+  background: rgba(44, 62, 80, 0.1);
+}
+
+.sell-nav {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-bottom: 0.5rem;
+}
+
+.sell-nav::-webkit-scrollbar {
+  display: none;
+}
+
+.sell-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  text-decoration: none;
+  color: #2c3e50;
+  font-weight: 600;
+  border-radius: 30px;
+  transition: all 0.3s ease;
+  font-size: 0.95rem;
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+  min-height: 44px;
+  min-width: 44px;
+  touch-action: manipulation;
+}
+
+.sell-nav-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+  transition: left 0.3s ease;
+  z-index: -1;
+}
+
+.sell-nav-item:hover::before {
+  left: 0;
+}
+
+.sell-nav-item:hover {
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+}
+
+.sell-nav-item.active {
+  background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.25);
+}
+
+.sell-nav-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.sell-nav-text {
+  white-space: nowrap;
 }
 
 /* Quick Contact Floating Buttons */
@@ -58,6 +218,9 @@ body {
   font-size: 1.4rem;
   color: white;
   overflow: hidden;
+  min-width: 60px;
+  min-height: 60px;
+  touch-action: manipulation;
 }
 
 .quick-contact-btn::before {
@@ -102,6 +265,7 @@ body {
   width: 24px;
   height: 24px;
   z-index: 1;
+  flex-shrink: 0;
 }
 
 .quick-contact-tooltip {
@@ -140,113 +304,6 @@ body {
   background: #f8f9fa;
 }
 
-/* Sell Header Styles */
-.sell-header-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 1000;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-.sell-header-container.scrolled {
-  background: rgba(255, 255, 255, 0.98);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-}
-
-.sell-header-content {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 1rem 2rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.sell-logo-link {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  text-decoration: none;
-}
-
-.sell-logo-image {
-  height: 45px;
-  width: 45px;
-  border-radius: 8px;
-  object-fit: cover;
-  border: 2px solid #2c3e50;
-}
-
-.sell-logo-text {
-  font-size: 1.6rem;
-  font-weight: 800;
-  background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  letter-spacing: -0.5px;
-}
-
-.sell-nav {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-}
-
-.sell-nav-item {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.25rem;
-  text-decoration: none;
-  color: #2c3e50;
-  font-weight: 600;
-  border-radius: 30px;
-  transition: all 0.3s ease;
-  font-size: 0.95rem;
-  position: relative;
-  overflow: hidden;
-}
-
-.sell-nav-item::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
-  transition: left 0.3s ease;
-  z-index: -1;
-}
-
-.sell-nav-item:hover::before {
-  left: 0;
-}
-
-.sell-nav-item:hover {
-  color: white;
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
-}
-
-.sell-nav-item.active {
-  background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
-  color: white;
-  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.25);
-}
-
-.sell-nav-icon {
-  width: 18px;
-  height: 18px;
-}
-
 /* Home Hero Section */
 .sell-hero-section.home-hero {
   margin-top: 80px;
@@ -260,6 +317,8 @@ body {
   text-align: center;
   position: relative;
   overflow: hidden;
+  will-change: transform;
+  backface-visibility: hidden;
 }
 
 .sell-hero-content {
@@ -275,6 +334,7 @@ body {
   margin-bottom: 1.5rem;
   line-height: 1.2;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  -webkit-text-size-adjust: 100%;
 }
 
 .sell-hero-subtitle {
@@ -282,6 +342,7 @@ body {
   margin-bottom: 3rem;
   color: #ecf0f1;
   line-height: 1.6;
+  -webkit-text-size-adjust: 100%;
 }
 
 .sell-hero-buttons {
@@ -304,6 +365,9 @@ body {
   transition: all 0.3s ease;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  min-height: 44px;
+  min-width: 44px;
+  touch-action: manipulation;
 }
 
 .sell-hero-button.primary {
@@ -336,133 +400,7 @@ body {
 .sell-hero-button-icon {
   width: 20px;
   height: 20px;
-}
-
-/* Search Bar */
-.search-bar-container1 {
-  position: relative;
-  margin: -60px auto 0;
-  padding: 0 2rem;
-  max-width: 1200px;
-  z-index: 10;
-}
-
-.search-bar1 {
-  background: white;
-  border-radius: 20px;
-  box-shadow: 0 20px 60px rgba(52, 152, 219, 0.15);
-  padding: 2rem;
-  border: 1px solid rgba(52, 152, 219, 0.1);
-}
-
-.search-tabs1 {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 2rem;
-}
-
-.search-tab1 {
-  flex: 1;
-  padding: 1rem;
-  background: #f1f5f9;
-  border: 2px solid transparent;
-  border-radius: 12px;
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: #64748b;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.search-tab1:hover {
-  background: #e2e8f0;
-  color: #2c3e50;
-}
-
-.search-tab1.active {
-  background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
-  color: #ffffff;
-  border-color: #2980b9;
-  box-shadow: 0 4px 20px rgba(52, 152, 219, 0.3);
-}
-
-.search-inputs {
-  display: grid;
-  grid-template-columns: 2fr 1.2fr 1.2fr auto;
-  gap: 1rem;
-  align-items: center;
-}
-
-.search-input-group,
-.search-select-group {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.input-icon {
-  position: absolute;
-  left: 1rem;
-  width: 20px;
-  height: 20px;
-  color: #3498db;
-  pointer-events: none;
-  z-index: 1;
-}
-
-.search-input1,
-.search-select1 {
-  width: 100%;
-  padding: 1rem 1rem 1rem 3rem;
-  background: #f8fafc;
-  border: 2px solid #e0e0e0;
-  border-radius: 12px;
-  font-size: 1rem;
-  font-weight: 500;
-  color: #2c3e50;
-  transition: all 0.3s ease;
-  outline: none;
-  appearance: none;
-}
-
-.search-input1:focus,
-.search-select1:focus {
-  background: #ffffff;
-  border-color: #3498db;
-  box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.15);
-}
-
-.search-input1::placeholder {
-  color: #95a5a6;
-}
-
-.search-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  padding: 1rem 2.5rem;
-  background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
-  color: #ffffff;
-  border: none;
-  border-radius: 12px;
-  font-size: 1.1rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 20px rgba(46, 204, 113, 0.4);
-  white-space: nowrap;
-  min-width: max-content;
-}
-
-.search-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(46, 204, 113, 0.5);
-}
-
-.search-icon {
-  width: 20px;
-  height: 20px;
+  flex-shrink: 0;
 }
 
 /* Featured Properties Section */
@@ -477,6 +415,8 @@ body {
   justify-content: space-between;
   align-items: flex-end;
   margin-bottom: 3rem;
+  flex-wrap: wrap;
+  gap: 1.5rem;
 }
 
 .section-title {
@@ -489,19 +429,10 @@ body {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-}
-
-.section-subtitle {
-  font-size: 1.2rem;
-  color: #7f8c8d;
-  font-weight: 400;
+  -webkit-text-size-adjust: 100%;
 }
 
 .section-title.center {
-  text-align: center;
-}
-
-.section-subtitle.center {
   text-align: center;
 }
 
@@ -519,6 +450,9 @@ body {
   cursor: pointer;
   transition: all 0.3s ease;
   text-decoration: none;
+  min-height: 44px;
+  min-width: 44px;
+  touch-action: manipulation;
 }
 
 .view-all-button:hover {
@@ -531,6 +465,7 @@ body {
   width: 20px;
   height: 20px;
   transition: transform 0.3s ease;
+  flex-shrink: 0;
 }
 
 .view-all-button:hover .arrow-icon {
@@ -601,10 +536,6 @@ body {
   border: 1px solid #e0e0e0;
 }
 
-.property-badge.type.rent {
-  color: #3498db;
-}
-
 .favorite-button {
   position: absolute;
   bottom: 1rem;
@@ -621,6 +552,9 @@ body {
   transition: all 0.3s ease;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   z-index: 2;
+  min-width: 48px;
+  min-height: 48px;
+  touch-action: manipulation;
 }
 
 .favorite-button:hover {
@@ -633,6 +567,7 @@ body {
   height: 24px;
   color: #7f8c8d;
   transition: all 0.3s ease;
+  flex-shrink: 0;
 }
 
 .favorite-button.active .favorite-icon {
@@ -736,6 +671,16 @@ body {
   margin: 0 auto;
 }
 
+.section-subtitle {
+  font-size: 1.2rem;
+  color: #7f8c8d;
+  font-weight: 400;
+}
+
+.section-subtitle.center {
+  text-align: center;
+}
+
 .districts-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -752,6 +697,14 @@ body {
   transition: all 0.3s ease;
   border: 2px solid transparent;
   cursor: pointer;
+  border: none;
+  min-height: 44px;
+  min-width: 44px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  touch-action: manipulation;
 }
 
 .district-card:hover {
@@ -775,6 +728,7 @@ body {
   width: 32px;
   height: 32px;
   color: white;
+  flex-shrink: 0;
 }
 
 .district-name {
@@ -841,6 +795,7 @@ body {
   display: flex;
   gap: 1rem;
   margin-top: 1rem;
+  flex-wrap: wrap;
 }
 
 .sell-social-link {
@@ -852,6 +807,9 @@ body {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 50%;
   transition: all 0.3s ease;
+  min-width: 40px;
+  min-height: 40px;
+  touch-action: manipulation;
 }
 
 .sell-social-link:hover {
@@ -864,6 +822,7 @@ body {
   width: 18px;
   height: 18px;
   color: white;
+  flex-shrink: 0;
 }
 
 .sell-footer-title {
@@ -871,6 +830,7 @@ body {
   font-weight: 700;
   margin-bottom: 1rem;
   color: white;
+  line-height: 1.2;
 }
 
 .sell-footer-links {
@@ -893,6 +853,12 @@ body {
   font-size: 0.95rem;
   transition: all 0.3s ease;
   font-weight: 500;
+  line-height: 1.4;
+  min-height: 44px;
+  min-width: 44px;
+  display: flex;
+  align-items: center;
+  touch-action: manipulation;
 }
 
 .sell-footer-link:hover {
@@ -910,6 +876,7 @@ body {
   color: #95a5a6;
   font-size: 0.9rem;
   font-weight: 500;
+  line-height: 1.4;
 }
 
 /* Animations */
@@ -924,14 +891,15 @@ body {
   }
 }
 
-/* Responsive Styles */
+/* ==================== */
+/* RESPONSIVE MEDIA QUERIES */
+/* ==================== */
+
+/* Large Tablets and Small Desktops (1200px and below) */
 @media (max-width: 1200px) {
-  .search-inputs {
-    grid-template-columns: 1fr 1fr;
-  }
-  
-  .properties-grid {
-    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  .sell-footer-content {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
   }
   
   .quick-contact-buttons {
@@ -942,54 +910,102 @@ body {
   .quick-contact-btn {
     width: 55px;
     height: 55px;
+    min-width: 55px;
+    min-height: 55px;
   }
-}
-
-@media (max-width: 1024px) {
-  .sell-footer-content {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .search-inputs {
-    grid-template-columns: 1fr;
-  }
-
-  .properties-grid {
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  }
-
+  
   .sell-hero-title {
     font-size: 3rem;
   }
-
+  
   .section-title {
-    font-size: 2.25rem;
+    font-size: 2.5rem;
+  }
+  
+  .properties-grid {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
+  
+  .districts-grid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   }
 }
 
-@media (max-width: 768px) {
-  .sell-footer-content {
-    grid-template-columns: 1fr;
+/* Tablet Portrait (992px and below) */
+@media (max-width: 992px) {
+  .sell-hero-title {
+    font-size: 2.5rem;
   }
-
-  .sell-header-content {
-    padding: 1rem;
+  
+  .section-title {
+    font-size: 2.2rem;
+  }
+  
+  .sell-hero-buttons {
     flex-direction: column;
+    align-items: center;
     gap: 1rem;
   }
   
-  .sell-nav {
+  .sell-hero-button {
     width: 100%;
-    overflow-x: auto;
-    padding-bottom: 0.5rem;
+    max-width: 400px;
+    justify-content: center;
   }
   
-  .sell-nav-item span {
-    display: none;
+  .properties-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+  
+  .districts-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+}
+
+/* Tablet and Mobile (768px and below) */
+@media (max-width: 768px) {
+  .sell-header-content {
+    padding: 1rem;
+    flex-direction: row;
+    gap: 1rem;
+  }
+  
+  .sell-mobile-menu-button {
+    display: block;
+  }
+  
+  .sell-nav {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 280px;
+    height: 100vh;
+    background: white;
+    flex-direction: column;
+    padding: 80px 2rem 2rem;
+    gap: 0.5rem;
+    transition: right 0.3s ease;
+    box-shadow: -5px 0 25px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    align-items: stretch;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .sell-nav.mobile-open {
+    right: 0;
   }
   
   .sell-nav-item {
-    padding: 0.5rem 1rem;
+    padding: 1rem;
+    border-radius: 8px;
+    justify-content: flex-start;
+    gap: 1rem;
+  }
+  
+  .sell-nav-item span {
+    display: block;
+    font-size: 1rem;
   }
   
   .sell-nav-icon {
@@ -999,7 +1015,8 @@ body {
   
   .sell-hero-section.home-hero {
     padding: 4rem 1rem;
-    margin-top: 120px;
+    margin-top: 80px;
+    background-attachment: scroll;
   }
   
   .sell-hero-title {
@@ -1010,113 +1027,251 @@ body {
     font-size: 1.1rem;
   }
   
-  .sell-hero-buttons {
-    flex-direction: column;
-    gap: 1rem;
-  }
-  
-  .sell-hero-button {
-    width: 100%;
-    justify-content: center;
-  }
-  
-  .search-bar-container1 {
-    padding: 0 1rem;
-    margin-top: -80px;
-  }
-  
-  .search-bar1 {
-    padding: 1.5rem;
-  }
-  
-  .search-tabs1 {
-    flex-direction: column;
-  }
-
-  .section-title {
-    font-size: 2rem;
-  }
-
   .section-header {
     flex-direction: column;
     align-items: flex-start;
-    gap: 1.5rem;
+    gap: 1rem;
   }
-
+  
+  .view-all-button {
+    align-self: flex-start;
+  }
+  
   .properties-grid {
     grid-template-columns: 1fr;
+    gap: 1.5rem;
   }
-
-  .districts-grid {
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  
+  .property-card {
+    max-width: 100%;
   }
-
+  
+  .property-image-container {
+    height: 250px;
+  }
+  
   .quote-text {
     font-size: 1.5rem;
   }
-
-  .featured-properties,
-  .districts-section {
-    padding: 3rem 1rem;
+  
+  .districts-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
   }
   
   .quick-contact-buttons {
     right: 15px;
-    bottom: 15px;
+    bottom: 70px;
   }
   
   .quick-contact-btn {
     width: 50px;
     height: 50px;
+    min-width: 50px;
+    min-height: 50px;
   }
   
   .quick-contact-icon {
     width: 20px;
     height: 20px;
   }
+  
+  .quick-contact-tooltip {
+    display: none;
+  }
+  
+  .featured-properties,
+  .districts-section {
+    padding: 4rem 1.5rem;
+  }
+  
+  .quote-section {
+    padding: 3rem 1.5rem;
+  }
 }
 
-@media (max-width: 480px) {
+/* Mobile Landscape (640px and below) */
+@media (max-width: 640px) {
+  .sell-logo-text {
+    font-size: 1.4rem;
+  }
+  
   .sell-hero-title {
-    font-size: 2rem;
-    margin-bottom: 2rem;
+    font-size: 1.8rem;
   }
-
-  .sell-hero-button {
-    min-width: auto;
-    padding: 0.875rem 1.5rem;
-    font-size: 1rem;
-  }
-
+  
   .section-title {
-    font-size: 15rem;
+    font-size: 1.8rem;
   }
-
+  
   .property-price {
     font-size: 1.5rem;
   }
-
+  
   .property-title {
     font-size: 1.2rem;
   }
-
+  
+  .property-features {
+    gap: 1rem;
+  }
+  
+  .feature {
+    font-size: 0.9rem;
+  }
+  
+  .feature-icon {
+    width: 16px;
+    height: 16px;
+  }
+  
+  .districts-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+  
   .district-card {
     padding: 1.5rem;
   }
   
-  .search-button {
-    padding: 1rem 1.5rem;
+  .district-icon-wrapper {
+    width: 56px;
+    height: 56px;
+  }
+  
+  .district-icon {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .district-name {
+    font-size: 1.2rem;
+  }
+  
+  .district-properties {
+    font-size: 0.9rem;
+  }
+}
+
+/* Mobile Portrait (480px and below) */
+@media (max-width: 480px) {
+  .sell-footer-content {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  
+  .sell-footer-section {
+    text-align: center;
+    align-items: center;
+  }
+  
+  .sell-footer-social {
+    justify-content: center;
+  }
+  
+  .sell-footer-links {
+    align-items: center;
+  }
+  
+  .sell-logo-text {
+    font-size: 1.3rem;
+  }
+  
+  .sell-logo-image {
+    height: 40px;
+    width: 40px;
+  }
+  
+  .sell-nav {
+    width: 100%;
+    right: -100%;
+  }
+  
+  .sell-nav.mobile-open {
+    right: 0;
+    width: 100%;
+  }
+  
+  .sell-hero-title {
+    font-size: 1.6rem;
+  }
+  
+  .sell-hero-subtitle {
     font-size: 1rem;
+  }
+  
+  .section-title {
+    font-size: 1.6rem;
+  }
+  
+  .view-all-button {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .property-image-container {
+    height: 220px;
+  }
+  
+  .property-badge {
+    font-size: 0.75rem;
+    padding: 0.4rem 1rem;
+  }
+  
+  .property-badge.featured {
+    left: 0.75rem;
+  }
+  
+  .property-badge.type {
+    right: 0.75rem;
+  }
+  
+  .favorite-button {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    bottom: 0.75rem;
+    right: 0.75rem;
+  }
+  
+  .favorite-icon {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .property-content {
+    padding: 1.5rem;
+  }
+  
+  .property-price {
+    font-size: 1.4rem;
+  }
+  
+  .property-title {
+    font-size: 1.1rem;
+  }
+  
+  .property-location {
+    font-size: 0.9rem;
+  }
+  
+  .property-features {
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: flex-start;
   }
   
   .quick-contact-buttons {
     right: 10px;
-    bottom: 10px;
+    bottom: 70px;
   }
   
   .quick-contact-btn {
     width: 45px;
     height: 45px;
+    min-width: 45px;
+    min-height: 45px;
   }
   
   .quick-contact-icon {
@@ -1124,7 +1279,156 @@ body {
     height: 18px;
   }
   
-  .quick-contact-tooltip {
-    display: none;
+  .districts-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .district-card {
+    padding: 1.25rem;
+  }
+  
+  .district-name {
+    font-size: 1.1rem;
+  }
+  
+  .district-properties {
+    font-size: 0.85rem;
+  }
+  
+  .quote-text {
+    font-size: 1.3rem;
+  }
+  
+  .quote-author {
+    font-size: 1rem;
+  }
+}
+
+/* Small Mobile (360px and below) */
+@media (max-width: 360px) {
+  .sell-logo-text {
+    font-size: 1.2rem;
+  }
+  
+  .sell-logo-image {
+    height: 35px;
+    width: 35px;
+  }
+  
+  .sell-hero-title {
+    font-size: 1.4rem;
+  }
+  
+  .sell-hero-button {
+    padding: 0.875rem 1rem;
+    font-size: 1rem;
+  }
+  
+  .section-title {
+    font-size: 1.4rem;
+  }
+  
+  .view-all-button {
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+  }
+  
+  .arrow-icon {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .property-image-container {
+    height: 200px;
+  }
+  
+  .property-price {
+    font-size: 1.3rem;
+  }
+  
+  .property-title {
+    font-size: 1rem;
+  }
+  
+  .property-location {
+    font-size: 0.85rem;
+  }
+  
+  .feature {
+    font-size: 0.85rem;
+  }
+  
+  .feature-icon {
+    width: 16px;
+    height: 16px;
+  }
+  
+  .quick-contact-btn {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    min-height: 40px;
+  }
+  
+  .quick-contact-icon {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+/* iOS-specific optimizations */
+@supports (-webkit-touch-callout: none) {
+  .sell-hero-section.home-hero {
+    background-attachment: scroll;
+  }
+  
+  .sell-hero-title,
+  .section-title,
+  .property-title {
+    -webkit-text-size-adjust: 100%;
+  }
+  
+  .sell-nav,
+  .sell-footer-links {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* High DPI Screens */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .sell-hero-section.home-hero {
+    background-image: linear-gradient(rgba(44, 62, 80, 0.85), rgba(52, 152, 219, 0.85)), 
+                     url('https://images.pexels.com/photos/1732414/pexels-photo-1732414.jpeg');
+  }
+  
+  .property-card,
+  .district-card {
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.15);
+  }
+}
+
+/* Touch target optimizations for mobile */
+@media (max-width: 768px) {
+  .sell-nav-item,
+  .sell-hero-button,
+  .view-all-button,
+  .favorite-button,
+  .district-card,
+  .sell-footer-link,
+  .sell-social-link,
+  .quick-contact-btn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  .sell-nav-item {
+    padding: 0.75rem;
+  }
+  
+  .favorite-button {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
   }
 }

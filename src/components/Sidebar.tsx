@@ -47,13 +47,13 @@ const Sidebar = ({ isOpen, isMobile, toggleSidebar }: SidebarProps) => {
       exact: false,
       description: 'Add new administrators'
     },
-    { 
-      icon: '📈', 
-      label: 'Analysis Reports', 
-      path: '/dashboard/analysis-reports',
-      exact: false,
-      description: 'Metrics and reports'
-    }
+    // { 
+    //   icon: '📈', 
+    //   label: 'Analysis Reports', 
+    //   path: '/dashboard/analysis-reports',
+    //   exact: false,
+    //   description: 'Metrics and reports'
+    // }
   ];
 
   const isActive = (path: string, exact: boolean) => {
