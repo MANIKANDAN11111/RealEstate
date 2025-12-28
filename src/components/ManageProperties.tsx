@@ -2,14 +2,158 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './ManageProperties.css';
 
+// Define TypeScript interfaces
+interface PropertyImage {
+  url?: string;
+  fileUrl?: string;
+  fileName?: string;
+  key?: string;
+  fileType?: string;
+  fileSize?: { $numberLong: string };
+}
+
+interface PropertyVideo {
+  url?: string;
+  fileUrl?: string;
+  fileName?: string;
+  key?: string;
+}
+
+interface PriceDetails {
+  price: number;
+  priceUnit: string;
+}
+
+interface Location {
+  state: string;
+  district: string;
+  locality: string;
+  landmark: string;
+  pincode: string;
+  fullAddress: string;
+}
+
+interface Features {
+  bedrooms: number;
+  bathrooms: number;
+  builtUpArea: number;
+  carpetArea: number;
+  amenities: string[];
+}
+
+interface ContactInfo {
+  ownerName: string;
+  phone: string;
+  email: string;
+  showPhone: boolean;
+  showEmail: boolean;
+}
+
+interface Property {
+  _id: string;
+  id?: string;
+  title: string;
+  propertyType: string;
+  propertyCategory: string;
+  propertySubCategory: string;
+  description: string;
+  priceDetails: PriceDetails;
+  location: Location;
+  features: Features;
+  contactInfo: ContactInfo;
+  images: PropertyImage[];
+  videos: PropertyVideo[];
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface EditForm {
+  title: string;
+  propertyType: string;
+  propertyCategory: string;
+  propertySubCategory: string;
+  description: string;
+  priceValue: string;
+  priceUnit: string;
+  location: {
+    state: string;
+    district: string;
+    locality: string;
+    landmark: string;
+    pincode: string;
+    fullAddress: string;
+  };
+  features: {
+    bedrooms: string;
+    bathrooms: string;
+    builtUpArea: string;
+    carpetArea: string;
+    amenities: string[];
+  };
+  contactInfo: {
+    ownerName: string;
+    phone: string;
+    email: string;
+    showPhone: boolean;
+    showEmail: boolean;
+  };
+  status: string;
+}
+
 const ManageProperties = () => {
-  const [properties, setProperties] = useState([]);
+  const [properties, setProperties] = useState<Property[]>([]);
   const [filter, setFilter] = useState('all');
   const [search, setSearch] = useState('');
-  const [selectedProperty, setSelectedProperty] = useState(null);
+  const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
   const [showViewModal, setShowViewModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+  
+  // Edit form state
+  const [editForm, setEditForm] = useState<EditForm>({
+    title: '',
+    propertyType: '',
+    propertyCategory: '',
+    propertySubCategory: '',
+    description: '',
+    priceValue: '',
+    priceUnit: 'lakh',
+    location: {
+      state: 'Tamil Nadu',
+      district: '',
+      locality: '',
+      landmark: '',
+      pincode: '',
+      fullAddress: ''
+    },
+    features: {
+      bedrooms: '',
+      bathrooms: '',
+      builtUpArea: '',
+      carpetArea: '',
+      amenities: []
+    },
+    contactInfo: {
+      ownerName: '',
+      phone: '',
+      email: '',
+      showPhone: true,
+      showEmail: true
+    },
+    status: 'PUBLISHED'
+  });
+  
+  const [existingImages, setExistingImages] = useState<PropertyImage[]>([]);
+  const [existingVideos, setExistingVideos] = useState<PropertyVideo[]>([]);
+  const [newImages, setNewImages] = useState<File[]>([]);
+  const [newVideos, setNewVideos] = useState<File[]>([]);
+  const [deleteImageKeys, setDeleteImageKeys] = useState<string[]>([]);
+  const [deleteVideoKeys, setDeleteVideoKeys] = useState<string[]>([]);
 
   const navigate = useNavigate();
   const API_BASE_URL = 'https://realestatebackend-8adg.onrender.com/api';
@@ -18,26 +162,49 @@ const ManageProperties = () => {
     fetchProperties();
   }, []);
 
+  useEffect(() => {
+    if (showSuccessMessage) {
+      const timer = setTimeout(() => {
+        setShowSuccessMessage(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showSuccessMessage]);
+
+  const showSuccessAlert = (message: string) => {
+    setSuccessMessage(message);
+    setShowSuccessMessage(true);
+  };
+
   const fetchProperties = () => {
     setLoading(true);
+    console.log('Fetching properties from:', `${API_BASE_URL}/properties`);
+    
     fetch(`${API_BASE_URL}/properties`)
       .then(res => {
-        if (!res.ok) throw new Error('Failed to fetch properties');
+        console.log('Fetch Response Status:', res.status);
+        if (!res.ok) {
+          return res.text().then(text => {
+            console.error('Fetch Error Response:', text);
+            throw new Error(`HTTP ${res.status}: ${text}`);
+          });
+        }
         return res.json();
       })
-      .then(data => {
-        setProperties(data || []);
+      .then((data: Property[]) => {
+        console.log('Fetched properties:', data);
+        setProperties(Array.isArray(data) ? data : []);
       })
       .catch(err => {
-        console.error('API Error:', err);
-        alert('Failed to load properties. Please try again.');
+        console.error('Fetch Error:', err);
+        alert(`Failed to load properties: ${err.message}`);
       })
       .finally(() => {
         setLoading(false);
       });
   };
 
-  const deleteProperty = async (id) => {
+  const deleteProperty = async (id: string) => {
     if (!id) {
       alert('Invalid property ID');
       return;
@@ -56,24 +223,60 @@ const ManageProperties = () => {
         },
       });
 
+      console.log('Delete Response Status:', response.status);
+      
       if (response.ok) {
-        // Instead of local filtering, refresh from server
-        await fetchProperties(); // This will refresh all data
-        alert('Property deleted successfully!');
+        const result = await response.json();
+        console.log('Delete successful:', result);
+        showSuccessAlert('Property deleted successfully!');
+        await fetchProperties(); // Refresh the list
       } else {
-        const error = await response.json();
-        alert(`Failed to delete property: ${error.message || 'Unknown error'}`);
+        const errorText = await response.text();
+        console.error('Delete failed:', errorText);
+        
+        try {
+          const errorJson = JSON.parse(errorText);
+          alert(`Failed to delete property: ${errorJson.message || 'Unknown error'}`);
+        } catch {
+          alert(`Failed to delete property: ${errorText || 'Unknown error'}`);
+        }
       }
     } catch (error) {
       console.error('Delete error:', error);
-      alert('Failed to delete property. Please check your connection.');
+      alert(`Failed to delete property: ${(error as Error).message}`);
     } finally {
       setIsDeleting(false);
     }
   };
 
-  // ADD THIS MISSING FUNCTION
-  const viewPropertyDetails = async (id) => {
+  const viewPropertyDetails = async (id: string) => {
+    if (!id) {
+      alert('Invalid property ID');
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/properties/${id}`);
+      
+      console.log('View Response Status:', response.status);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`HTTP ${response.status}: ${errorText}`);
+      }
+      
+      const property: Property = await response.json();
+      console.log('Fetched property:', property);
+      
+      setSelectedProperty(property);
+      setShowViewModal(true);
+    } catch (error) {
+      console.error('View error:', error);
+      alert(`Failed to fetch property details: ${(error as Error).message}`);
+    }
+  };
+
+  const handleEditProperty = async (id: string) => {
     if (!id) {
       alert('Invalid property ID');
       return;
@@ -84,21 +287,299 @@ const ManageProperties = () => {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      const property = await response.json();
+      const property: Property = await response.json();
+      console.log('Property for editing:', property);
+      
+      // Extract key from image objects (handle different structures)
+      const imagesWithKeys: PropertyImage[] = (property.images || []).map(img => ({
+        ...img,
+        key: img.key || img.fileName || img.url || ''
+      }));
+      
+      const videosWithKeys: PropertyVideo[] = (property.videos || []).map(vid => ({
+        ...vid,
+        key: vid.key || vid.fileName || vid.url || ''
+      }));
+      
+      // Populate edit form with existing data - SAFE parsing
+      setEditForm({
+        title: property.title || '',
+        propertyType: property.propertyType || '',
+        propertyCategory: property.propertyCategory || '',
+        propertySubCategory: property.propertySubCategory || '',
+        description: property.description || '',
+        priceValue: property.priceDetails?.price?.toString() || '',
+        priceUnit: property.priceDetails?.priceUnit || 'lakh',
+        location: {
+          state: property.location?.state || 'Tamil Nadu',
+          district: property.location?.district || '',
+          locality: property.location?.locality || '',
+          landmark: property.location?.landmark || '',
+          pincode: property.location?.pincode || '',
+          fullAddress: property.location?.fullAddress || ''
+        },
+        features: {
+          bedrooms: property.features?.bedrooms?.toString() || '0',
+          bathrooms: property.features?.bathrooms?.toString() || '0',
+          builtUpArea: property.features?.builtUpArea?.toString() || '0',
+          carpetArea: property.features?.carpetArea?.toString() || '0',
+          amenities: Array.isArray(property.features?.amenities) 
+            ? property.features.amenities.filter((item): item is string => 
+                item != null && typeof item === 'string'
+              )
+            : []
+        },
+        contactInfo: {
+          ownerName: property.contactInfo?.ownerName || '',
+          phone: property.contactInfo?.phone || '',
+          email: property.contactInfo?.email || '',
+          showPhone: property.contactInfo?.showPhone !== false,
+          showEmail: property.contactInfo?.showEmail !== false
+        },
+        status: property.status || 'PUBLISHED'
+      });
+      
+      // Set existing media
+      setExistingImages(imagesWithKeys);
+      setExistingVideos(videosWithKeys);
+      setNewImages([]);
+      setNewVideos([]);
+      setDeleteImageKeys([]);
+      setDeleteVideoKeys([]);
+      
       setSelectedProperty(property);
-      setShowViewModal(true);
+      setShowEditModal(true);
     } catch (error) {
-      console.error('View error:', error);
-      alert(`Failed to fetch property details: ${error.message}`);
+      console.error('Edit error:', error);
+      alert(`Failed to fetch property details: ${(error as Error).message}`);
     }
   };
 
-  const handleEditProperty = (id) => {
-    if (!id) {
+  const handleEditFormChange = (field: string, value: string | string[] | boolean | number) => {
+    console.log(`Changing ${field} to:`, value);
+    
+    // Handle amenities specially
+    if (field === 'features.amenities') {
+      if (Array.isArray(value)) {
+        setEditForm(prev => ({
+          ...prev,
+          features: {
+            ...prev.features,
+            amenities: value
+          }
+        }));
+      }
+      return;
+    }
+    
+    if (field.includes('.')) {
+      const [parent, child] = field.split('.');
+      setEditForm(prev => ({
+        ...prev,
+        [parent]: {
+          ...prev[parent as keyof EditForm] as any,
+          [child]: value
+        }
+      }));
+    } else {
+      setEditForm(prev => ({
+        ...prev,
+        [field]: value
+      }));
+    }
+  };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files) {
+      setNewImages(prev => [...prev, ...Array.from(files)]);
+    }
+  };
+
+  const handleVideoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files) {
+      setNewVideos(prev => [...prev, ...Array.from(files)]);
+    }
+  };
+
+  const removeExistingImage = (imageObj: PropertyImage) => {
+    const key = imageObj.key || imageObj.fileName || imageObj.url || '';
+    if (key) {
+      setDeleteImageKeys(prev => [...prev, key]);
+    }
+    setExistingImages(prev => prev.filter(img => 
+      (img.key || img.fileName || img.url || '') !== key
+    ));
+  };
+
+  const removeExistingVideo = (videoObj: PropertyVideo) => {
+    const key = videoObj.key || videoObj.fileName || videoObj.url || '';
+    if (key) {
+      setDeleteVideoKeys(prev => [...prev, key]);
+    }
+    setExistingVideos(prev => prev.filter(vid => 
+      (vid.key || vid.fileName || vid.url || '') !== key
+    ));
+  };
+
+  const removeNewImage = (index: number) => {
+    setNewImages(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const removeNewVideo = (index: number) => {
+    setNewVideos(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleUpdateProperty = async () => {
+    console.log('🚀 === UPDATE PROPERTY START ===');
+    
+    if (!selectedProperty) {
+      alert('No property selected for update');
+      return;
+    }
+
+    const propertyId = selectedProperty._id || selectedProperty.id;
+    
+    if (!propertyId) {
       alert('Invalid property ID');
       return;
     }
-    navigate(`/dashboard/edit-properties/${id}`);
+
+    if (!editForm.title || !editForm.priceValue) {
+      alert('Please fill in all required fields (Title and Price)');
+      return;
+    }
+
+    setIsUpdating(true);
+
+    try {
+      const formData = new FormData();
+      
+      // Clean amenities before sending - SAFE handling
+      const cleanAmenities = (editForm.features.amenities || [])
+        .filter((item): item is string => 
+          item != null && typeof item === 'string' && item.trim() !== ''
+        )
+        .map(item => item.trim());
+      
+      console.log('Cleaned amenities:', cleanAmenities);
+      
+      // Prepare property data - EXACTLY matching your PropertyRequestDTO
+      const propertyData = {
+        title: editForm.title,
+        propertyType: editForm.propertyType,
+        propertyCategory: editForm.propertyCategory,
+        propertySubCategory: editForm.propertySubCategory,
+        description: editForm.description,
+        priceValue: editForm.priceValue, // SEND AS STRING
+        priceUnit: editForm.priceUnit || 'lakh',
+        location: {
+          state: editForm.location.state,
+          district: editForm.location.district,
+          locality: editForm.location.locality,
+          landmark: editForm.location.landmark,
+          pincode: editForm.location.pincode,
+          fullAddress: editForm.location.fullAddress
+        },
+        features: {
+          bedrooms: parseInt(editForm.features.bedrooms) || 0,
+          bathrooms: parseInt(editForm.features.bathrooms) || 0,
+          builtUpArea: parseInt(editForm.features.builtUpArea) || 0,
+          carpetArea: parseInt(editForm.features.carpetArea) || 0,
+          amenities: cleanAmenities // Use cleaned array
+        },
+        contactInfo: {
+          ownerName: editForm.contactInfo.ownerName,
+          phone: editForm.contactInfo.phone,
+          email: editForm.contactInfo.email,
+          showPhone: editForm.contactInfo.showPhone,
+          showEmail: editForm.contactInfo.showEmail
+        },
+        status: editForm.status
+      };
+
+      console.log('📦 Property Data being sent:', JSON.stringify(propertyData, null, 2));
+      
+      // Append property data as JSON string
+      formData.append('propertyData', JSON.stringify(propertyData));
+
+      // Append new images
+      newImages.forEach(image => {
+        formData.append('images', image);
+      });
+
+      // Append new videos
+      newVideos.forEach(video => {
+        formData.append('videos', video);
+      });
+
+      // Build URL with query parameters
+      let url = `${API_BASE_URL}/properties/${propertyId}`;
+      const params = new URLSearchParams();
+      
+      // Add delete parameters if they exist
+      if (deleteImageKeys.length > 0) {
+        deleteImageKeys.forEach(key => {
+          params.append('deleteImageKeys', key);
+        });
+      }
+      
+      if (deleteVideoKeys.length > 0) {
+        deleteVideoKeys.forEach(key => {
+          params.append('deleteVideoKeys', key);
+        });
+      }
+      
+      // Add other optional parameters with defaults
+      params.append('replaceImages', 'false');
+      params.append('replaceVideos', 'false');
+      
+      const queryString = params.toString();
+      if (queryString) {
+        url += `?${queryString}`;
+      }
+
+      console.log('🌐 PUT URL:', url);
+      
+      // Log FormData entries for debugging
+      console.log('📝 FormData entries:');
+      for (let pair of formData.entries()) {
+        console.log(pair[0], pair[1]);
+      }
+
+      const response = await fetch(url, {
+        method: 'PUT',
+        body: formData
+      });
+
+      console.log('📨 Response Status:', response.status);
+      console.log('📨 Response OK:', response.ok);
+      
+      if (response.ok) {
+        const result = await response.json(); // Read ONCE
+        console.log('✅ Update successful:', result);
+        showSuccessAlert('Property updated successfully!');
+        setShowEditModal(false);
+        await fetchProperties();
+      } else {
+        // For error responses, read the text
+        const errorText = await response.text();
+        console.error('❌ Update failed. Full response:', errorText);
+        
+        try {
+          const errorJson = JSON.parse(errorText);
+          alert(`Failed to update property: ${errorJson.message || 'Unknown error'}`);
+        } catch {
+          alert(`Failed to update property: ${errorText || 'Unknown error'}`);
+        }
+      }
+    } catch (error) {
+      console.error('💥 Update error:', error);
+      alert(`Failed to update property: ${(error as Error).message}`);
+    } finally {
+      setIsUpdating(false);
+    }
   };
 
   const filteredProperties = properties.filter(property => {
@@ -114,23 +595,42 @@ const ManageProperties = () => {
     return matchesFilter && matchesSearch;
   });
 
-  const formatPrice = (price) => {
+  const formatPrice = (price: number) => {
     if (!price || isNaN(price)) return '₹0';
     return `₹${price.toLocaleString('en-IN')}`;
   };
 
-  const getPropertyId = (property) => {
-    return property._id || property.id;
+  const getPropertyId = (property: Property) => {
+    return property._id || property.id || '';
   };
 
-  const truncateText = (text, maxLength = 30) => {
+  const truncateText = (text: string, maxLength: number = 30) => {
     if (!text) return '-';
     if (text.length <= maxLength) return text;
     return text.substring(0, maxLength) + '...';
   };
 
+  // Debug useEffect
+  useEffect(() => {
+    if (showEditModal) {
+      console.log('🔍 Edit Form State:', editForm);
+      console.log('🔍 Existing Images:', existingImages);
+      console.log('🔍 Delete Image Keys:', deleteImageKeys);
+    }
+  }, [showEditModal, editForm, existingImages, deleteImageKeys]);
+
   return (
     <div className="manage-properties">
+      {/* Success Message Popup */}
+      {showSuccessMessage && (
+        <div className="success-message-popup">
+          <div className="success-message-content">
+            <span className="success-icon">✓</span>
+            <span className="success-text">{successMessage}</span>
+          </div>
+        </div>
+      )}
+
       {/* ================= HEADER ================= */}
       <div className="page-header">
         <div className="header-top">
@@ -271,13 +771,13 @@ const ManageProperties = () => {
 
                     <td>
                       <div className="action-buttons-cell">
-                        {/* <button 
+                        <button 
                           className="action-btn edit-btn" 
                           onClick={() => handleEditProperty(propertyId)}
                           title="Edit Property"
                         >
                           ✏️
-                        </button> */}
+                        </button>
                         <button 
                           className="action-btn view-btn" 
                           onClick={() => viewPropertyDetails(propertyId)}
@@ -331,6 +831,10 @@ const ManageProperties = () => {
                     <span className="detail-value">{selectedProperty.propertyCategory || selectedProperty.propertyType || 'N/A'}</span>
                   </div>
                   <div className="detail-row">
+                    <span className="detail-label">Sub Type:</span>
+                    <span className="detail-value">{selectedProperty.propertySubCategory || 'N/A'}</span>
+                  </div>
+                  <div className="detail-row">
                     <span className="detail-label">Status:</span>
                     <span className="status-cell">
                       <span className={`status-badge ${selectedProperty.status?.toLowerCase() || 'draft'}`}>
@@ -350,24 +854,28 @@ const ManageProperties = () => {
                 <div className="detail-section">
                   <h3>📍 Location Details</h3>
                   <div className="detail-row">
-                    <span className="detail-label">Address:</span>
-                    <span className="detail-value">{selectedProperty.location?.address || 'N/A'}</span>
+                    <span className="detail-label">State:</span>
+                    <span className="detail-value">{selectedProperty.location?.state || 'N/A'}</span>
                   </div>
                   <div className="detail-row">
                     <span className="detail-label">District:</span>
                     <span className="detail-value">{selectedProperty.location?.district || 'N/A'}</span>
                   </div>
                   <div className="detail-row">
-                    <span className="detail-label">City:</span>
-                    <span className="detail-value">{selectedProperty.location?.city || 'N/A'}</span>
+                    <span className="detail-label">Locality:</span>
+                    <span className="detail-value">{selectedProperty.location?.locality || 'N/A'}</span>
                   </div>
                   <div className="detail-row">
-                    <span className="detail-label">State:</span>
-                    <span className="detail-value">{selectedProperty.location?.state || 'N/A'}</span>
+                    <span className="detail-label">Landmark:</span>
+                    <span className="detail-value">{selectedProperty.location?.landmark || 'N/A'}</span>
                   </div>
                   <div className="detail-row">
                     <span className="detail-label">Pincode:</span>
                     <span className="detail-value">{selectedProperty.location?.pincode || 'N/A'}</span>
+                  </div>
+                  <div className="detail-row">
+                    <span className="detail-label">Full Address:</span>
+                    <span className="detail-value">{selectedProperty.location?.fullAddress || 'N/A'}</span>
                   </div>
                 </div>
 
@@ -380,73 +888,66 @@ const ManageProperties = () => {
                       {formatPrice(selectedProperty.priceDetails?.price)} {selectedProperty.priceDetails?.priceUnit || ''}
                     </span>
                   </div>
-                  <div className="detail-row">
-                    <span className="detail-label">Security Deposit:</span>
-                    <span className="detail-value">
-                      {formatPrice(selectedProperty.priceDetails?.securityDeposit)} {selectedProperty.priceDetails?.securityDepositUnit || ''}
-                    </span>
-                  </div>
-                  <div className="detail-row">
-                    <span className="detail-label">Maintenance:</span>
-                    <span className="detail-value">
-                      {formatPrice(selectedProperty.priceDetails?.maintenance)} {selectedProperty.priceDetails?.maintenanceUnit || ''}
-                    </span>
-                  </div>
-                  <div className="detail-row">
-                    <span className="detail-label">Booking Amount:</span>
-                    <span className="detail-value">
-                      {formatPrice(selectedProperty.priceDetails?.bookingAmount)} {selectedProperty.priceDetails?.bookingAmountUnit || ''}
-                    </span>
-                  </div>
                 </div>
 
-                {/* Property Specifications */}
+                {/* Property Features */}
                 <div className="detail-section">
-                  <h3>🏠 Property Specifications</h3>
+                  <h3>🏠 Property Features</h3>
                   <div className="detail-row">
-                    <span className="detail-label">Carpet Area:</span>
+                    <span className="detail-label">Bedrooms:</span>
                     <span className="detail-value">
-                      {selectedProperty.propertySpecification?.carpetArea || 0} sq.ft
+                      {selectedProperty.features?.bedrooms || 0}
+                    </span>
+                  </div>
+                  <div className="detail-row">
+                    <span className="detail-label">Bathrooms:</span>
+                    <span className="detail-value">
+                      {selectedProperty.features?.bathrooms || 0}
                     </span>
                   </div>
                   <div className="detail-row">
                     <span className="detail-label">Built-up Area:</span>
                     <span className="detail-value">
-                      {selectedProperty.propertySpecification?.builtUpArea || 0} sq.ft
+                      {selectedProperty.features?.builtUpArea || 0} sq.ft
                     </span>
                   </div>
                   <div className="detail-row">
-                    <span className="detail-label">Bedrooms:</span>
-                    <span className="detail-value">{selectedProperty.propertySpecification?.bedrooms || 0}</span>
+                    <span className="detail-label">Carpet Area:</span>
+                    <span className="detail-value">
+                      {selectedProperty.features?.carpetArea || 0} sq.ft
+                    </span>
+                  </div>
+                  {selectedProperty.features?.amenities && selectedProperty.features.amenities.length > 0 && (
+                    <div className="detail-row">
+                      <span className="detail-label">Amenities:</span>
+                      <span className="detail-value">
+                        {selectedProperty.features.amenities.join(', ')}
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Contact Information */}
+                <div className="detail-section">
+                  <h3>📞 Contact Information</h3>
+                  <div className="detail-row">
+                    <span className="detail-label">Owner Name:</span>
+                    <span className="detail-value">{selectedProperty.contactInfo?.ownerName || 'N/A'}</span>
                   </div>
                   <div className="detail-row">
-                    <span className="detail-label">Bathrooms:</span>
-                    <span className="detail-value">{selectedProperty.propertySpecification?.bathrooms || 0}</span>
+                    <span className="detail-label">Phone:</span>
+                    <span className="detail-value">
+                      {selectedProperty.contactInfo?.showPhone ? selectedProperty.contactInfo?.phone : 'Hidden'}
+                    </span>
                   </div>
                   <div className="detail-row">
-                    <span className="detail-label">Balconies:</span>
-                    <span className="detail-value">{selectedProperty.propertySpecification?.balconies || 0}</span>
-                  </div>
-                  <div className="detail-row">
-                    <span className="detail-label">Furnishing:</span>
-                    <span className="detail-value">{selectedProperty.propertySpecification?.furnishing || 'N/A'}</span>
+                    <span className="detail-label">Email:</span>
+                    <span className="detail-value">
+                      {selectedProperty.contactInfo?.showEmail ? selectedProperty.contactInfo?.email : 'Hidden'}
+                    </span>
                   </div>
                 </div>
               </div>
-
-              {/* Amenities */}
-              {selectedProperty.amenities && selectedProperty.amenities.length > 0 && (
-                <div className="detail-section full-width">
-                  <h3>✅ Amenities</h3>
-                  <div className="amenities-grid">
-                    {selectedProperty.amenities.map((amenity, index) => (
-                      <span key={index} className="amenity-badge">
-                        {amenity}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
 
               {/* Images */}
               {selectedProperty.images && selectedProperty.images.length > 0 && (
@@ -456,10 +957,28 @@ const ManageProperties = () => {
                     {selectedProperty.images.map((img, index) => (
                       <div key={index} className="image-thumbnail">
                         <img 
-                          src={img} 
+                          src={img.url || img.fileUrl || ''} 
                           alt={`Property ${index + 1}`}
-                          onClick={() => window.open(img, '_blank')}
+                          onClick={() => window.open(img.url || img.fileUrl || '', '_blank')}
                           style={{ cursor: 'pointer' }}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Videos */}
+              {selectedProperty.videos && selectedProperty.videos.length > 0 && (
+                <div className="detail-section full-width">
+                  <h3>🎥 Videos ({selectedProperty.videos.length})</h3>
+                  <div className="video-gallery">
+                    {selectedProperty.videos.map((vid, index) => (
+                      <div key={index} className="video-thumbnail">
+                        <video 
+                          src={vid.url || vid.fileUrl || ''}
+                          controls
+                          style={{ maxWidth: '200px', maxHeight: '150px' }}
                         />
                       </div>
                     ))}
@@ -483,14 +1002,6 @@ const ManageProperties = () => {
                       {selectedProperty.updatedAt ? new Date(selectedProperty.updatedAt).toLocaleString() : 'N/A'}
                     </span>
                   </div>
-                  <div className="detail-row">
-                    <span className="detail-label">Owner Name:</span>
-                    <span className="detail-value">{selectedProperty.ownerName || 'N/A'}</span>
-                  </div>
-                  <div className="detail-row">
-                    <span className="detail-label">Contact Email:</span>
-                    <span className="detail-value">{selectedProperty.contactEmail || 'N/A'}</span>
-                  </div>
                 </div>
               </div>
             </div>
@@ -499,21 +1010,458 @@ const ManageProperties = () => {
               <button className="modal-btn secondary" onClick={() => setShowViewModal(false)}>
                 Close
               </button>
-              {/* <button 
-                className="modal-btn primary" 
-                onClick={() => {
-                  setShowViewModal(false);
-                  handleEditProperty(getPropertyId(selectedProperty));
-                }}
-              >
-                ✏️ Edit Property
-              </button> */}
             </div>
           </div>
         </div>
       )}
-    </div>
+
+      {/* ================= EDIT MODAL ================= */}
+      {showEditModal && selectedProperty && (
+        <div className="modal-overlay" onClick={() => setShowEditModal(false)}>
+          <div className="modal-content edit-modal-large" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <div>
+                <h2>✏️ Edit Property</h2>
+                <p className="property-id-modal">ID: #{getPropertyId(selectedProperty)?.slice(-6)}</p>
+              </div>
+              <button className="modal-close" onClick={() => setShowEditModal(false)}>
+                ✕
+              </button>
+            </div>
+
+            <div className="modal-body">
+              <div className="edit-form-grid">
+                {/* Basic Information */}
+                <div className="edit-section">
+                  <h3 className="edit-section-title">📋 Basic Information</h3>
+                  <div className="form-group">
+                    <label className="form-label">Title *</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      value={editForm.title}
+                      onChange={(e) => handleEditFormChange('title', e.target.value)}
+                      placeholder="Enter property title"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Property Type</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      value={editForm.propertyType}
+                      onChange={(e) => handleEditFormChange('propertyType', e.target.value)}
+                      placeholder="e.g., Residential, Commercial"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Category</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      value={editForm.propertyCategory}
+                      onChange={(e) => handleEditFormChange('propertyCategory', e.target.value)}
+                      placeholder="e.g., Apartment, Villa"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Sub Category</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      value={editForm.propertySubCategory}
+                      onChange={(e) => handleEditFormChange('propertySubCategory', e.target.value)}
+                      placeholder="e.g., Single Floor, Multi-floor"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Description</label>
+                    <textarea
+                      className="form-textarea"
+                      value={editForm.description}
+                      onChange={(e) => handleEditFormChange('description', e.target.value)}
+                      placeholder="Enter property description"
+                      rows="4"
+                    />
+                  </div>
+                </div>
+
+                {/* Price Information */}
+                <div className="edit-section">
+                  <h3 className="edit-section-title">💰 Price Information</h3>
+                  <div className="form-group">
+                    <label className="form-label">Price *</label>
+                    <input
+                      type="number"
+                      className="form-input"
+                      value={editForm.priceValue}
+                      onChange={(e) => handleEditFormChange('priceValue', e.target.value)}
+                      placeholder="Enter price"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Price Unit</label>
+                    <select
+                      className="form-input"
+                      value={editForm.priceUnit}
+                      onChange={(e) => handleEditFormChange('priceUnit', e.target.value)}
+                    >
+                      <option value="lakh">Lakh</option>
+                      <option value="crore">Crore</option>
+                      <option value="per sqft">Per Sq.Ft</option>
+                      <option value="per month">Per Month</option>
+                      <option value="per year">Per Year</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Location Details */}
+                <div className="edit-section">
+                  <h3 className="edit-section-title">📍 Location Details</h3>
+                  <div className="form-group">
+                    <label className="form-label">State</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      value={editForm.location.state}
+                      onChange={(e) => handleEditFormChange('location.state', e.target.value)}
+                      placeholder="State"
+                      disabled
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">District</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      value={editForm.location.district}
+                      onChange={(e) => handleEditFormChange('location.district', e.target.value)}
+                      placeholder="Enter district"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Locality</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      value={editForm.location.locality}
+                      onChange={(e) => handleEditFormChange('location.locality', e.target.value)}
+                      placeholder="Enter locality"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Landmark</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      value={editForm.location.landmark}
+                      onChange={(e) => handleEditFormChange('location.landmark', e.target.value)}
+                      placeholder="Enter landmark"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Pincode</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      value={editForm.location.pincode}
+                      onChange={(e) => handleEditFormChange('location.pincode', e.target.value)}
+                      placeholder="Enter pincode"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Full Address</label>
+                    <textarea
+                      className="form-textarea"
+                      value={editForm.location.fullAddress}
+                      onChange={(e) => handleEditFormChange('location.fullAddress', e.target.value)}
+                      placeholder="Enter full address"
+                      rows="3"
+                    />
+                  </div>
+                </div>
+
+                {/* Property Features */}
+                <div className="edit-section">
+                  <h3 className="edit-section-title">🏠 Property Features</h3>
+                  <div className="form-group">
+                    <label className="form-label">Bedrooms</label>
+                    <input
+                      type="number"
+                      className="form-input"
+                      value={editForm.features.bedrooms}
+                      onChange={(e) => handleEditFormChange('features.bedrooms', e.target.value)}
+                      placeholder="Number of bedrooms"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Bathrooms</label>
+                    <input
+                      type="number"
+                      className="form-input"
+                      value={editForm.features.bathrooms}
+                      onChange={(e) => handleEditFormChange('features.bathrooms', e.target.value)}
+                      placeholder="Number of bathrooms"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Built-up Area (sq.ft)</label>
+                    <input
+                      type="number"
+                      className="form-input"
+                      value={editForm.features.builtUpArea}
+                      onChange={(e) => handleEditFormChange('features.builtUpArea', e.target.value)}
+                      placeholder="Built-up area"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Carpet Area (sq.ft)</label>
+                    <input
+                      type="number"
+                      className="form-input"
+                      value={editForm.features.carpetArea}
+                      onChange={(e) => handleEditFormChange('features.carpetArea', e.target.value)}
+                      placeholder="Carpet area"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Amenities</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      value={editForm.features.amenities?.join(', ') || ''}
+                      onChange={(e) => {
+                        const val = e.target.value || '';
+                        
+                        // Split by comma and clean up safely
+                        const parts = val.split(',');
+                        const amenitiesArray = parts.reduce((acc: string[], part) => {
+                          if (part && typeof part === 'string') {
+                            const trimmed = part.trim();
+                            if (trimmed !== '') {
+                              acc.push(trimmed);
+                            }
+                          }
+                          return acc;
+                        }, []);
+                        
+                        console.log('Processed amenities:', amenitiesArray);
+                        
+                        // Update directly
+                        setEditForm(prev => ({
+                          ...prev,
+                          features: {
+                            ...prev.features,
+                            amenities: amenitiesArray
+                          }
+                        }));
+                      }}
+                      placeholder="Security, Parking, Gym"
+                    />
+                    <small className="form-hint">Separate with commas</small>
+                  </div>
+                </div>
+
+                {/* Contact Information */}
+                <div className="edit-section">
+                  <h3 className="edit-section-title">📞 Contact Information</h3>
+                  <div className="form-group">
+                    <label className="form-label">Owner Name</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      value={editForm.contactInfo.ownerName}
+                      onChange={(e) => handleEditFormChange('contactInfo.ownerName', e.target.value)}
+                      placeholder="Owner name"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Phone</label>
+                    <input
+                      type="tel"
+                      className="form-input"
+                      value={editForm.contactInfo.phone}
+                      onChange={(e) => handleEditFormChange('contactInfo.phone', e.target.value)}
+                      placeholder="Phone number"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Email</label>
+                    <input
+                      type="email"
+                      className="form-input"
+                      value={editForm.contactInfo.email}
+                      onChange={(e) => handleEditFormChange('contactInfo.email', e.target.value)}
+                      placeholder="Email address"
+                    />
+                  </div>
+                  <div className="form-group checkbox-group">
+                    <label className="checkbox-label">
+                      <input
+                        type="checkbox"
+                        checked={editForm.contactInfo.showPhone}
+                        onChange={(e) => handleEditFormChange('contactInfo.showPhone', e.target.checked)}
+                      />
+                      Show Phone to Public
+                    </label>
+                    <label className="checkbox-label">
+                      <input
+                        type="checkbox"
+                        checked={editForm.contactInfo.showEmail}
+                        onChange={(e) => handleEditFormChange('contactInfo.showEmail', e.target.checked)}
+                      />
+                      Show Email to Public
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              {/* Images Section */}
+              <div className="edit-section full-width media-section">
+                <h3 className="edit-section-title">📸 Property Images</h3>
+                
+                {/* Existing Images */}
+                {existingImages.length > 0 && (
+                  <div className="existing-media">
+                    <h4 className="media-subtitle">Existing Images ({existingImages.length})</h4>
+                    <div className="media-grid">
+                      {existingImages.map((img, index) => (
+                        <div key={index} className="media-item">
+                          <img src={img.url || img.fileUrl || ''} alt={`Property ${index + 1}`} />
+                          <button
+                            className="delete-media-btn"
+                            onClick={() => removeExistingImage(img)}
+                            title="Delete Image"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* New Images Preview */}
+                {newImages.length > 0 && (
+                  <div className="new-media">
+                    <h4 className="media-subtitle">New Images to Upload ({newImages.length})</h4>
+                    <div className="media-grid">
+                      {newImages.map((file, index) => (
+                        <div key={index} className="media-item">
+                          <img src={URL.createObjectURL(file)} alt={`New ${index + 1}`} />
+                          <button
+                            className="delete-media-btn"
+                            onClick={() => removeNewImage(index)}
+                            title="Remove Image"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Add Images Button */}
+                <div className="upload-section">
+                  <label className="upload-btn">
+                    <input
+                      type="file"
+                      multiple
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      style={{ display: 'none' }}
+                    />
+                    ➕ Add Images
+                  </label>
+                  <p className="upload-hint">Maximum 20 images, up to 10MB each</p>
+                </div>
+              </div>
+
+              {/* Videos Section */}
+              <div className="edit-section full-width media-section">
+                <h3 className="edit-section-title">🎥 Property Videos</h3>
+                
+                {/* Existing Videos */}
+                {existingVideos.length > 0 && (
+                  <div className="existing-media">
+                    <h4 className="media-subtitle">Existing Videos ({existingVideos.length})</h4>
+                    <div className="media-grid">
+                      {existingVideos.map((vid, index) => (
+                        <div key={index} className="media-item video-item">
+                          <video src={vid.url || vid.fileUrl || ''} controls />
+                          <button
+                            className="delete-media-btn"
+                            onClick={() => removeExistingVideo(vid)}
+                            title="Delete Video"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* New Videos Preview */}
+                {newVideos.length > 0 && (
+                  <div className="new-media">
+                    <h4 className="media-subtitle">New Videos to Upload ({newVideos.length})</h4>
+                    <div className="media-grid">
+                      {newVideos.map((file, index) => (
+                        <div key={index} className="media-item video-item">
+                          <video src={URL.createObjectURL(file)} controls />
+                          <button
+                            className="delete-media-btn"
+                            onClick={() => removeNewVideo(index)}
+                            title="Remove Video"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      ))}
+                    </div> 
+                  </div> 
+                )}
+
+                {/* Add Videos Button */}
+                <div className="upload-section">
+                  <label className="upload-btn">
+                    <input
+                      type="file"
+                      multiple
+                      accept="video/*"
+                      onChange={handleVideoUpload}
+                      style={{ display: 'none' }}
+                    />
+                    ➕ Add Videos
+                  </label>
+                  <p className="upload-hint">Maximum 5 videos, up to 500MB each</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="modal-footer">
+              <button 
+                className="modal-btn secondary" 
+                onClick={() => setShowEditModal(false)}
+                disabled={isUpdating}
+              >
+                Cancel
+              </button>
+              <button 
+                className="modal-btn primary"  
+                onClick={handleUpdateProperty} 
+                disabled={isUpdating} 
+              >  
+                {isUpdating ? '⏳ Updating...' : '✅ Update Property'}
+              </button> 
+            </div>  
+          </div>  
+        </div> 
+      )} 
+    </div>  
   );
-};
+};  
 
 export default ManageProperties;

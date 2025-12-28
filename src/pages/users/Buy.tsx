@@ -128,7 +128,7 @@ function Footer() {
               <a href="#" className="sell-social-link" aria-label="Twitter">
                 <Twitter className="sell-social-icon" />
               </a>
-              <a href="#" className="sell-social-link" aria-label="Instagram">
+              <a href="https://www.instagram.com/ag_dreamproperties" className="sell-social-link" aria-label="Instagram">
                 <Instagram className="sell-social-icon" />
               </a>
               <a href="#" className="sell-social-link" aria-label="LinkedIn">
@@ -394,7 +394,7 @@ function SearchBar() {
         </div>
 
         <button className="search-button" onClick={handleSearch} aria-label="Search properties">
-          <Search className="search-icon" />
+          
           <span className="search-button-text">Search</span>
         </button>
       </div>

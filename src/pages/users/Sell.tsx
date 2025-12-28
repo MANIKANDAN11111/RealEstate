@@ -90,7 +90,7 @@ function Footer() {
               <a href="#" className="sell-social-link">
                 <Twitter className="sell-social-icon" />
               </a>
-              <a href="#" className="sell-social-link">
+              <a href="https://www.instagram.com/ag_dreamproperties" className="sell-social-link">
                 <Instagram className="sell-social-icon" />
               </a>
               <a href="#" className="sell-social-link">

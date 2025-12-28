@@ -149,7 +149,7 @@ function Footer() {
               <a href="#" className="pd5-contact-social-link" aria-label="Twitter">
                 <Twitter className="pd5-contact-social-icon" />
               </a>
-              <a href="#" className="pd5-contact-social-link" aria-label="Instagram">
+              <a href="https://www.instagram.com/ag_dreamproperties" className="pd5-contact-social-link" aria-label="Instagram">
                 <Instagram className="pd5-contact-social-icon" />
               </a>
               <a href="#" className="pd5-contact-social-link" aria-label="LinkedIn">
