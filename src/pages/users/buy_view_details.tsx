@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { 
   Home, MapPin, Bed, Bath, Maximize, Heart, Share2, Phone, Mail, 
   Check, Car, Layers, Shield, ArrowLeft, 
   Star, Facebook, Twitter, Linkedin, Instagram, 
   Building, DollarSign, Megaphone,
-  X, User, MessageSquare, AlertCircle
+  X, User, MessageSquare, AlertCircle,
+  ZoomIn, ZoomOut, Play, Pause, SkipBack, SkipForward,
+  Volume2, VolumeX, X as XIcon, ChevronLeft, ChevronRight
 } from 'lucide-react';
 import AGLogo from '../../assets/AG_logo.jpeg';
 import './buy_view_details.css';
@@ -530,6 +532,373 @@ function SuccessModal({ isOpen, onClose }: SuccessModalProps) {
   );
 }
 
+// Image Zoom Modal Component
+interface ImageZoomModalProps {
+  isOpen: boolean;
+  imageUrl: string;
+  onClose: () => void;
+  onNext: () => void;
+  onPrev: () => void;
+  currentIndex: number;
+  totalImages: number;
+}
+
+function ImageZoomModal({ isOpen, imageUrl, onClose, onNext, onPrev, currentIndex, totalImages }: ImageZoomModalProps) {
+  const [scale, setScale] = useState(1);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+      setScale(1);
+      setPosition({ x: 0, y: 0 });
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
+
+  const handleZoomIn = () => {
+    setScale(prev => Math.min(prev + 0.25, 3));
+  };
+
+  const handleZoomOut = () => {
+    setScale(prev => Math.max(prev - 0.25, 1));
+  };
+
+  const handleResetZoom = () => {
+    setScale(1);
+    setPosition({ x: 0, y: 0 });
+  };
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (scale > 1) {
+      setIsDragging(true);
+      setDragStart({ x: e.clientX - position.x, y: e.clientY - position.y });
+    }
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (isDragging && scale > 1) {
+      const newX = e.clientX - dragStart.x;
+      const newY = e.clientY - dragStart.y;
+      
+      // Limit the drag based on image size and scale
+      const container = containerRef.current;
+      if (container) {
+        const containerWidth = container.clientWidth;
+        const containerHeight = container.clientHeight;
+        const maxX = (scale - 1) * containerWidth / 2;
+        const maxY = (scale - 1) * containerHeight / 2;
+        
+        setPosition({
+          x: Math.max(-maxX, Math.min(maxX, newX)),
+          y: Math.max(-maxY, Math.min(maxY, newY))
+        });
+      }
+    }
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  const handleWheel = (e: React.WheelEvent) => {
+    e.preventDefault();
+    if (e.deltaY < 0) {
+      handleZoomIn();
+    } else {
+      handleZoomOut();
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="pd5-image-zoom-modal-overlay" onClick={onClose}>
+      <div 
+        className="pd5-image-zoom-modal-content" 
+        onClick={(e) => e.stopPropagation()}
+        ref={containerRef}
+      >
+        <div className="pd5-image-zoom-header">
+          <div className="pd5-image-zoom-counter">
+            {currentIndex + 1} / {totalImages}
+          </div>
+          <button className="pd5-image-zoom-close" onClick={onClose}>
+            <XIcon className="pd5-image-zoom-close-icon" />
+          </button>
+        </div>
+        
+        <div className="pd5-image-zoom-navigation">
+          <button className="pd5-image-zoom-nav-btn pd5-image-zoom-prev" onClick={onPrev}>
+            <ChevronLeft className="pd5-image-zoom-nav-icon" />
+          </button>
+          
+          <div 
+            className="pd5-image-zoom-container"
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseUp}
+            onWheel={handleWheel}
+          >
+            <img
+              src={imageUrl}
+              alt={`Zoomed view ${currentIndex + 1}`}
+              className="pd5-image-zoom-img"
+              style={{
+                transform: `scale(${scale}) translate(${position.x}px, ${position.y}px)`,
+                cursor: scale > 1 ? (isDragging ? 'grabbing' : 'grab') : 'zoom-in'
+              }}
+            />
+          </div>
+          
+          <button className="pd5-image-zoom-nav-btn pd5-image-zoom-next" onClick={onNext}>
+            <ChevronRight className="pd5-image-zoom-nav-icon" />
+          </button>
+        </div>
+        
+        <div className="pd5-image-zoom-controls">
+          <button className="pd5-image-zoom-control-btn" onClick={handleZoomOut} title="Zoom Out">
+            <ZoomOut className="pd5-image-zoom-control-icon" />
+            <span>Zoom Out</span>
+          </button>
+          <button className="pd5-image-zoom-control-btn" onClick={handleResetZoom} title="Reset Zoom">
+            <span>Reset</span>
+          </button>
+          <button className="pd5-image-zoom-control-btn" onClick={handleZoomIn} title="Zoom In">
+            <ZoomIn className="pd5-image-zoom-control-icon" />
+            <span>Zoom In</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Video Player Modal Component
+interface VideoPlayerModalProps {
+  isOpen: boolean;
+  videoUrl: string;
+  onClose: () => void;
+}
+
+function VideoPlayerModal({ isOpen, videoUrl, onClose }: VideoPlayerModalProps) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [volume, setVolume] = useState(1);
+  const [isMuted, setIsMuted] = useState(false);
+  const [playbackRate, setPlaybackRate] = useState(1);
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+      if (videoRef.current) {
+        videoRef.current.currentTime = 0;
+        const playPromise = videoRef.current.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(error => {
+            console.log("Auto-play prevented:", error);
+          });
+        }
+      }
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
+
+  const handlePlayPause = () => {
+    if (videoRef.current) {
+      if (isPlaying) {
+        videoRef.current.pause();
+      } else {
+        videoRef.current.play();
+      }
+      setIsPlaying(!isPlaying);
+    }
+  };
+
+  const handleSkipBackward = () => {
+    if (videoRef.current) {
+      videoRef.current.currentTime = Math.max(0, videoRef.current.currentTime - 3);
+    }
+  };
+
+  const handleSkipForward = () => {
+    if (videoRef.current) {
+      videoRef.current.currentTime = Math.min(duration, videoRef.current.currentTime + 3);
+    }
+  };
+
+  const handleTimeUpdate = () => {
+    if (videoRef.current) {
+      setCurrentTime(videoRef.current.currentTime);
+    }
+  };
+
+  const handleLoadedMetadata = () => {
+    if (videoRef.current) {
+      setDuration(videoRef.current.duration);
+    }
+  };
+
+  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newVolume = parseFloat(e.target.value);
+    setVolume(newVolume);
+    if (videoRef.current) {
+      videoRef.current.volume = newVolume;
+      setIsMuted(newVolume === 0);
+    }
+  };
+
+  const handleToggleMute = () => {
+    if (videoRef.current) {
+      if (isMuted) {
+        videoRef.current.volume = volume;
+        setIsMuted(false);
+      } else {
+        videoRef.current.volume = 0;
+        setIsMuted(true);
+      }
+    }
+  };
+
+  const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newTime = parseFloat(e.target.value);
+    setCurrentTime(newTime);
+    if (videoRef.current) {
+      videoRef.current.currentTime = newTime;
+    }
+  };
+
+  const handlePlaybackRateChange = (rate: number) => {
+    setPlaybackRate(rate);
+    if (videoRef.current) {
+      videoRef.current.playbackRate = rate;
+    }
+  };
+
+  const formatTime = (time: number) => {
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="pd5-video-modal-overlay" onClick={onClose}>
+      <div className="pd5-video-modal-content" onClick={(e) => e.stopPropagation()}>
+        <div className="pd5-video-modal-header">
+          <h3 className="pd5-video-modal-title">Property Video</h3>
+          <button className="pd5-video-modal-close" onClick={onClose}>
+            <XIcon className="pd5-video-modal-close-icon" />
+          </button>
+        </div>
+        
+        <div className="pd5-video-player-container">
+          <video
+            ref={videoRef}
+            src={videoUrl}
+            className="pd5-video-player"
+            onTimeUpdate={handleTimeUpdate}
+            onLoadedMetadata={handleLoadedMetadata}
+            onEnded={() => setIsPlaying(false)}
+            onPlay={() => setIsPlaying(true)}
+            onPause={() => setIsPlaying(false)}
+            controls={false}
+          />
+          
+          <div className="pd5-video-controls">
+            <div className="pd5-video-progress-container">
+              <input
+                type="range"
+                min="0"
+                max={duration || 0}
+                value={currentTime}
+                onChange={handleSeek}
+                className="pd5-video-progress"
+              />
+              <div className="pd5-video-time">
+                <span>{formatTime(currentTime)}</span>
+                <span>{formatTime(duration)}</span>
+              </div>
+            </div>
+            
+            <div className="pd5-video-controls-bottom">
+              <div className="pd5-video-controls-left">
+                <button className="pd5-video-control-btn" onClick={handlePlayPause} title={isPlaying ? "Pause" : "Play"}>
+                  {isPlaying ? (
+                    <Pause className="pd5-video-control-icon" />
+                  ) : (
+                    <Play className="pd5-video-control-icon" />
+                  )}
+                </button>
+                <button className="pd5-video-control-btn" onClick={handleSkipBackward} title="Skip Back 3s">
+                  <SkipBack className="pd5-video-control-icon" />
+                  <span className="pd5-skip-text">3s</span>
+                </button>
+                <button className="pd5-video-control-btn" onClick={handleSkipForward} title="Skip Forward 3s">
+                  <SkipForward className="pd5-video-control-icon" />
+                  <span className="pd5-skip-text">3s</span>
+                </button>
+                
+                <div className="pd5-volume-control">
+                  <button className="pd5-video-control-btn" onClick={handleToggleMute} title={isMuted ? "Unmute" : "Mute"}>
+                    {isMuted ? (
+                      <VolumeX className="pd5-video-control-icon" />
+                    ) : (
+                      <Volume2 className="pd5-video-control-icon" />
+                    )}
+                  </button>
+                  <input
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.01"
+                    value={isMuted ? 0 : volume}
+                    onChange={handleVolumeChange}
+                    className="pd5-volume-slider"
+                  />
+                </div>
+              </div>
+              
+              <div className="pd5-video-controls-right">
+                <div className="pd5-playback-rate">
+                  <span>Speed:</span>
+                  <select
+                    value={playbackRate}
+                    onChange={(e) => handlePlaybackRateChange(parseFloat(e.target.value))}
+                    className="pd5-playback-select"
+                  >
+                    <option value="0.5">0.5x</option>
+                    <option value="0.75">0.75x</option>
+                    <option value="1">1x</option>
+                    <option value="1.25">1.25x</option>
+                    <option value="1.5">1.5x</option>
+                    <option value="2">2x</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function PropertyDetails() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -541,6 +910,9 @@ export default function PropertyDetails() {
   const [error, setError] = useState<string | null>(null);
   const [showInterestForm, setShowInterestForm] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showImageZoom, setShowImageZoom] = useState(false);
+  const [showVideoPlayer, setShowVideoPlayer] = useState(false);
+  const [selectedVideoIndex, setSelectedVideoIndex] = useState(0);
 
   // Static contact details
   const contactNumbers = [
@@ -670,14 +1042,19 @@ export default function PropertyDetails() {
   };
 
   const handleShare = () => {
-    navigator.share?.({
-      title: property?.title || 'Property',
-      text: `Check out this property: ${property?.title}`,
-      url: window.location.href
-    }).catch(() => {
+    if (navigator.share) {
+      navigator.share({
+        title: property?.title || 'Property',
+        text: `Check out this property: ${property?.title}`,
+        url: window.location.href
+      }).catch(() => {
+        navigator.clipboard.writeText(window.location.href);
+        alert("Link copied to clipboard!");
+      });
+    } else {
       navigator.clipboard.writeText(window.location.href);
       alert("Link copied to clipboard!");
-    });
+    }
   };
 
   const handleSendInterest = () => {
@@ -685,40 +1062,62 @@ export default function PropertyDetails() {
   };
 
   const handleInterestSubmit = async (formData: InterestFormData) => {
-  try {
-    const payload = {
-      propertyTitle: property?.title || 'Property',
-      name: formData.name,
-      email: formData.email,
-      phoneNumber: formData.phone,
-      message: formData.message
-    };
+    try {
+      const payload = {
+        propertyTitle: property?.title || 'Property',
+        name: formData.name,
+        email: formData.email,
+        phoneNumber: formData.phone,
+        message: formData.message
+      };
 
-    const response = await fetch(
-      'https://realestatebackend-8adg.onrender.com/api/messages',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(payload)
+      const response = await fetch(
+        'https://realestatebackend-8adg.onrender.com/api/messages',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        }
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || 'Failed to submit interest');
       }
-    );
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(errorText || 'Failed to submit interest');
+      setShowInterestForm(false);
+      setShowSuccessModal(true);
+      
+    } catch (error) {
+      console.error('Interest submission error:', error);
+      alert('Failed to submit interest. Please try again.');
     }
+  };
 
-    setShowInterestForm(false);
-    setShowSuccessModal(true);
-    
-  } catch (error) {
-    console.error('Interest submission error:', error);
-    alert('Failed to submit interest. Please try again.');
-  }
-};
+  const handleImageClick = () => {
+    if (property?.images && property.images.length > 0) {
+      setShowImageZoom(true);
+    }
+  };
 
+  const handleVideoClick = (index: number) => {
+    setSelectedVideoIndex(index);
+    setShowVideoPlayer(true);
+  };
+
+  const handleNextImage = () => {
+    if (property?.images) {
+      setActiveImage((prev) => (prev + 1) % property.images!.length);
+    }
+  };
+
+  const handlePrevImage = () => {
+    if (property?.images) {
+      setActiveImage((prev) => (prev - 1 + property.images!.length) % property.images!.length);
+    }
+  };
 
   // Loading state
   if (loading) {
@@ -807,6 +1206,8 @@ export default function PropertyDetails() {
               alt={property.title}
               className="pd5-property-details-active-image"
               loading="lazy"
+              onClick={handleImageClick}
+              style={{ cursor: 'pointer' }}
             />
             <div className="pd5-property-details-image-actions">
               <button
@@ -814,10 +1215,18 @@ export default function PropertyDetails() {
                 onClick={() => setIsFavorite(!isFavorite)}
                 aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
               >
-                <Heart className="pd5-property-details-favorite-icon" />
+                <Heart 
+                  className="pd5-property-details-favorite-icon" 
+                  fill={isFavorite ? "white" : "none"} 
+                  strokeWidth={2}
+                />
                 <span className="pd5-favorite-text">{isFavorite ? 'Saved' : 'Save'}</span>
               </button>
-              <button className="pd5-property-details-share-btn" onClick={handleShare} aria-label="Share property">
+              <button 
+                className="pd5-property-details-share-btn" 
+                onClick={handleShare} 
+                aria-label="Share property"
+              >
                 <Share2 className="pd5-property-details-share-icon" />
                 <span className="pd5-share-text">Share</span>
               </button>
@@ -842,6 +1251,24 @@ export default function PropertyDetails() {
               <div className="pd5-no-images">
                 <p>No images available</p>
               </div>
+            )}
+            {property.videos && property.videos.length > 0 && (
+              property.videos.map((video, index) => (
+                <div
+                  key={`video-${index}`}
+                  className="pd5-property-details-thumbnail pd5-video-thumbnail"
+                  onClick={() => handleVideoClick(index)}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`Play video ${index + 1}`}
+                  onKeyDown={(e) => e.key === 'Enter' && handleVideoClick(index)}
+                >
+                  <div className="pd5-video-thumbnail-overlay">
+                    <Play className="pd5-video-play-icon" />
+                  </div>
+                  <div className="pd5-video-label">Video {index + 1}</div>
+                </div>
+              ))
             )}
           </div>
         </div>
@@ -1138,6 +1565,28 @@ export default function PropertyDetails() {
         isOpen={showSuccessModal}
         onClose={() => setShowSuccessModal(false)}
       />
+
+      {/* Image Zoom Modal */}
+      {property.images && property.images.length > 0 && (
+        <ImageZoomModal
+          isOpen={showImageZoom}
+          imageUrl={property.images[activeImage].fileUrl}
+          onClose={() => setShowImageZoom(false)}
+          onNext={handleNextImage}
+          onPrev={handlePrevImage}
+          currentIndex={activeImage}
+          totalImages={property.images.length}
+        />
+      )}
+
+      {/* Video Player Modal */}
+      {property.videos && property.videos.length > 0 && (
+        <VideoPlayerModal
+          isOpen={showVideoPlayer}
+          videoUrl={property.videos[selectedVideoIndex].fileUrl}
+          onClose={() => setShowVideoPlayer(false)}
+        />
+      )}
 
       <Footer />
     </div>
