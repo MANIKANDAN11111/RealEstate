@@ -34,8 +34,9 @@
   margin: 0 auto;
   padding: 1rem 2rem;
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
+  position: relative;
   flex-wrap: wrap;
 }
 
@@ -45,6 +46,7 @@
   gap: 0.75rem;
   text-decoration: none;
   min-width: max-content;
+  z-index: 1001;
 }
 
 .pd5-property-details-logo-image {
@@ -64,6 +66,33 @@
   -webkit-text-fill-color: transparent;
   background-clip: text;
   white-space: nowrap;
+}
+
+/* Mobile Menu Button */
+.pd5-mobile-menu-button {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #2c3e50;
+  z-index: 1001;
+  padding: 0.5rem;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  min-width: 44px;
+  min-height: 44px;
+  touch-action: manipulation;
+}
+
+.pd5-mobile-menu-button:hover {
+  background: rgba(44, 62, 80, 0.1);
+}
+
+.pd5-mobile-menu-icon {
+  width: 24px;
+  height: 24px;
+  color: #2c3e50;
+  flex-shrink: 0;
 }
 
 .pd5-property-details-nav {
@@ -932,6 +961,16 @@
   line-height: 1.4;
 }
 
+.pd5-contact-footer-copyright a {
+  color: white;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.pd5-contact-footer-copyright a:hover {
+  color: #3498db;
+}
+
 /* Loading and Error States */
 .pd5-loading-container {
   display: flex;
@@ -1452,37 +1491,61 @@ body.pd5-modal-open {
   }
 }
 
-/* Tablet Portrait (768px and below) */
+/* Tablet Portrait (768px and below) - ADDED MOBILE NAV RESPONSIVENESS HERE */
 @media (max-width: 768px) {
   .pd5-property-details-header-content {
     padding: 1rem;
-    flex-direction: column;
+    flex-direction: row;
     gap: 1rem;
-    align-items: stretch;
   }
-
+  
+  /* Mobile Menu Button */
+  .pd5-mobile-menu-button {
+    display: block;
+  }
+  
+  /* Navigation Menu */
   .pd5-property-details-nav {
-    width: 100%;
-    justify-content: flex-start;
-    padding: 0.5rem 0;
-  }
-
-  .pd5-nav-item-text {
-    display: inline;
-    font-size: 0.85rem;
-    white-space: nowrap;
-  }
-
-  .pd5-property-details-nav-item {
-    padding: 0.75rem 1rem;
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 280px;
+    height: 100vh;
+    background: white;
+    flex-direction: column;
+    padding: 80px 2rem 2rem;
     gap: 0.5rem;
+    transition: right 0.3s ease;
+    box-shadow: -5px 0 25px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    align-items: stretch;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
   }
-
+  
+  .pd5-property-details-nav.pd5-mobile-open {
+    right: 0;
+  }
+  
+  .pd5-property-details-nav-item {
+    padding: 1rem;
+    border-radius: 8px;
+    justify-content: flex-start;
+    gap: 1rem;
+  }
+  
+  .pd5-nav-item-text {
+    display: block;
+    font-size: 1rem;
+  }
+  
   .pd5-property-details-nav-icon {
-    width: 16px;
-    height: 16px;
+    width: 20px;
+    height: 20px;
   }
-
+  
+  /* Rest of the existing mobile styles */
   .pd5-property-details-main {
     padding: 1rem;
   }
@@ -1876,6 +1939,16 @@ body.pd5-modal-open {
   
   .pd5-success-message {
     font-size: 0.9rem;
+  }
+  
+  /* Make mobile nav full width on very small screens */
+  .pd5-property-details-nav {
+    width: 100%;
+    right: -100%;
+  }
+  
+  .pd5-property-details-nav.pd5-mobile-open {
+    width: 100%;
   }
 }
 

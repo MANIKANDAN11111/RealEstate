@@ -1,14 +1,99 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   Home, Building2, DollarSign, Megaphone, Phone,
   MapPin, ArrowRight, Bed, Bath, Maximize,
   Heart, Facebook, Twitter, Instagram, Linkedin,
-  Upload, ShoppingBag, MessageCircle, Search,
-  Menu, X
+  Upload, ShoppingBag, MessageCircle, 
+  Menu, X, Map, Home as HomeIcon
 } from 'lucide-react';
 import './home_user.css';
 import AGLogo from '../../assets/AG_logo.jpeg';
+
+// Types for API response
+interface PropertyPriceDetails {
+  price: number;
+  priceUnit: string;
+  negotiable: boolean | null;
+  maintenanceCharge: number | null;
+  bookingAmount: number | null;
+}
+
+interface PropertyLocation {
+  state: string;
+  district: string;
+  city: string | null;
+  locality: string;
+  landmark: string;
+  pincode: string;
+  fullAddress: string;
+  latitude: number | null;
+  longitude: number | null;
+}
+
+interface PropertyFeatures {
+  bedrooms: number;
+  bathrooms: number;
+  balconies: number | null;
+  builtUpArea: number;
+  carpetArea: number;
+  areaUnit: string | null;
+  floor: number | null;
+  totalFloors: number | null;
+  facing: string | null;
+  propertyAge: string | null;
+  furnished: string | null;
+  parking: string | null;
+  parkingCount: number | null;
+  amenities: string[];
+}
+
+interface PropertyDetails {
+  floorNumber: string;
+  totalFloors: string;
+  facing: string;
+  carpetArea: number;
+  superBuiltUpArea: number;
+  cornerApartment: boolean;
+  propertyAge: string;
+  liftAvailable: boolean;
+  builtUpArea: number;
+}
+
+interface ContactInfo {
+  ownerName: string;
+  phone: string;
+  email: string;
+  showPhone: boolean;
+  showEmail: boolean;
+}
+
+interface PropertyImage {
+  fileName: string;
+  fileType: string;
+  fileUrl: string;
+  fileSize: number;
+  key: string;
+}
+
+interface Property {
+  id: string;
+  propertyType: string;
+  propertyCategory: string;
+  propertySubCategory: string;
+  title: string;
+  description: string;
+  priceDetails: PropertyPriceDetails;
+  location: PropertyLocation;
+  features: PropertyFeatures;
+  propertyDetails: PropertyDetails;
+  contactInfo: ContactInfo;
+  images: PropertyImage[];
+  videos: any[];
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+}
 
 // Header Component
 interface HeaderProps {
@@ -157,7 +242,7 @@ function Footer() {
 
         <div className="sell-footer-bottom">
           <p className="sell-footer-copyright">
-            &copy; 2024 DreamProperties. All rights reserved. | Built with excellence for Tamil Nadu
+            &copy; 2024 DreamProperties. All rights reserved. | <a href="https://ananthitech.vercel.app/" target="_blank" rel="noopener noreferrer">Designed and Developed by Ananthi Software Solutions</a>
           </p>
         </div>
       </div>
@@ -216,35 +301,56 @@ function QuickContactButtons() {
 
 // PropertyCard Component
 interface PropertyCardProps {
-  image: string;
-  price: string;
-  title: string;
-  location: string;
-  beds: number;
-  baths: number;
-  sqft: number;
-  type: 'sale' | 'rent';
-  featured: boolean;
+  property: Property;
 }
 
-function PropertyCard(props: PropertyCardProps) {
+function PropertyCard({ property }: PropertyCardProps) {
   const [isFavorite, setIsFavorite] = useState(false);
+
+  // Format price based on priceUnit
+  const formatPrice = () => {
+    const { price, priceUnit } = property.priceDetails;
+    if (priceUnit === 'lakh') {
+      return `₹${price} L`;
+    } else if (priceUnit === 'cr') {
+      return `₹${price} Cr`;
+    } else {
+      return `₹${price.toLocaleString()}`;
+    }
+  };
+
+  // Get location string
+  const getLocationString = () => {
+    const { locality, district, state } = property.location;
+    return `${locality}, ${district}, ${state}`;
+  };
+
+  // Get first image or fallback
+  const getImageUrl = () => {
+    if (property.images && property.images.length > 0) {
+      return property.images[0].fileUrl;
+    }
+    // Fallback image
+    return 'https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg';
+  };
+
+  // Determine if property is for sale or rent based on type
+  const getPropertyType = () => {
+    return property.propertyType === 'rental' ? 'rent' : 'sale';
+  };
 
   return (
     <div className="property-card" role="article">
       <div className="property-image-container">
         <img 
-          src={props.image} 
-          alt={props.title} 
+          src={getImageUrl()} 
+          alt={property.title} 
           className="property-image"
           loading="lazy"
         />
-        {props.featured && (
-          <div className="property-badge featured">Featured</div>
-        )}
-        <div className={`property-badge type ${props.type}`}>
-          {props.type === 'sale' ? 'For Sale' : 'For Rent'}
-        </div>
+        {/* <div className={`property-badge type ${getPropertyType()}`}>
+          {getPropertyType() === 'sale' ? 'For Sale' : 'For Rent'}
+        </div> */}
         <button 
           className={`favorite-button ${isFavorite ? 'active' : ''}`}
           onClick={() => setIsFavorite(!isFavorite)}
@@ -254,24 +360,57 @@ function PropertyCard(props: PropertyCardProps) {
         </button>
       </div>
       <div className="property-content">
-        <div className="property-price">{props.price}</div>
-        <h3 className="property-title">{props.title}</h3>
+        <div className="property-price">{formatPrice()}</div>
+        <h3 className="property-title">{property.title}</h3>
         <div className="property-location">
           <MapPin className="location-icon" />
-          <span>{props.location}</span>
+          <span>{getLocationString()}</span>
         </div>
         <div className="property-features">
           <div className="feature">
             <Bed className="feature-icon" />
-            <span>{props.beds} Beds</span>
+            <span>{property.features.bedrooms || 0} Beds</span>
           </div>
           <div className="feature">
             <Bath className="feature-icon" />
-            <span>{props.baths} Baths</span>
+            <span>{property.features.bathrooms || 0} Baths</span>
           </div>
           <div className="feature">
             <Maximize className="feature-icon" />
-            <span>{props.sqft} sqft</span>
+            <span>{property.features.builtUpArea || 0} sqft</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Loading Skeleton Component
+function PropertyCardSkeleton() {
+  return (
+    <div className="property-card skeleton" role="article">
+      <div className="property-image-container">
+        <div className="skeleton-image"></div>
+      </div>
+      <div className="property-content">
+        <div className="skeleton-text skeleton-price"></div>
+        <div className="skeleton-text skeleton-title"></div>
+        <div className="property-location">
+          <MapPin className="location-icon" />
+          <div className="skeleton-text skeleton-location"></div>
+        </div>
+        <div className="property-features">
+          <div className="feature">
+            <Bed className="feature-icon" />
+            <div className="skeleton-text"></div>
+          </div>
+          <div className="feature">
+            <Bath className="feature-icon" />
+            <div className="skeleton-text"></div>
+          </div>
+          <div className="feature">
+            <Maximize className="feature-icon" />
+            <div className="skeleton-text"></div>
           </div>
         </div>
       </div>
@@ -284,7 +423,42 @@ export default function HomePage() {
   const location = useLocation();
   const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(false);
+  const [properties, setProperties] = useState<Property[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   
+  // Fetch properties on component mount
+  useEffect(() => {
+    fetchProperties();
+  }, []);
+  
+  const fetchProperties = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const response = await fetch('https://realestatebackend-8adg.onrender.com/api/properties');
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      // Filter only PUBLISHED properties and take first 6
+      const publishedProperties = data
+        .filter((prop: Property) => prop.status === 'PUBLISHED')
+        .slice(0, 6);
+      
+      setProperties(publishedProperties);
+    } catch (err) {
+      console.error('Error fetching properties:', err);
+      setError('Failed to load properties. Please try again later.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Determine current page from URL
   const getCurrentPage = () => {
     const path = location.pathname;
@@ -312,10 +486,6 @@ export default function HomePage() {
   }, [scrolled]);
 
   const currentPage = getCurrentPage();
-  const [activeTab, setActiveTab] = useState('buy');
-  const [locationInput, setLocationInput] = useState('');
-  const [propertyType, setPropertyType] = useState('all');
-  const [priceRange, setPriceRange] = useState('all');
 
   const handlePublish = () => {
     navigate('/advertise');
@@ -325,81 +495,14 @@ export default function HomePage() {
     navigate('/buy');
   };
 
-  const handleSearch = () => {
-    navigate('/buy', { 
-      state: { 
-        location: locationInput,
-        propertyType,
-        priceRange,
-        activeTab 
-      }
-    });
-  };
-
-  const properties = [
-    {
-      id: 1,
-      image: 'https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg',
-      price: '₹1.2 Cr',
-      title: 'Luxury Villa',
-      location: 'Anna Nagar, Chennai',
-      beds: 4,
-      baths: 3,
-      sqft: 2400,
-      type: 'sale' as const,
-      featured: true,
-    },
-    {
-      id: 2,
-      image: 'https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg',
-      price: '₹85 L',
-      title: 'Modern Apartment',
-      location: 'T. Nagar, Chennai',
-      beds: 3,
-      baths: 2,
-      sqft: 1800,
-      type: 'rent' as const,
-      featured: false,
-    },
-    {
-      id: 3,
-      image: 'https://images.pexels.com/photos/276724/pexels-photo-276724.jpeg',
-      price: '₹2.1 Cr',
-      title: 'Sea View Penthouse',
-      location: 'Besant Nagar, Chennai',
-      beds: 5,
-      baths: 4,
-      sqft: 3200,
-      type: 'sale' as const,
-      featured: true,
-    },
-    {
-      id: 4,
-      image: 'https://images.pexels.com/photos/1643383/pexels-photo-1643383.jpeg',
-      price: '₹45,000/mo',
-      title: 'Studio Apartment',
-      location: 'Nungambakkam, Chennai',
-      beds: 1,
-      baths: 1,
-      sqft: 850,
-      type: 'rent' as const,
-      featured: false,
-    },
-  ];
-
   const districts = [
-    { name: 'Chennai City', properties: 245, icon: Home },
-    { name: 'Coimbatore', properties: 189, icon: Home },
-    { name: 'Madurai', properties: 156, icon: Home },
-    { name: 'Trichy', properties: 134, icon: Home },
-    { name: 'Salem', properties: 98, icon: Home },
-    { name: 'Tirunelveli', properties: 87, icon: Home },
+    { name: 'Chennai City', properties: 245, icon: HomeIcon },
+    { name: 'Coimbatore', properties: 189, icon: HomeIcon },
+    { name: 'Madurai', properties: 156, icon: HomeIcon },
+    { name: 'Trichy', properties: 134, icon: HomeIcon },
+    { name: 'Salem', properties: 98, icon: HomeIcon },
+    { name: 'Tirunelveli', properties: 87, icon: HomeIcon },
   ];
-
-  const handleDistrictClick = (districtName: string) => {
-    setLocationInput(districtName);
-    setActiveTab('buy');
-  };
 
   return (
     <div className="home-page-wrapper">
@@ -442,18 +545,50 @@ export default function HomePage() {
           <div className="section-header">
             <div>
               <h2 id="featured-properties-title" className="section-title">Featured Properties</h2>
+              <p className="section-subtitle">Discover our latest properties</p>
             </div>
-            <button className="view-all-button" onClick={handleBuy} aria-label="View all properties">
-              View All
-              <ArrowRight className="arrow-icon" />
-            </button>
+            {properties.length > 0 && (
+              <button className="view-all-button" onClick={handleBuy} aria-label="View all properties">
+                View All
+                <ArrowRight className="arrow-icon" />
+              </button>
+            )}
           </div>
 
-          <div className="properties-grid">
-            {properties.map((property) => (
-              <PropertyCard key={property.id} {...property} />
-            ))}
-          </div>
+          {loading ? (
+            // Loading skeletons
+            <div className="properties-grid">
+              {[...Array(4)].map((_, index) => (
+                <PropertyCardSkeleton key={index} />
+              ))}
+            </div>
+          ) : error ? (
+            // Error state
+            <div className="properties-error">
+              <p className="error-message">{error}</p>
+              <button 
+                className="retry-button"
+                onClick={fetchProperties}
+                aria-label="Retry loading properties"
+              >
+                Retry
+              </button>
+            </div>
+          ) : properties.length === 0 ? (
+            // No properties state
+            <div className="properties-empty">
+              <Map className="empty-icon" size={48} />
+              <h3>No Properties Available</h3>
+              <p>Check back soon for new listings!</p>
+            </div>
+          ) : (
+            // Properties grid
+            <div className="properties-grid">
+              {properties.map((property) => (
+                <PropertyCard key={property.id} property={property} />
+              ))}
+            </div>
+          )}
         </section>
 
         {/* Quote Section */}
@@ -479,7 +614,6 @@ export default function HomePage() {
                   <button 
                     key={index} 
                     className="district-card" 
-                    onClick={() => handleDistrictClick(district.name)}
                     aria-label={`Explore properties in ${district.name}`}
                   >
                     <div className="district-icon-wrapper">

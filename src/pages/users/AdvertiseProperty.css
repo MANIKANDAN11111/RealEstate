@@ -946,6 +946,16 @@
   line-height: 1.4;
 }
 
+.advertise-footer-copyright a {
+  color: white;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.advertise-footer-copyright a:hover {
+  color: #3498db;
+}
+
 /* ================================ */
 /* RESPONSIVE MEDIA QUERIES */
 /* ================================ */

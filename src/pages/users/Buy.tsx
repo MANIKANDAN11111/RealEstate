@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import {
   Home, Building2, DollarSign, Megaphone, Phone,
   Facebook, Twitter, Instagram, Linkedin,
-  MapPin, Bed, Bath, Maximize, Heart, Search,  
+  MapPin, Bed, Bath, Maximize, Heart,  
   ChevronLeft, ChevronRight, MessageCircle,
   Menu, X  
 } from 'lucide-react';
@@ -194,7 +194,7 @@ function Footer() {
 
         <div className="sell-footer-bottom">
           <p className="sell-footer-copyright">
-            &copy; 2024 DreamProperties. All rights reserved. | Built with excellence for Tamil Nadu
+            &copy; 2024 DreamProperties. All rights reserved. | <a href="https://ananthitech.vercel.app/" target="_blank" rel="noopener noreferrer">Designed and Developed by Ananthi Software Solutions</a>
           </p>
         </div>
       </div>

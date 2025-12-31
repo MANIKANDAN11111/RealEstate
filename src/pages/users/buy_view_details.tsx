@@ -47,7 +47,7 @@ interface Property {
     parkingCount?: number;
     amenities?: string[];
   };
-  propertyDetails?: Record<string, any>;
+  propertyDetails?: Record<string, unknown>;
   contactInfo?: {
     ownerName?: string;
     phone: string;
@@ -92,6 +92,7 @@ interface HeaderProps {
 }
 
 function Header({ scrolled }: HeaderProps) {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navItems = [
     { name: 'Home', icon: Home, path: '/' },
     { name: 'Buy', icon: Building, path: '/buy' },
@@ -100,6 +101,38 @@ function Header({ scrolled }: HeaderProps) {
     { name: 'Contact', icon: Phone, path: '/contact' },
   ];
 
+  // Close mobile menu when clicking outside or on a link
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const nav = document.querySelector('.pd5-property-details-nav');
+      const menuButton = document.querySelector('.pd5-mobile-menu-button');
+      
+      if (isMobileMenuOpen && 
+          nav && 
+          !nav.contains(event.target as Node) && 
+          menuButton && 
+          !menuButton.contains(event.target as Node)) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [isMobileMenuOpen]);
+
+  // Prevent scrolling when mobile menu is open
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isMobileMenuOpen]);
+
   return (
     <header className={`pd5-property-details-header ${scrolled ? 'pd5-scrolled' : ''}`}>
       <div className="pd5-property-details-header-content">
@@ -107,13 +140,50 @@ function Header({ scrolled }: HeaderProps) {
           <img src={AGLogo} alt="PropFinder" className="pd5-property-details-logo-image" />
           <span className="pd5-property-details-logo-text">DreamProperties</span>
         </Link>
-        <nav className="pd5-property-details-nav">
+        
+        {/* Mobile Menu Button */}
+        <button 
+          className="pd5-mobile-menu-button"
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
+          aria-expanded={isMobileMenuOpen}
+        >
+          <svg 
+            className="pd5-mobile-menu-icon" 
+            width="24" 
+            height="24" 
+            viewBox="0 0 24 24" 
+            fill="none" 
+            stroke="currentColor" 
+            strokeWidth="2" 
+            strokeLinecap="round" 
+            strokeLinejoin="round"
+          >
+            {isMobileMenuOpen ? (
+              // X icon when menu is open
+              <>
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </>
+            ) : (
+              // Hamburger icon when menu is closed
+              <>
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+              </>
+            )}
+          </svg>
+        </button>
+        
+        <nav className={`pd5-property-details-nav ${isMobileMenuOpen ? 'pd5-mobile-open' : ''}`}>
           {navItems.map((item) => (
             <Link
               key={item.name}
               to={item.path}
               className="pd5-property-details-nav-item"
               aria-label={item.name}
+              onClick={() => setIsMobileMenuOpen(false)}
             >
               <item.icon className="pd5-property-details-nav-icon" />
               <span className="pd5-nav-item-text">{item.name}</span>
@@ -215,7 +285,7 @@ function Footer() {
 
         <div className="pd5-contact-footer-bottom">
           <p className="pd5-contact-footer-copyright">
-            &copy; 2024 DreamProperties. All rights reserved. | Built with excellence for Tamil Nadu
+            &copy; 2024 DreamProperties. All rights reserved. | <a href="https://ananthitech.vercel.app/" target="_blank" rel="noopener noreferrer">Designed and Developed by Ananthi Software Solutions</a>
           </p>
         </div>
       </div>

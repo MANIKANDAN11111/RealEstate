@@ -156,7 +156,7 @@ function Footer() {
 
         <div className="advertise-footer-bottom">
           <p className="advertise-footer-copyright">
-            &copy; 2024 DreamProperties. All rights reserved. | Built with excellence for Tamil Nadu
+            &copy; 2024 DreamProperties. All rights reserved. | <a href="https://ananthitech.vercel.app/" target="_blank" rel="noopener noreferrer">Designed and Developed by Ananthi Software Solutions</a>
           </p>
         </div>
       </div>

@@ -1019,6 +1019,16 @@
   margin: 0;
 }
 
+.contact-footer-copyright a {
+  color: white;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.contact-footer-copyright a:hover {
+  color: #3498db;
+}
+
 /* =========================== */
 /* MOBILE RESPONSIVE BREAKPOINTS */
 /* =========================== */

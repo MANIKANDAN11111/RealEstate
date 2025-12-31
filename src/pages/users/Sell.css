@@ -878,6 +878,16 @@
   margin: 0;
 }
 
+.sell-footer-copyright a {
+  color: white;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.sell-footer-copyright a:hover {
+  color: #3498db;
+}
+
 /* Animation for form elements */
 @keyframes sell-slideUp {
   from {
