@@ -278,11 +278,11 @@ function PropertyCard(props: PropertyCardProps) {
           loading="lazy"
         />
         {props.featured && (
-          <div className="property-badge featured">Featured</div>
+          <div className=""></div>
         )}
-        <div className={`property-badge type ${props.type}`}>
+        {/* <div className={`property-badge type ${props.type}`}>
           {props.type === 'sale' ? 'For Sale' : 'For Rent'}
-        </div>
+        </div> */}
         <button 
           className={`favorite-button ${isFavorite ? 'active' : ''}`}
           onClick={() => setIsFavorite(!isFavorite)}
