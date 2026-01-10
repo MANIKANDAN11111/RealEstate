@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   Home, Building2, DollarSign, Megaphone, Phone,
   Facebook, Twitter, Instagram, Linkedin,
@@ -267,9 +267,35 @@ interface PropertyCardProps {
 
 function PropertyCard(props: PropertyCardProps) {
   const [isFavorite, setIsFavorite] = useState(false);
+  const navigate = useNavigate();
+
+  const handleCardClick = (e: React.MouseEvent) => {
+    // Prevent navigation when clicking on the favorite button
+    if ((e.target as HTMLElement).closest('.favorite-button')) {
+      return;
+    }
+    navigate(`/property/${props.id}`);
+  };
+
+  const handleFavoriteClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent card navigation when clicking favorite
+    setIsFavorite(!isFavorite);
+  };
 
   return (
-    <div className="property-card buy-property-card">
+    <div 
+      className="property-card buy-property-card"
+      onClick={handleCardClick}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          navigate(`/property/${props.id}`);
+        }
+      }}
+      aria-label={`View details for ${props.title} - ${props.location}`}
+    >
       <div className="property-image-container">
         <img 
           src={props.image} 
@@ -280,12 +306,9 @@ function PropertyCard(props: PropertyCardProps) {
         {props.featured && (
           <div className=""></div>
         )}
-        {/* <div className={`property-badge type ${props.type}`}>
-          {props.type === 'sale' ? 'For Sale' : 'For Rent'}
-        </div> */}
         <button 
           className={`favorite-button ${isFavorite ? 'active' : ''}`}
-          onClick={() => setIsFavorite(!isFavorite)}
+          onClick={handleFavoriteClick}
           aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
         >
           <Heart className="favorite-icon" />
@@ -313,9 +336,9 @@ function PropertyCard(props: PropertyCardProps) {
           </div>
         </div>
         
-      <Link to={`/property/${props.id}`} className="view-details-btn">
+      <div className="view-details-btn">
         <span className="view-details-text">View Details</span>
-      </Link>
+      </div>
       </div>
     </div>
   );

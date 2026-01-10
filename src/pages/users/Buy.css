@@ -646,7 +646,7 @@
   padding: 0.5rem;
 }
 
-/* Property Card */
+/* Property Card - Make entire card clickable */
 .property-card.buy-property-card {
   background: white;
   border-radius: 12px;
@@ -659,6 +659,7 @@
   display: flex;
   flex-direction: column;
   min-height: 450px;
+  position: relative;
 }
 
 .property-card.buy-property-card:hover {
@@ -695,8 +696,9 @@
   text-transform: uppercase;
   letter-spacing: 0.5px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  z-index: 1;
+  z-index: 2;
   white-space: nowrap;
+  pointer-events: none;
 }
 
 .property-badge.featured {
@@ -731,6 +733,7 @@
   min-width: 40px;
   min-height: 40px;
   touch-action: manipulation;
+  pointer-events: auto;
 }
 
 .favorite-button:hover {
@@ -765,6 +768,7 @@
   margin-bottom: 0.5rem;
   line-height: 1.2;
   word-break: break-word;
+  pointer-events: none;
 }
 
 .property-title {
@@ -775,6 +779,7 @@
   line-height: 1.4;
   -webkit-text-size-adjust: 100%;
   word-break: break-word;
+  pointer-events: none;
 }
 
 .property-location {
@@ -785,6 +790,7 @@
   margin-bottom: 1rem;
   font-weight: 500;
   font-size: 0.9rem;
+  pointer-events: none;
 }
 
 .location-icon {
@@ -807,6 +813,7 @@
   padding: 1rem 0;
   border-top: 1px solid #f1f5f9;
   margin-bottom: 1rem;
+  pointer-events: none;
 }
 
 .feature {
@@ -854,6 +861,7 @@
   align-items: center;
   justify-content: center;
   margin-top: auto;
+  pointer-events: none;
 }
 
 .view-details-btn:hover {

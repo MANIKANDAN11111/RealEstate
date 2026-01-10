@@ -113,6 +113,8 @@ const ManageProperties = () => {
   const [isUpdating, setIsUpdating] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+  const [isMobile, setIsMobile] = useState(false);
+  const [isTablet, setIsTablet] = useState(false);
   
   // Edit form state
   const [editForm, setEditForm] = useState<EditForm>({
@@ -157,6 +159,20 @@ const ManageProperties = () => {
 
   const navigate = useNavigate();
   const API_BASE_URL = 'https://realestatebackend-8adg.onrender.com/api';
+
+  // Check screen size on mount and resize
+  useEffect(() => {
+    const checkScreenSize = () => {
+      const width = window.innerWidth;
+      setIsMobile(width <= 768);
+      setIsTablet(width > 768 && width <= 1024);
+    };
+
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+    
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
 
   useEffect(() => {
     fetchProperties();
@@ -229,7 +245,7 @@ const ManageProperties = () => {
         const result = await response.json();
         console.log('Delete successful:', result);
         showSuccessAlert('Property deleted successfully!');
-        await fetchProperties(); // Refresh the list
+        await fetchProperties();
       } else {
         const errorText = await response.text();
         console.error('Delete failed:', errorText);
@@ -290,7 +306,7 @@ const ManageProperties = () => {
       const property: Property = await response.json();
       console.log('Property for editing:', property);
       
-      // Extract key from image objects (handle different structures)
+      // Extract key from image objects
       const imagesWithKeys: PropertyImage[] = (property.images || []).map(img => ({
         ...img,
         key: img.key || img.fileName || img.url || ''
@@ -301,7 +317,7 @@ const ManageProperties = () => {
         key: vid.key || vid.fileName || vid.url || ''
       }));
       
-      // Populate edit form with existing data - SAFE parsing
+      // Populate edit form
       setEditForm({
         title: property.title || '',
         propertyType: property.propertyType || '',
@@ -456,7 +472,7 @@ const ManageProperties = () => {
     try {
       const formData = new FormData();
       
-      // Clean amenities before sending - SAFE handling
+      // Clean amenities before sending
       const cleanAmenities = (editForm.features.amenities || [])
         .filter((item): item is string => 
           item != null && typeof item === 'string' && item.trim() !== ''
@@ -465,14 +481,14 @@ const ManageProperties = () => {
       
       console.log('Cleaned amenities:', cleanAmenities);
       
-      // Prepare property data - EXACTLY matching your PropertyRequestDTO
+      // Prepare property data
       const propertyData = {
         title: editForm.title,
         propertyType: editForm.propertyType,
         propertyCategory: editForm.propertyCategory,
         propertySubCategory: editForm.propertySubCategory,
         description: editForm.description,
-        priceValue: editForm.priceValue, // SEND AS STRING
+        priceValue: editForm.priceValue,
         priceUnit: editForm.priceUnit || 'lakh',
         location: {
           state: editForm.location.state,
@@ -487,7 +503,7 @@ const ManageProperties = () => {
           bathrooms: parseInt(editForm.features.bathrooms) || 0,
           builtUpArea: parseInt(editForm.features.builtUpArea) || 0,
           carpetArea: parseInt(editForm.features.carpetArea) || 0,
-          amenities: cleanAmenities // Use cleaned array
+          amenities: cleanAmenities
         },
         contactInfo: {
           ownerName: editForm.contactInfo.ownerName,
@@ -557,7 +573,7 @@ const ManageProperties = () => {
       console.log('📨 Response OK:', response.ok);
       
       if (response.ok) {
-        const result = await response.json(); // Read ONCE
+        const result = await response.json();
         console.log('✅ Update successful:', result);
         showSuccessAlert('Property updated successfully!');
         setShowEditModal(false);
@@ -610,14 +626,15 @@ const ManageProperties = () => {
     return text.substring(0, maxLength) + '...';
   };
 
-  // Debug useEffect
-  useEffect(() => {
-    if (showEditModal) {
-      console.log('🔍 Edit Form State:', editForm);
-      console.log('🔍 Existing Images:', existingImages);
-      console.log('🔍 Delete Image Keys:', deleteImageKeys);
+  // Responsive table column visibility
+  const getTableColumns = () => {
+    if (isMobile) {
+      return ['Title', 'Price', 'Status', 'Actions'];
+    } else if (isTablet) {
+      return ['Title', 'Type', 'Price', 'Status', 'Actions'];
     }
-  }, [showEditModal, editForm, existingImages, deleteImageKeys]);
+    return ['Property Title', 'Type', 'Location', 'Price', 'Status', 'Date Added', 'Actions'];
+  };
 
   return (
     <div className="manage-properties">
@@ -638,7 +655,7 @@ const ManageProperties = () => {
             <h1>Manage Properties</h1>
             <h3 className="subtitle">Manage and Track all your Properties</h3>
           </div>
-          <div className="header-stats-corner">
+          <div className={`header-stats-corner ${isMobile ? 'mobile-stats' : ''}`}>
             <div className="stat-card-corner">
               <span className="stat-number">{properties.length}</span>
               <span className="stat-label">Total Properties</span>
@@ -684,7 +701,8 @@ const ManageProperties = () => {
 
           <div className="action-buttons">
             <button className="add-btn" onClick={() => navigate('/dashboard/add-properties')}>
-              ➕ Add New Property
+              <span className="add-btn-icon">➕</span>
+              <span className="add-btn-text">Add New Property</span>
             </button>
           </div>
         </div>
@@ -705,108 +723,195 @@ const ManageProperties = () => {
             </button>
           </div>
         ) : (
-          <table className="properties-table">
-            <thead>
-              <tr>
-                <th>Property Title</th>
-                <th>Type</th>
-                <th>Location</th>
-                <th>Price</th>
-                <th>Status</th>
-                <th>Date Added</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {filteredProperties.map((property) => {
-                const propertyId = getPropertyId(property);
-                return (
-                  <tr key={propertyId}>
-                    <td className="property-title-cell">
-                      <div className="property-info">
-                        <div className="property-details">
+          <>
+            {/* Mobile/Tablet View */}
+            {(isMobile || isTablet) ? (
+              <div className="properties-cards">
+                {filteredProperties.map((property) => {
+                  const propertyId = getPropertyId(property);
+                  return (
+                    <div key={propertyId} className="property-card">
+                      <div className="card-header">
+                        <div className="property-title-mobile">
                           <span className="property-name" title={property.title}>
-                            {truncateText(property.title || 'Untitled Property', 40)}
+                            {truncateText(property.title || 'Untitled Property', isMobile ? 40 : 60)}
                           </span>
-                          <span className="property-id">
+                          <span className="property-id-mobile">
                             ID: #{propertyId ? propertyId.slice(-6) : 'N/A'}
                           </span>
                         </div>
+                        <div className="card-actions">
+                          <button 
+                            className="action-btn edit-btn" 
+                            onClick={() => handleEditProperty(propertyId)}
+                            title="Edit"
+                          >
+                            ✏️
+                          </button>
+                          <button 
+                            className="action-btn view-btn" 
+                            onClick={() => viewPropertyDetails(propertyId)}
+                            title="View"
+                          >
+                            👁️
+                          </button>
+                        </div>
                       </div>
-                    </td>
-
-                    <td>
-                      <span className={`property-type ${(property.propertyCategory || '').toLowerCase()}`}>
-                        {property.propertyCategory || property.propertyType || '-'}
-                      </span>
-                    </td>
-
-                    <td>
-                      <div className="location-cell">
-                        <span className="location-icon">📍</span>
-                        <span title={property.location?.district}>
-                          {truncateText(property.location?.district || '-', 20)}
-                        </span>
+                      
+                      <div className="card-body">
+                        {!isMobile && (
+                          <div className="card-row">
+                            <span className="card-label">Type:</span>
+                            <span className={`property-type ${(property.propertyCategory || '').toLowerCase()}`}>
+                              {truncateText(property.propertyCategory || property.propertyType || '-', 20)}
+                            </span>
+                          </div>
+                        )}
+                        
+                        <div className="card-row">
+                          <span className="card-label">Price:</span>
+                          <span className="property-price">
+                            {formatPrice(property.priceDetails?.price)} {property.priceDetails?.priceUnit || ''}
+                          </span>
+                        </div>
+                        
+                        <div className="card-row">
+                          <span className="card-label">Status:</span>
+                          <span className={`status-badge ${property.status?.toLowerCase() || 'draft'}`}>
+                            {property.status || 'Draft'}
+                          </span>
+                        </div>
+                        
+                        {!isMobile && (
+                          <div className="card-row">
+                            <span className="card-label">Added:</span>
+                            <span className="date-cell">
+                              {property.createdAt ? new Date(property.createdAt).toLocaleDateString() : '-'}
+                            </span>
+                          </div>
+                        )}
                       </div>
-                    </td>
-
-                    <td>
-                      <span className="property-price">
-                        {formatPrice(property.priceDetails?.price)} {property.priceDetails?.priceUnit || ''}
-                      </span>
-                    </td>
-
-                    <td>
-                      <span className={`status-badge ${property.status?.toLowerCase() || 'draft'}`}>
-                        {property.status || 'Draft'}
-                      </span>
-                    </td>
-
-                    <td>
-                      <span className="date-cell">
-                        {property.createdAt ? new Date(property.createdAt).toLocaleDateString() : '-'}
-                      </span>
-                    </td>
-
-                    <td>
-                      <div className="action-buttons-cell">
-                        <button 
-                          className="action-btn edit-btn" 
-                          onClick={() => handleEditProperty(propertyId)}
-                          title="Edit Property"
-                        >
-                          ✏️
-                        </button>
-                        <button 
-                          className="action-btn view-btn" 
-                          onClick={() => viewPropertyDetails(propertyId)}
-                          title="View Details"
-                        >
-                          👁️
-                        </button>
+                      
+                      <div className="card-footer">
                         <button 
                           className={`action-btn delete-btn ${isDeleting ? 'loading' : ''}`}
                           onClick={() => deleteProperty(propertyId)}
                           disabled={isDeleting}
                           title="Delete Property"
                         >
-                          {isDeleting ? '⏳' : '🗑️'}
+                          {isDeleting ? '⏳' : '🗑️ Delete'}
                         </button>
                       </div>
-                    </td>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              /* Desktop View */
+              <table className="properties-table">
+                <thead>
+                  <tr>
+                    <th>Property Title</th>
+                    <th>Type</th>
+                    <th>Location</th>
+                    <th>Price</th>
+                    <th>Status</th>
+                    <th>Date Added</th>
+                    <th>Actions</th>
                   </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                </thead>
+
+                <tbody>
+                  {filteredProperties.map((property) => {
+                    const propertyId = getPropertyId(property);
+                    return (
+                      <tr key={propertyId}>
+                        <td className="property-title-cell">
+                          <div className="property-info">
+                            <div className="property-details">
+                              <span className="property-name" title={property.title}>
+                                {truncateText(property.title || 'Untitled Property', 40)}
+                              </span>
+                              <span className="property-id">
+                                ID: #{propertyId ? propertyId.slice(-6) : 'N/A'}
+                              </span>
+                            </div>
+                          </div>
+                        </td>
+
+                        <td>
+                          <span className={`property-type ${(property.propertyCategory || '').toLowerCase()}`}>
+                            {property.propertyCategory || property.propertyType || '-'}
+                          </span>
+                        </td>
+
+                        <td>
+                          <div className="location-cell">
+                            <span className="location-icon">📍</span>
+                            <span title={property.location?.district}>
+                              {truncateText(property.location?.district || '-', 20)}
+                            </span>
+                          </div>
+                        </td>
+
+                        <td>
+                          <span className="property-price">
+                            {formatPrice(property.priceDetails?.price)} {property.priceDetails?.priceUnit || ''}
+                          </span>
+                        </td>
+
+                        <td>
+                          <span className={`status-badge ${property.status?.toLowerCase() || 'draft'}`}>
+                            {property.status || 'Draft'}
+                          </span>
+                        </td>
+
+                        <td>
+                          <span className="date-cell">
+                            {property.createdAt ? new Date(property.createdAt).toLocaleDateString() : '-'}
+                          </span>
+                        </td>
+
+                        <td>
+                          <div className="action-buttons-cell">
+                            <button 
+                              className="action-btn edit-btn" 
+                              onClick={() => handleEditProperty(propertyId)}
+                              title="Edit Property"
+                            >
+                              ✏️
+                            </button>
+                            <button 
+                              className="action-btn view-btn" 
+                              onClick={() => viewPropertyDetails(propertyId)}
+                              title="View Details"
+                            >
+                              👁️
+                            </button>
+                            <button 
+                              className={`action-btn delete-btn ${isDeleting ? 'loading' : ''}`}
+                              onClick={() => deleteProperty(propertyId)}
+                              disabled={isDeleting}
+                              title="Delete Property"
+                            >
+                              {isDeleting ? '⏳' : '🗑️'}
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            )}
+          </>
         )}
       </div>
 
       {/* ================= VIEW MODAL ================= */}
       {showViewModal && selectedProperty && (
         <div className="modal-overlay" onClick={() => setShowViewModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+          <div className={`modal-content ${isMobile ? 'mobile-modal' : ''}`} onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <div>
                 <h2>{selectedProperty.title || 'Property Details'}</h2>
@@ -818,7 +923,7 @@ const ManageProperties = () => {
             </div>
 
             <div className="modal-body">
-              <div className="property-detail-grid">
+              <div className={`property-detail-grid ${isMobile ? 'mobile-detail-grid' : ''}`}>
                 {/* Basic Information */}
                 <div className="detail-section">
                   <h3>📋 Basic Information</h3>
@@ -865,18 +970,22 @@ const ManageProperties = () => {
                     <span className="detail-label">Locality:</span>
                     <span className="detail-value">{selectedProperty.location?.locality || 'N/A'}</span>
                   </div>
-                  <div className="detail-row">
-                    <span className="detail-label">Landmark:</span>
-                    <span className="detail-value">{selectedProperty.location?.landmark || 'N/A'}</span>
-                  </div>
-                  <div className="detail-row">
-                    <span className="detail-label">Pincode:</span>
-                    <span className="detail-value">{selectedProperty.location?.pincode || 'N/A'}</span>
-                  </div>
-                  <div className="detail-row">
-                    <span className="detail-label">Full Address:</span>
-                    <span className="detail-value">{selectedProperty.location?.fullAddress || 'N/A'}</span>
-                  </div>
+                  {!isMobile && (
+                    <>
+                      <div className="detail-row">
+                        <span className="detail-label">Landmark:</span>
+                        <span className="detail-value">{selectedProperty.location?.landmark || 'N/A'}</span>
+                      </div>
+                      <div className="detail-row">
+                        <span className="detail-label">Pincode:</span>
+                        <span className="detail-value">{selectedProperty.location?.pincode || 'N/A'}</span>
+                      </div>
+                      <div className="detail-row">
+                        <span className="detail-label">Full Address:</span>
+                        <span className="detail-value">{selectedProperty.location?.fullAddress || 'N/A'}</span>
+                      </div>
+                    </>
+                  )}
                 </div>
 
                 {/* Price Information */}
@@ -917,14 +1026,6 @@ const ManageProperties = () => {
                       {selectedProperty.features?.carpetArea || 0} sq.ft
                     </span>
                   </div>
-                  {selectedProperty.features?.amenities && selectedProperty.features.amenities.length > 0 && (
-                    <div className="detail-row">
-                      <span className="detail-label">Amenities:</span>
-                      <span className="detail-value">
-                        {selectedProperty.features.amenities.join(', ')}
-                      </span>
-                    </div>
-                  )}
                 </div>
 
                 {/* Contact Information */}
@@ -953,7 +1054,7 @@ const ManageProperties = () => {
               {selectedProperty.images && selectedProperty.images.length > 0 && (
                 <div className="detail-section full-width">
                   <h3>📸 Images ({selectedProperty.images.length})</h3>
-                  <div className="image-gallery">
+                  <div className={`image-gallery ${isMobile ? 'mobile-gallery' : ''}`}>
                     {selectedProperty.images.map((img, index) => (
                       <div key={index} className="image-thumbnail">
                         <img 
@@ -968,42 +1069,24 @@ const ManageProperties = () => {
                 </div>
               )}
 
-              {/* Videos */}
-              {selectedProperty.videos && selectedProperty.videos.length > 0 && (
-                <div className="detail-section full-width">
-                  <h3>🎥 Videos ({selectedProperty.videos.length})</h3>
-                  <div className="video-gallery">
-                    {selectedProperty.videos.map((vid, index) => (
-                      <div key={index} className="video-thumbnail">
-                        <video 
-                          src={vid.url || vid.fileUrl || ''}
-                          controls
-                          style={{ maxWidth: '200px', maxHeight: '150px' }}
-                        />
-                      </div>
-                    ))}
+              {/* Additional Details for Mobile */}
+              {isMobile && (
+                <div className="detail-section">
+                  <h3>📍 More Location Details</h3>
+                  <div className="detail-row">
+                    <span className="detail-label">Landmark:</span>
+                    <span className="detail-value">{selectedProperty.location?.landmark || 'N/A'}</span>
+                  </div>
+                  <div className="detail-row">
+                    <span className="detail-label">Pincode:</span>
+                    <span className="detail-value">{selectedProperty.location?.pincode || 'N/A'}</span>
+                  </div>
+                  <div className="detail-row">
+                    <span className="detail-label">Full Address:</span>
+                    <span className="detail-value">{selectedProperty.location?.fullAddress || 'N/A'}</span>
                   </div>
                 </div>
               )}
-
-              {/* Additional Details */}
-              <div className="detail-section full-width">
-                <h3>📝 Additional Details</h3>
-                <div className="additional-details">
-                  <div className="detail-row">
-                    <span className="detail-label">Created:</span>
-                    <span className="detail-value">
-                      {selectedProperty.createdAt ? new Date(selectedProperty.createdAt).toLocaleString() : 'N/A'}
-                    </span>
-                  </div>
-                  <div className="detail-row">
-                    <span className="detail-label">Last Updated:</span>
-                    <span className="detail-value">
-                      {selectedProperty.updatedAt ? new Date(selectedProperty.updatedAt).toLocaleString() : 'N/A'}
-                    </span>
-                  </div>
-                </div>
-              </div>
             </div>
 
             <div className="modal-footer">
@@ -1018,7 +1101,7 @@ const ManageProperties = () => {
       {/* ================= EDIT MODAL ================= */}
       {showEditModal && selectedProperty && (
         <div className="modal-overlay" onClick={() => setShowEditModal(false)}>
-          <div className="modal-content edit-modal-large" onClick={(e) => e.stopPropagation()}>
+          <div className={`modal-content ${isMobile ? 'mobile-edit-modal' : 'edit-modal-large'}`} onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <div>
                 <h2>✏️ Edit Property</h2>
@@ -1030,7 +1113,7 @@ const ManageProperties = () => {
             </div>
 
             <div className="modal-body">
-              <div className="edit-form-grid">
+              <div className={`edit-form-grid ${isMobile ? 'mobile-form-grid' : ''}`}>
                 {/* Basic Information */}
                 <div className="edit-section">
                   <h3 className="edit-section-title">📋 Basic Information</h3>
@@ -1072,16 +1155,6 @@ const ManageProperties = () => {
                       value={editForm.propertySubCategory}
                       onChange={(e) => handleEditFormChange('propertySubCategory', e.target.value)}
                       placeholder="e.g., Single Floor, Multi-floor"
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">Description</label>
-                    <textarea
-                      className="form-textarea"
-                      value={editForm.description}
-                      onChange={(e) => handleEditFormChange('description', e.target.value)}
-                      placeholder="Enter property description"
-                      rows="4"
                     />
                   </div>
                 </div>
@@ -1149,36 +1222,30 @@ const ManageProperties = () => {
                       placeholder="Enter locality"
                     />
                   </div>
-                  <div className="form-group">
-                    <label className="form-label">Landmark</label>
-                    <input
-                      type="text"
-                      className="form-input"
-                      value={editForm.location.landmark}
-                      onChange={(e) => handleEditFormChange('location.landmark', e.target.value)}
-                      placeholder="Enter landmark"
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">Pincode</label>
-                    <input
-                      type="text"
-                      className="form-input"
-                      value={editForm.location.pincode}
-                      onChange={(e) => handleEditFormChange('location.pincode', e.target.value)}
-                      placeholder="Enter pincode"
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">Full Address</label>
-                    <textarea
-                      className="form-textarea"
-                      value={editForm.location.fullAddress}
-                      onChange={(e) => handleEditFormChange('location.fullAddress', e.target.value)}
-                      placeholder="Enter full address"
-                      rows="3"
-                    />
-                  </div>
+                  {!isMobile && (
+                    <>
+                      <div className="form-group">
+                        <label className="form-label">Landmark</label>
+                        <input
+                          type="text"
+                          className="form-input"
+                          value={editForm.location.landmark}
+                          onChange={(e) => handleEditFormChange('location.landmark', e.target.value)}
+                          placeholder="Enter landmark"
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label className="form-label">Pincode</label>
+                        <input
+                          type="text"
+                          className="form-input"
+                          value={editForm.location.pincode}
+                          onChange={(e) => handleEditFormChange('location.pincode', e.target.value)}
+                          placeholder="Enter pincode"
+                        />
+                      </div>
+                    </>
+                  )}
                 </div>
 
                 {/* Property Features */}
@@ -1224,42 +1291,6 @@ const ManageProperties = () => {
                       placeholder="Carpet area"
                     />
                   </div>
-                  <div className="form-group">
-                    <label className="form-label">Amenities</label>
-                    <input
-                      type="text"
-                      className="form-input"
-                      value={editForm.features.amenities?.join(', ') || ''}
-                      onChange={(e) => {
-                        const val = e.target.value || '';
-                        
-                        // Split by comma and clean up safely
-                        const parts = val.split(',');
-                        const amenitiesArray = parts.reduce((acc: string[], part) => {
-                          if (part && typeof part === 'string') {
-                            const trimmed = part.trim();
-                            if (trimmed !== '') {
-                              acc.push(trimmed);
-                            }
-                          }
-                          return acc;
-                        }, []);
-                        
-                        console.log('Processed amenities:', amenitiesArray);
-                        
-                        // Update directly
-                        setEditForm(prev => ({
-                          ...prev,
-                          features: {
-                            ...prev.features,
-                            amenities: amenitiesArray
-                          }
-                        }));
-                      }}
-                      placeholder="Security, Parking, Gym"
-                    />
-                    <small className="form-hint">Separate with commas</small>
-                  </div>
                 </div>
 
                 {/* Contact Information */}
@@ -1302,7 +1333,7 @@ const ManageProperties = () => {
                         checked={editForm.contactInfo.showPhone}
                         onChange={(e) => handleEditFormChange('contactInfo.showPhone', e.target.checked)}
                       />
-                      Show Phone to Public
+                      Show Phone
                     </label>
                     <label className="checkbox-label">
                       <input
@@ -1310,11 +1341,98 @@ const ManageProperties = () => {
                         checked={editForm.contactInfo.showEmail}
                         onChange={(e) => handleEditFormChange('contactInfo.showEmail', e.target.checked)}
                       />
-                      Show Email to Public
+                      Show Email
                     </label>
                   </div>
                 </div>
               </div>
+
+              {/* Description Field (Full Width) */}
+              <div className="edit-section full-width">
+                <h3 className="edit-section-title">📝 Description</h3>
+                <div className="form-group">
+                  <textarea
+                    className="form-textarea"
+                    value={editForm.description}
+                    onChange={(e) => handleEditFormChange('description', e.target.value)}
+                    placeholder="Enter property description"
+                    rows={isMobile ? "3" : "4"}
+                  />
+                </div>
+              </div>
+
+              {/* Mobile Only Fields */}
+              {isMobile && (
+                <>
+                  <div className="edit-section">
+                    <h3 className="edit-section-title">📍 More Location Details</h3>
+                    <div className="form-group">
+                      <label className="form-label">Landmark</label>
+                      <input
+                        type="text"
+                        className="form-input"
+                        value={editForm.location.landmark}
+                        onChange={(e) => handleEditFormChange('location.landmark', e.target.value)}
+                        placeholder="Enter landmark"
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label className="form-label">Pincode</label>
+                      <input
+                        type="text"
+                        className="form-input"
+                        value={editForm.location.pincode}
+                        onChange={(e) => handleEditFormChange('location.pincode', e.target.value)}
+                        placeholder="Enter pincode"
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label className="form-label">Full Address</label>
+                      <textarea
+                        className="form-textarea"
+                        value={editForm.location.fullAddress}
+                        onChange={(e) => handleEditFormChange('location.fullAddress', e.target.value)}
+                        placeholder="Enter full address"
+                        rows="2"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="edit-section">
+                    <h3 className="edit-section-title">🎯 Amenities</h3>
+                    <div className="form-group">
+                      <input
+                        type="text"
+                        className="form-input"
+                        value={editForm.features.amenities?.join(', ') || ''}
+                        onChange={(e) => {
+                          const val = e.target.value || '';
+                          const parts = val.split(',');
+                          const amenitiesArray = parts.reduce((acc: string[], part) => {
+                            if (part && typeof part === 'string') {
+                              const trimmed = part.trim();
+                              if (trimmed !== '') {
+                                acc.push(trimmed);
+                              }
+                            }
+                            return acc;
+                          }, []);
+                          
+                          setEditForm(prev => ({
+                            ...prev,
+                            features: {
+                              ...prev.features,
+                              amenities: amenitiesArray
+                            }
+                          }));
+                        }}
+                        placeholder="Security, Parking, Gym"
+                      />
+                      <small className="form-hint">Separate with commas</small>
+                    </div>
+                  </div>
+                </>
+              )}
 
               {/* Images Section */}
               <div className="edit-section full-width media-section">
@@ -1324,7 +1442,7 @@ const ManageProperties = () => {
                 {existingImages.length > 0 && (
                   <div className="existing-media">
                     <h4 className="media-subtitle">Existing Images ({existingImages.length})</h4>
-                    <div className="media-grid">
+                    <div className={`media-grid ${isMobile ? 'mobile-media-grid' : ''}`}>
                       {existingImages.map((img, index) => (
                         <div key={index} className="media-item">
                           <img src={img.url || img.fileUrl || ''} alt={`Property ${index + 1}`} />
@@ -1345,7 +1463,7 @@ const ManageProperties = () => {
                 {newImages.length > 0 && (
                   <div className="new-media">
                     <h4 className="media-subtitle">New Images to Upload ({newImages.length})</h4>
-                    <div className="media-grid">
+                    <div className={`media-grid ${isMobile ? 'mobile-media-grid' : ''}`}>
                       {newImages.map((file, index) => (
                         <div key={index} className="media-item">
                           <img src={URL.createObjectURL(file)} alt={`New ${index + 1}`} />
@@ -1375,68 +1493,6 @@ const ManageProperties = () => {
                     ➕ Add Images
                   </label>
                   <p className="upload-hint">Maximum 20 images, up to 10MB each</p>
-                </div>
-              </div>
-
-              {/* Videos Section */}
-              <div className="edit-section full-width media-section">
-                <h3 className="edit-section-title">🎥 Property Videos</h3>
-                
-                {/* Existing Videos */}
-                {existingVideos.length > 0 && (
-                  <div className="existing-media">
-                    <h4 className="media-subtitle">Existing Videos ({existingVideos.length})</h4>
-                    <div className="media-grid">
-                      {existingVideos.map((vid, index) => (
-                        <div key={index} className="media-item video-item">
-                          <video src={vid.url || vid.fileUrl || ''} controls />
-                          <button
-                            className="delete-media-btn"
-                            onClick={() => removeExistingVideo(vid)}
-                            title="Delete Video"
-                          >
-                            ✕
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* New Videos Preview */}
-                {newVideos.length > 0 && (
-                  <div className="new-media">
-                    <h4 className="media-subtitle">New Videos to Upload ({newVideos.length})</h4>
-                    <div className="media-grid">
-                      {newVideos.map((file, index) => (
-                        <div key={index} className="media-item video-item">
-                          <video src={URL.createObjectURL(file)} controls />
-                          <button
-                            className="delete-media-btn"
-                            onClick={() => removeNewVideo(index)}
-                            title="Remove Video"
-                          >
-                            ✕
-                          </button>
-                        </div>
-                      ))}
-                    </div> 
-                  </div> 
-                )}
-
-                {/* Add Videos Button */}
-                <div className="upload-section">
-                  <label className="upload-btn">
-                    <input
-                      type="file"
-                      multiple
-                      accept="video/*"
-                      onChange={handleVideoUpload}
-                      style={{ display: 'none' }}
-                    />
-                    ➕ Add Videos
-                  </label>
-                  <p className="upload-hint">Maximum 5 videos, up to 500MB each</p>
                 </div>
               </div>
             </div>

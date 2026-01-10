@@ -31,6 +31,7 @@ interface EditFormData {
 }
 
 interface Errors {
+  name?: string;
   email: string;
   mobileNumber: string;
   password: string;
@@ -81,6 +82,22 @@ const AddAdmins = () => {
 
   // Mobile menu state
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [isTablet, setIsTablet] = useState(false);
+
+  // Detect device type
+  useEffect(() => {
+    const checkDevice = () => {
+      const width = window.innerWidth;
+      setIsMobile(width < 768);
+      setIsTablet(width >= 768 && width < 1024);
+    };
+
+    checkDevice();
+    window.addEventListener('resize', checkDevice);
+    
+    return () => window.removeEventListener('resize', checkDevice);
+  }, []);
 
   // Fetch admins from API
   useEffect(() => {
@@ -91,10 +108,7 @@ const AddAdmins = () => {
     try {
       setLoading(true);
       setFetchError('');
-      console.log('Fetching admins from API...');
       const token = localStorage.getItem('token');
-      
-      console.log('Testing connection to:', 'https://realestatebackend-8adg.onrender.com/getalladmin');
       
       const response = await fetch('https://realestatebackend-8adg.onrender.com/getalladmin', {
         method: 'GET',
@@ -107,24 +121,18 @@ const AddAdmins = () => {
         credentials: 'omit'
       });
       
-      console.log('Response status:', response.status);
-      console.log('Response status text:', response.statusText);
-      
       if (!response.ok) {
         const errorText = await response.text();
-        console.error('Server error response:', errorText);
         throw new Error(`HTTP error! status: ${response.status} - ${response.statusText || 'Unknown error'}`);
       }
       
       let data = await response.json();
-      console.log('API Response data:', data);
       
       if (!data) {
         throw new Error('No data received from server');
       }
       
       if (!Array.isArray(data)) {
-        console.error('Response is not an array:', data);
         if (data.data && Array.isArray(data.data)) {
           data = data.data;
         } else if (data.admins && Array.isArray(data.admins)) {
@@ -148,7 +156,6 @@ const AddAdmins = () => {
         password: admin.password || ''
       }));
       
-      console.log('Formatted admins:', formattedAdmins);
       setAdmins(formattedAdmins);
       setFetchError('');
       
@@ -157,13 +164,15 @@ const AddAdmins = () => {
       const errorMessage = error.message || 'Failed to fetch admins';
       setFetchError(`Failed to load admins: ${errorMessage}`);
       setAdmins([]);
-      
-      if (error.name === 'TypeError') {
-        console.error('Network error or CORS issue. Details:', error);
-      }
     } finally {
       setLoading(false);
     }
+  };
+
+  const validateName = (name: string) => {
+    if (!name.trim()) return 'Name is required';
+    if (name.trim().length < 2) return 'Name must be at least 2 characters';
+    return '';
   };
 
   const validateEmail = (email: string) => {
@@ -174,8 +183,9 @@ const AddAdmins = () => {
   };
 
   const validateMobileNumber = (mobileNumber: string) => {
+    if (!mobileNumber) return '';
     const mobileRegex = /^\d{10}$/;
-    if (mobileNumber && !mobileRegex.test(mobileNumber)) return 'Please enter a valid 10-digit mobile number';
+    if (!mobileRegex.test(mobileNumber)) return 'Please enter a valid 10-digit mobile number';
     return '';
   };
 
@@ -193,7 +203,10 @@ const AddAdmins = () => {
       setApiMessage({ type: '', text: '' });
     }
     
-    if (name === 'email') {
+    if (name === 'name') {
+      const error = validateName(value);
+      setErrors(prev => ({ ...prev, name: error }));
+    } else if (name === 'email') {
       setErrors(prev => ({ ...prev, email: validateEmail(value) }));
     } else if (name === 'mobileNumber') {
       setErrors(prev => ({ ...prev, mobileNumber: validateMobileNumber(value) }));
@@ -207,7 +220,6 @@ const AddAdmins = () => {
     if (window.confirm(`Are you sure you want to delete admin with email: ${email}?`)) {
       try {
         const token = localStorage.getItem('token');
-        console.log(`Deleting admin with email: ${email}`);
         
         const response = await fetch(`https://realestatebackend-8adg.onrender.com/admin/delete?email=${encodeURIComponent(email)}`, {
           method: 'DELETE',
@@ -217,8 +229,6 @@ const AddAdmins = () => {
           }
         });
 
-        console.log('Delete response status:', response.status);
-        
         if (response.ok) {
           // Remove from local state
           setAdmins(prevAdmins => prevAdmins.filter(admin => admin.email !== email));
@@ -226,7 +236,6 @@ const AddAdmins = () => {
           await fetchAdmins(); // Refresh the list
         } else {
           const errorText = await response.text();
-          console.error('Delete error:', errorText);
           alert(`Failed to delete admin: ${errorText}`);
         }
       } catch (error: any) {
@@ -297,11 +306,11 @@ const AddAdmins = () => {
       setApiLoading(true);
       const token = localStorage.getItem('token');
       
-      // Prepare update data - only include fields that have changed
+      // Prepare update data
       const updateData: any = {};
       if (editFormData.name !== editingAdmin.name) updateData.name = editFormData.name;
-      if (editFormData.mobileNumber !== editingAdmin.mobileNumber && editFormData.mobileNumber) 
-        updateData.mobileNumber = editFormData.mobileNumber;
+      if (editFormData.mobileNumber !== editingAdmin.mobileNumber) 
+        updateData.mobileNumber = editFormData.mobileNumber || "0";
       if (editFormData.password) updateData.password = editFormData.password;
       if (editFormData.status !== editingAdmin.status) updateData.status = editFormData.status;
       
@@ -311,9 +320,6 @@ const AddAdmins = () => {
         closeEditModal();
         return;
       }
-
-      console.log('Updating admin with data:', updateData);
-      console.log('Admin email:', editingAdmin.email);
       
       const response = await fetch(`https://realestatebackend-8adg.onrender.com/admin/update?email=${encodeURIComponent(editingAdmin.email)}`, {
         method: 'PUT',
@@ -325,11 +331,10 @@ const AddAdmins = () => {
       });
 
       const responseText = await response.text();
-      console.log('Update response:', responseText);
       
       if (response.ok) {
         alert('Admin updated successfully!');
-        await fetchAdmins(); // Refresh the list
+        await fetchAdmins();
         closeEditModal();
       } else {
         alert(`Failed to update admin: ${responseText}`);
@@ -345,12 +350,14 @@ const AddAdmins = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    const nameError = validateName(formData.name);
     const emailError = validateEmail(formData.email);
     const mobileNumberError = validateMobileNumber(formData.mobileNumber);
     const passwordError = validatePassword(formData.password);
     
-    if (emailError || mobileNumberError || passwordError) {
+    if (nameError || emailError || mobileNumberError || passwordError) {
       setErrors({
+        name: nameError,
         email: emailError,
         mobileNumber: mobileNumberError,
         password: passwordError
@@ -364,8 +371,6 @@ const AddAdmins = () => {
       mobileNumber: formData.mobileNumber || "0",
       password: formData.password
     };
-
-    console.log('Submitting data:', apiData);
 
     setApiLoading(true);
     setApiMessage({ type: '', text: '' });
@@ -381,16 +386,12 @@ const AddAdmins = () => {
 
       let data;
       const responseText = await response.text();
-      console.log('Raw response:', responseText);
       
       try {
         data = JSON.parse(responseText);
       } catch (jsonError) {
-        console.log('Response is not JSON, treating as text');
         data = { message: responseText };
       }
-
-      console.log('Processed response:', data);
 
       const isSuccess = response.ok || 
                         responseText.includes('Success') || 
@@ -400,11 +401,8 @@ const AddAdmins = () => {
 
       if (isSuccess) {
         const successMessage = 'Admin added successfully!';
-        
         alert(successMessage);
-        
         setApiMessage({ type: 'success', text: successMessage });
-        
         await fetchAdmins();
         
         setFormData({
@@ -467,14 +465,6 @@ const AddAdmins = () => {
     }
   };
 
-  console.log(toggleAdminStatus)
-
-  const resendInvite = (email: string) => {
-    alert(`Invitation resent to ${email}`);
-  };
-
-  console.log(resendInvite)
-
   // Mobile menu toggle
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -484,8 +474,8 @@ const AddAdmins = () => {
     <div className="add-admins">
       {/* Edit Admin Modal */}
       {showEditModal && (
-        <div className="modal-overlay">
-          <div className="modal-container">
+        <div className="modal-overlay" onClick={closeEditModal}>
+          <div className="modal-container" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h2>Edit Admin</h2>
               <button className="modal-close" onClick={closeEditModal}>×</button>
@@ -562,7 +552,7 @@ const AddAdmins = () => {
                   >
                     {apiLoading ? (
                       <>
-                        <span className="loading-spinner2"></span>
+                        <span className="loading-spinner"></span>
                         Updating...
                       </>
                     ) : (
@@ -579,7 +569,7 @@ const AddAdmins = () => {
       <div className="page-header">
         <div className="header-content">
           <h1>Admin Management</h1>
-          <h3 className="subtitle">Add and manage administrator accounts</h3>
+          <p className="subtitle">Add and manage administrator accounts</p>
         </div>
         
         <div className="header-stats">
@@ -626,7 +616,7 @@ const AddAdmins = () => {
             }}
           >
             <span className="tab-icon">➕</span>
-            Add New Admin
+            {!isMobile ? 'Add New Admin' : 'Add'}
           </button>
           <button 
             className={`tab-btn ${activeTab === 'manage' ? 'active' : ''}`}
@@ -636,7 +626,7 @@ const AddAdmins = () => {
             }}
           >
             <span className="tab-icon">👥</span>
-            Manage Admins
+            {!isMobile ? 'Manage Admins' : 'Manage'}
           </button>
         </div>
 
@@ -667,11 +657,12 @@ const AddAdmins = () => {
                         name="name"
                         value={formData.name}
                         onChange={handleInputChange}
-                        className="form-input"
+                        className={`form-input ${errors.name ? 'error' : ''}`}
                         placeholder="Enter full name"
                         required
                         disabled={apiLoading}
                       />
+                      {errors.name && <div className="error-message">{errors.name}</div>}
                     </div>
 
                     <div className="form-group">
@@ -755,7 +746,7 @@ const AddAdmins = () => {
                   >
                     {apiLoading ? (
                       <>
-                        <span className="loading-spinner2"></span>
+                        <span className="loading-spinner"></span>
                         Adding Admin...
                       </>
                     ) : (
@@ -772,7 +763,11 @@ const AddAdmins = () => {
               <div className="manage-header">
                 <h2>Admin Accounts</h2>
                 <div className="header-actions">
-                  <button className="export-btn" onClick={fetchAdmins} disabled={loading}>
+                  <button 
+                    className="refresh-btn" 
+                    onClick={fetchAdmins} 
+                    disabled={loading}
+                  >
                     <span className="icon">🔄</span>
                     {loading ? 'Refreshing...' : 'Refresh'}
                   </button>
@@ -781,106 +776,105 @@ const AddAdmins = () => {
 
               <div className="admins-table-container">
                 {loading ? (
-                  <div className="loading-container2">
-                    <div className="loading-spinner2"></div>
+                  <div className="loading-container">
+                    <div className="loading-spinner"></div>
                     <p>Loading admins...</p>
-                    <p className="loading-hint2">Fetching from: https://realestatebackend-8adg.onrender.com/getalladmin</p>
                   </div>
                 ) : fetchError ? (
                   <div className="no-data error">
-                    <p style={{ color: '#ef4444' }}>{fetchError}</p>
-                    <button className="refresh-btn" onClick={fetchAdmins} style={{marginTop: '10px'}}>
+                    <p className="error-text">{fetchError}</p>
+                    <button className="refresh-btn" onClick={fetchAdmins}>
                       Try Again
                     </button>
-                    <p style={{marginTop: '10px', fontSize: '12px', color: '#666'}}>
-                      If this persists, check:
-                      <br />1. Your internet connection
-                      <br />2. CORS settings on the backend
-                      <br />3. API endpoint accessibility
-                    </p>
                   </div>
                 ) : admins.length === 0 ? (
                   <div className="no-data">
                     <p>No admin accounts found.</p>
-                    <button className="refresh-btn" onClick={fetchAdmins} style={{marginTop: '10px'}}>
+                    <button className="refresh-btn" onClick={fetchAdmins}>
                       Refresh List
                     </button>
                   </div>
                 ) : (
                   <>
                     <div className="table-info">
-                      <p>Showing {admins.length} admin(s)</p>
+                      <p>Showing {admins.length} admin{admins.length !== 1 ? 's' : ''}</p>
                     </div>
-                    <div className="mobile-table-wrapper">
-                      <table className="admins-table">
-                        <thead>
-                          <tr>
-                            <th>ADMIN</th>
-                            <th>NAME</th>
-                            <th>ROLE</th>
-                            <th>STATUS</th>
-                            <th>EMAIL</th>
-                            <th>MOBILE NUMBER</th>
-                            <th>ACTIONS</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {admins.map((admin) => (
-                            <tr key={admin.id}>
-                              <td className="admin-cell">
-                                <div className="admin-info">
-                                  <div className="admin-avatar">
-                                    {admin.avatar}
-                                  </div>
-                                </div>
-                              </td>
-                              <td>
-                                <span className="admin-name-text">{admin.name}</span>
-                              </td>
-                              <td>
-                                <span className={`role-badge ${admin.role.toLowerCase().replace(' ', '-')}`}>
-                                  {admin.role}
-                                </span>
-                              </td>
-                              <td>
-                                <span className={`status-badge ${admin.status.toLowerCase()}`}>
-                                  {admin.status}
-                                </span>
-                              </td>
-                              <td>
-                                <span className="admin-email">{admin.email}</span>
-                              </td>
-                              <td>
-                                <span className="mobile-number">
-                                  {admin.mobileNumber === "0" || admin.mobileNumber === "Not provided" 
-                                    ? "Not provided" 
-                                    : admin.mobileNumber}
-                                </span>
-                              </td>
-                              <td>
-                                <div className="action-buttons">
-                                  <button 
-                                    className="action-btn edit-btn"
-                                    onClick={() => openEditModal(admin)}
-                                    title="Edit Admin"
-                                    aria-label={`Edit ${admin.name}`}
-                                  >
-                                    ✏️
-                                  </button>
-                                  <button 
-                                    className="action-btn delete-btn"
-                                    onClick={() => deleteAdmin(admin.email)}
-                                    title="Delete Admin"
-                                    aria-label={`Delete ${admin.name}`}
-                                  >
-                                    🗑️
-                                  </button>
-                                </div>
-                              </td>
+                    <div className="table-wrapper">
+                      <div className="table-responsive">
+                        <table className="admins-table">
+                          <thead>
+                            <tr>
+                              <th>ADMIN</th>
+                              <th>NAME</th>
+                              {!isMobile && <th>ROLE</th>}
+                              <th>STATUS</th>
+                              <th>EMAIL</th>
+                              {!isMobile && <th>MOBILE</th>}
+                              <th>ACTIONS</th>
                             </tr>
-                          ))}
-                        </tbody>
-                      </table>
+                          </thead>
+                          <tbody>
+                            {admins.map((admin) => (
+                              <tr key={admin.id}>
+                                <td className="admin-cell">
+                                  <div className="admin-info">
+                                    <div className="admin-avatar">
+                                      {admin.avatar}
+                                    </div>
+                                  </div>
+                                </td>
+                                <td>
+                                  <span className="admin-name-text">{admin.name}</span>
+                                </td>
+                                {!isMobile && (
+                                  <td>
+                                    <span className="role-badge admin-role">
+                                      {admin.role}
+                                    </span>
+                                  </td>
+                                )}
+                                <td>
+                                  <span className={`status-badge ${admin.status.toLowerCase()}`}>
+                                    {admin.status}
+                                  </span>
+                                </td>
+                                <td>
+                                  <span className="admin-email">{admin.email}</span>
+                                </td>
+                                {!isMobile && (
+                                  <td>
+                                    <span className="mobile-number">
+                                      {admin.mobileNumber === "0" || admin.mobileNumber === "Not provided" 
+                                        ? "Not provided" 
+                                        : admin.mobileNumber}
+                                    </span>
+                                  </td>
+                                )}
+                                <td>
+                                  <div className="action-buttons">
+                                    <button 
+                                      className="action-btn edit-btn"
+                                      onClick={() => openEditModal(admin)}
+                                      title="Edit Admin"
+                                      aria-label={`Edit ${admin.name}`}
+                                    >
+                                      ✏️
+                                    </button>
+                                    <button 
+                                      className="action-btn delete-btn"
+                                      onClick={() => deleteAdmin(admin.email)}
+                                      title="Delete Admin"
+                                      aria-label={`Delete ${admin.name}`}
+                                    >
+                                      🗑️
+                                    </button>
+                                  </div>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
                     </div>
                   </>
                 )}

@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import './AddProperties.css';
 
 // Tamil Nadu districts array
@@ -438,6 +438,8 @@ const AddProperties = () => {
   const [uploadProgress, setUploadProgress] = useState<Record<number, number>>({});
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [isTablet, setIsTablet] = useState(false);
   
   // New state for contact validation
   const [contactInfo, setContactInfo] = useState({
@@ -465,6 +467,20 @@ const AddProperties = () => {
   const imageUploadRef = useRef<HTMLInputElement>(null);
   const videoUploadRef = useRef<HTMLInputElement>(null);
 
+  // Detect device type
+  useEffect(() => {
+    const checkDevice = () => {
+      const width = window.innerWidth;
+      setIsMobile(width < 768);
+      setIsTablet(width >= 768 && width < 1024);
+    };
+
+    checkDevice();
+    window.addEventListener('resize', checkDevice);
+    
+    return () => window.removeEventListener('resize', checkDevice);
+  }, []);
+
   const handlePropertyTypeChange = (type: 'residential' | 'commercial' | 'land') => {
     setPropertyType(type);
     // Reset category and subcategory when property type changes
@@ -488,11 +504,14 @@ const AddProperties = () => {
     }));
   };
 
-  const renderPropertyDetailField = (field: PropertyDetailField) => {
+  const renderPropertyDetailField = (field: PropertyDetailField, index: number) => {
+    const fieldId = `${field.name}-${index}`;
+    
     switch (field.type) {
       case 'select':
         return (
           <select
+            id={fieldId}
             className="form-select"
             value={propertyDetails[field.name] as string || ''}
             onChange={(e) => handlePropertyDetailChange(field.name, e.target.value)}
@@ -507,6 +526,7 @@ const AddProperties = () => {
       case 'number':
         return (
           <input
+            id={fieldId}
             type="number"
             className="form-input"
             placeholder={field.placeholder}
@@ -520,6 +540,7 @@ const AddProperties = () => {
       case 'text':
         return (
           <input
+            id={fieldId}
             type="text"
             className="form-input"
             placeholder={field.placeholder}
@@ -533,12 +554,12 @@ const AddProperties = () => {
           <div className="checkbox-wrapper">
             <input
               type="checkbox"
-              id={field.name}
+              id={fieldId}
               className="checkbox-input"
               checked={propertyDetails[field.name] as boolean || false}
               onChange={(e) => handlePropertyDetailChange(field.name, e.target.checked)}
             />
-            <label htmlFor={field.name} className="checkbox-label">{field.label}</label>
+            <label htmlFor={fieldId} className="checkbox-label">{field.label}</label>
           </div>
         );
       
@@ -838,6 +859,7 @@ const AddProperties = () => {
     setBedrooms(2);
     setBathrooms(2);
     setContactInfo({ phone: '', email: '' });
+    setValidationErrors({ phone: '', email: '' });
     
     if (titleRef.current) titleRef.current.value = '';
     if (descriptionRef.current) descriptionRef.current.value = '';
@@ -927,7 +949,7 @@ const AddProperties = () => {
         formData.append('videos', video);
       });
       
-      // Send to backend - Using the same API endpoint from first code
+      // Send to backend
       const response = await fetch('https://realestatebackend-8adg.onrender.com/api/properties', {
         method: 'POST',
         body: formData
@@ -960,6 +982,7 @@ const AddProperties = () => {
       <div className="page-header">
         <div className="header-content">
           <h1>Add New Property</h1>
+          <p className="subtitle">Fill in the details to list your property</p>
         </div>
         <div className="header-actions">
           <button className="save-draft-btn">Save as Draft</button>
@@ -997,21 +1020,21 @@ const AddProperties = () => {
                   onClick={() => handlePropertyTypeChange('residential')}
                   type="button"
                 >
-                  🏠 Residential
+                  {!isMobile ? '🏠 Residential' : '🏠'}
                 </button>
                 <button 
                   className={`type-btn ${propertyType === 'commercial' ? 'active' : ''}`}
                   onClick={() => handlePropertyTypeChange('commercial')}
                   type="button"
                 >
-                  🏢 Commercial
+                  {!isMobile ? '🏢 Commercial' : '🏢'}
                 </button>
                 <button 
                   className={`type-btn ${propertyType === 'land' ? 'active' : ''}`}
                   onClick={() => handlePropertyTypeChange('land')}
                   type="button"
                 >
-                  🌳 Land
+                  {!isMobile ? '🌳 Land' : '🌳'}
                 </button>
               </div>
             </div>
@@ -1110,7 +1133,7 @@ const AddProperties = () => {
                       <label className="form-label">
                         {field.label} <span className="required">*</span>
                       </label>
-                      {renderPropertyDetailField(field)}
+                      {renderPropertyDetailField(field, index)}
                     </div>
                   ))}
                 </div>
@@ -1125,7 +1148,7 @@ const AddProperties = () => {
                         <label className="form-label">
                           {field.label}
                         </label>
-                        {renderPropertyDetailField(field)}
+                        {renderPropertyDetailField(field, index + 100)}
                       </div>
                     ))}
                   </div>
@@ -1355,7 +1378,7 @@ const AddProperties = () => {
                   onClick={clearAllImages}
                   type="button"
                 >
-                  Clear All Images
+                  Clear All
                 </button>
               )}
             </div>
@@ -1403,6 +1426,7 @@ const AddProperties = () => {
                           src={URL.createObjectURL(file)} 
                           alt={`Property ${index + 1}`}
                           className="preview-image"
+                          loading="lazy"
                         />
                         <button 
                           className="remove-image-btn"
@@ -1466,7 +1490,7 @@ const AddProperties = () => {
                   onClick={clearAllVideos}
                   type="button"
                 >
-                  Clear All Videos
+                  Clear All
                 </button>
               )}
             </div>

@@ -306,6 +306,7 @@ interface PropertyCardProps {
 
 function PropertyCard({ property }: PropertyCardProps) {
   const [isFavorite, setIsFavorite] = useState(false);
+  const navigate = useNavigate();
 
   // Format price based on priceUnit
   const formatPrice = () => {
@@ -339,8 +340,38 @@ function PropertyCard({ property }: PropertyCardProps) {
     return property.propertyType === 'rental' ? 'rent' : 'sale';
   };
 
+  // Handle card click
+  const handleCardClick = (e: React.MouseEvent) => {
+    // Prevent navigation when clicking on the favorite button
+    if ((e.target as HTMLElement).closest('.favorite-button')) {
+      return;
+    }
+    navigate(`/property/${property.id}`);
+  };
+
+  // Handle favorite click
+  const handleFavoriteClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent card navigation when clicking favorite
+    setIsFavorite(!isFavorite);
+  };
+
+  // Handle keyboard navigation
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      navigate(`/property/${property.id}`);
+    }
+  };
+
   return (
-    <div className="property-card" role="article">
+    <div 
+      className="property-card"
+      onClick={handleCardClick}
+      onKeyDown={handleKeyDown}
+      role="button"
+      tabIndex={0}
+      aria-label={`View details for ${property.title} - ${getLocationString()}`}
+    >
       <div className="property-image-container">
         <img 
           src={getImageUrl()} 
@@ -348,12 +379,9 @@ function PropertyCard({ property }: PropertyCardProps) {
           className="property-image"
           loading="lazy"
         />
-        {/* <div className={`property-badge type ${getPropertyType()}`}>
-          {getPropertyType() === 'sale' ? 'For Sale' : 'For Rent'}
-        </div> */}
         <button 
           className={`favorite-button ${isFavorite ? 'active' : ''}`}
-          onClick={() => setIsFavorite(!isFavorite)}
+          onClick={handleFavoriteClick}
           aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
         >
           <Heart className="favorite-icon" />
@@ -614,6 +642,7 @@ export default function HomePage() {
                   <button 
                     key={index} 
                     className="district-card" 
+                    onClick={() => navigate('/buy')}
                     aria-label={`Explore properties in ${district.name}`}
                   >
                     <div className="district-icon-wrapper">

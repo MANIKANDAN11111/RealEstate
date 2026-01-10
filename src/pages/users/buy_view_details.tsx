@@ -1,115 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { 
-  Home, Menu, MapPin, Bed, Bath, Maximize, Heart, Share2, Phone, Mail, 
+  Home, MapPin, Bed, Bath, Maximize, Heart, Share2, Phone, Mail, 
   Check, Car, Layers, Shield, ArrowLeft, 
   Star, Facebook, Twitter, Linkedin, Instagram, 
   Building, DollarSign, Megaphone,
   X, User, MessageSquare, AlertCircle,
   ZoomIn, ZoomOut, Play, Pause, SkipBack, SkipForward,
-  Volume2, VolumeX, X as XIcon, ChevronLeft, ChevronRight
+  Volume2, VolumeX, X as XIcon, ChevronLeft, ChevronRight,
+  Menu, ShoppingBag
 } from 'lucide-react';
 import AGLogo from '../../assets/AG_logo.jpeg';
 import './buy_view_details.css';
-
-// Updated Header Component with Mobile Menu
-interface HeaderProps {
-  scrolled: boolean;
-}
-
-function Header({ scrolled }: HeaderProps) {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const navItems = [
-    { name: 'Home', icon: Home, path: '/' },
-    { name: 'Buy', icon: Building, path: '/buy' },
-    { name: 'Sell', icon: DollarSign, path: '/sell' },
-    { name: 'Advertise', icon: Megaphone, path: '/advertise' },
-    { name: 'Contact', icon: Phone, path: '/contact' },
-  ];
-
-  const toggleMobileMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen);
-  };
-
-  // Close mobile menu when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as HTMLElement;
-      if (isMobileMenuOpen && 
-          !target.closest('.pd5-property-details-nav') && 
-          !target.closest('.pd5-mobile-menu-button')) {
-        setIsMobileMenuOpen(false);
-      }
-    };
-
-    document.addEventListener('click', handleClickOutside);
-    return () => {
-      document.removeEventListener('click', handleClickOutside);
-    };
-  }, [isMobileMenuOpen]);
-
-  // Close mobile menu on escape key
-  useEffect(() => {
-    const handleEscKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && isMobileMenuOpen) {
-        setIsMobileMenuOpen(false);
-      }
-    };
-
-    document.addEventListener('keydown', handleEscKey);
-    return () => {
-      document.removeEventListener('keydown', handleEscKey);
-    };
-  }, [isMobileMenuOpen]);
-
-  // Prevent body scroll when mobile menu is open
-  useEffect(() => {
-    if (isMobileMenuOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [isMobileMenuOpen]);
-
-  return (
-    <header className={`pd5-property-details-header ${scrolled ? 'pd5-scrolled' : ''}`}>
-      <div className="pd5-property-details-header-content">
-        <Link to="/" className="pd5-property-details-logo">
-          <img src={AGLogo} alt="PropFinder" className="pd5-property-details-logo-image" />
-          <span className="pd5-property-details-logo-text">DreamProperties</span>
-        </Link>
-
-        {/* Mobile Menu Button */}
-        <button 
-          className="pd5-mobile-menu-button"
-          onClick={toggleMobileMenu}
-          aria-label="Toggle menu"
-          aria-expanded={isMobileMenuOpen}
-        >
-          {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
-
-        <nav className={`pd5-property-details-nav ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
-          {navItems.map((item) => (
-            <Link
-              key={item.name}
-              to={item.path}
-              className="pd5-property-details-nav-item"
-              aria-label={item.name}
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              <item.icon className="pd5-property-details-nav-icon" />
-              <span className="pd5-nav-item-text">{item.name}</span>
-            </Link>
-          ))}
-        </nav>
-      </div>
-    </header>
-  );
-}
 
 // Define Property Interface matching backend
 interface Property {
@@ -187,98 +89,206 @@ interface ValidationErrors {
   phone?: string;
 }
 
+// Header Component (Updated with Sell Page Design)
+interface HeaderProps {
+  scrolled: boolean;
+}
 
+function Header({ scrolled }: HeaderProps) {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  
+  const navItems = [
+    { name: 'Home', icon: Home, path: '/' },
+    { name: 'Buy', icon: Building, path: '/buy' },
+    { name: 'Sell', icon: DollarSign, path: '/sell' },
+    { name: 'Advertise Property', icon: Megaphone, path: '/advertise' },
+    { name: 'Contact Us', icon: Phone, path: '/contact' },
+  ];
 
-// Updated Footer Component (from ContactUs)
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  // Close mobile menu on route change
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [window.location.pathname]);
+
+  return (
+    <header className={`sell-header-container ${scrolled ? 'scrolled' : ''}`}>
+      <div className="sell-header-content">
+        <Link to="/" className="sell-logo-link">
+          <img src={AGLogo} alt="PropFinder Logo" className="sell-logo-image" />
+          <span className="sell-logo-text">DreamProperties</span>
+        </Link>
+
+        {/* Mobile Menu Button */}
+        <button 
+          className="sell-mobile-menu-button"
+          onClick={toggleMobileMenu}
+          aria-label="Toggle menu"
+        >
+          {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
+
+        <nav className={`sell-nav ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
+          {navItems.map((item) => (
+            <Link
+              key={item.name}
+              to={item.path}
+              className={`sell-nav-item ${window.location.pathname === item.path ? 'active' : ''}`}
+              onClick={() => setIsMobileMenuOpen(false)}
+              aria-label={item.name}
+            >
+              <item.icon className="sell-nav-icon" />
+              <span className="sell-nav-text">{item.name}</span>
+            </Link>
+          ))}
+        </nav>
+      </div>
+    </header>
+  );
+}
+
+// Quick Contact Floating Buttons Component (From Sell Page)
+function QuickContactButtons() {
+  const handleWhatsAppClick = () => {
+    window.open('https://wa.me/916374656460', '_blank');
+  };
+
+  const handleCallClick = () => {
+    window.location.href = 'tel:+916374656460';
+  };
+
+  const handleLocationClick = () => {
+    window.open('https://maps.google.com/?q=Tamil+Nadu,India', '_blank');
+  };
+
+  return (
+    <div className="quick-contact-buttons">
+      <button 
+        className="quick-contact-btn whatsapp-btn"
+        onClick={handleWhatsAppClick}
+        title="Chat on WhatsApp"
+        aria-label="Chat on WhatsApp"
+      >
+        <MessageSquare className="quick-contact-icon" />
+        <span className="quick-contact-tooltip">Chat on WhatsApp</span>
+      </button>
+      
+      <button 
+        className="quick-contact-btn call-btn"
+        onClick={handleCallClick}
+        title="Call Now"
+        aria-label="Call Now"
+      >
+        <Phone className="quick-contact-icon" />
+        <span className="quick-contact-tooltip">Call Now</span>
+      </button>
+      
+      <button 
+        className="quick-contact-btn location-btn"
+        onClick={handleLocationClick}
+        title="Our Location"
+        aria-label="Our Location"
+      >
+        <MapPin className="quick-contact-icon" />
+        <span className="quick-contact-tooltip">Our Location</span>
+      </button>
+    </div>
+  );
+}
+
+// Updated Footer Component (Matching Sell Page)
 function Footer() {
   return (
-    <footer className="pd5-contact-footer">
-      <div className="pd5-contact-footer-container">
-        <div className="pd5-contact-footer-content">
-          <div className="pd5-contact-footer-section">
-            <div className="pd5-contact-footer-logo">
-              <Link to="/" className="pd5-contact-logo-link">
-                <img src={AGLogo} alt="PropFinder Logo" className="pd5-contact-logo-image" />
-                <span className="pd5-contact-footer-logo-text">DreamProperties</span>
+    <footer className="sell-footer">
+      <div className="sell-footer-container">
+        <div className="sell-footer-content">
+          <div className="sell-footer-section">
+            <div className="sell-footer-logo">
+              <Link to="/" className="sell-logo-link">
+                <img src={AGLogo} alt="PropFinder Logo" className="sell-logo-image" />
+                <span className="sell-footer-logo-text">DreamProperties</span>
               </Link>
             </div>
-            <p className="pd5-contact-footer-description">
+            <p className="sell-footer-description">
               Your trusted partner in finding the perfect property across Tamil Nadu. We make real
               estate easy.
             </p>
-            <div className="pd5-contact-footer-social">
-              <a href="#" className="pd5-contact-social-link" aria-label="Facebook">
-                <Facebook className="pd5-contact-social-icon" />
+            <div className="sell-footer-social">
+              <a href="#" className="sell-social-link" aria-label="Facebook">
+                <Facebook className="sell-social-icon" />
               </a>
-              <a href="#" className="pd5-contact-social-link" aria-label="Twitter">
-                <Twitter className="pd5-contact-social-icon" />
+              <a href="#" className="sell-social-link" aria-label="Twitter">
+                <Twitter className="sell-social-icon" />
               </a>
-              <a href="https://www.instagram.com/ag_dreamproperties" className="pd5-contact-social-link" aria-label="Instagram">
-                <Instagram className="pd5-contact-social-icon" />
+              <a href="https://www.instagram.com/ag_dreamproperties" className="sell-social-link" aria-label="Instagram">
+                <Instagram className="sell-social-icon" />
               </a>
-              <a href="#" className="pd5-contact-social-link" aria-label="LinkedIn">
-                <Linkedin className="pd5-contact-social-icon" />
+              <a href="#" className="sell-social-link" aria-label="LinkedIn">
+                <Linkedin className="sell-social-icon" />
               </a>
             </div>
           </div>
 
-          <div className="pd5-contact-footer-section">
-            <h3 className="pd5-contact-footer-title">Quick Links</h3>
-            <ul className="pd5-contact-footer-links">
+          <div className="sell-footer-section">
+            <h3 className="sell-footer-title">Quick Links</h3>
+            <ul className="sell-footer-links">
               <li>
-                <Link to="/" className="pd5-contact-footer-link">Home</Link>
+                <Link to="/" className="sell-footer-link">Home</Link>
               </li>
               <li>
-                <Link to="/buy" className="pd5-contact-footer-link">Buy Property</Link>
+                <Link to="/buy" className="sell-footer-link">Buy Property</Link>
               </li>
               <li>
-                <Link to="/sell" className="pd5-contact-footer-link">Sell Property</Link>
+                <Link to="/sell" className="sell-footer-link">Sell Property</Link>
               </li>
               <li>
-                <Link to="/advertise" className="pd5-contact-footer-link">Advertise</Link>
-              </li>
-            </ul>
-          </div>
-
-          <div className="pd5-contact-footer-section">
-            <h3 className="pd5-contact-footer-title">Properties</h3>
-            <ul className="pd5-contact-footer-links">
-              <li>
-                <Link to="/buy" className="pd5-contact-footer-link">Buy Property</Link>
-              </li>
-              <li>
-                <Link to="/properties" className="pd5-contact-footer-link">Rent Property</Link>
-              </li>
-              <li>
-                <Link to="/sell" className="pd5-contact-footer-link">Sell Property</Link>
-              </li>
-              <li>
-                <Link to="/properties" className="pd5-contact-footer-link">Featured Listings</Link>
+                <Link to="/advertise" className="sell-footer-link">Advertise</Link>
               </li>
             </ul>
           </div>
 
-          <div className="pd5-contact-footer-section">
-            <h3 className="pd5-contact-footer-title">Legal</h3>
-            <ul className="pd5-contact-footer-links">
+          <div className="sell-footer-section">
+            <h3 className="sell-footer-title">Properties</h3>
+            <ul className="sell-footer-links">
               <li>
-                <a href="#" className="pd5-contact-footer-link">Privacy Policy</a>
+                <Link to="/buy" className="sell-footer-link">Buy Property</Link>
               </li>
               <li>
-                <a href="#" className="pd5-contact-footer-link">Terms of Service</a>
+                <Link to="/properties" className="sell-footer-link">Rent Property</Link>
               </li>
               <li>
-                <a href="#" className="pd5-contact-footer-link">Cookie Policy</a>
+                <Link to="/sell" className="sell-footer-link">Sell Property</Link>
               </li>
               <li>
-                <a href="#" className="pd5-contact-footer-link">Disclaimer</a>
+                <Link to="/properties" className="sell-footer-link">Featured Listings</Link>
+              </li>
+            </ul>
+          </div>
+
+          <div className="sell-footer-section">
+            <h3 className="sell-footer-title">Legal</h3>
+            <ul className="sell-footer-links">
+              <li>
+                <a href="#" className="sell-footer-link">Privacy Policy</a>
+              </li>
+              <li>
+                <a href="#" className="sell-footer-link">Terms of Service</a>
+              </li>
+              <li>
+                <a href="#" className="sell-footer-link">Cookie Policy</a>
+              </li>
+              <li>
+                <a href="#" className="sell-footer-link">Disclaimer</a>
               </li>
             </ul>
           </div>
         </div>
 
-        <div className="pd5-contact-footer-bottom">
-          <p className="pd5-contact-footer-copyright">
+        <div className="sell-footer-bottom">
+          <p className="sell-footer-copyright">
             &copy; 2024 DreamProperties. All rights reserved. | Built with excellence for Tamil Nadu
           </p>
         </div>
@@ -593,12 +603,6 @@ function SuccessModal({ isOpen, onClose }: SuccessModalProps) {
     </div>
   );
 }
-
-// Updated Header Component with Mobile Menu
-interface HeaderProps {
-  scrolled: boolean;
-}
-
 
 // Image Zoom Modal Component
 interface ImageZoomModalProps {
@@ -1239,6 +1243,9 @@ export default function PropertyDetails() {
   return (
     <div className="pd5-property-details-page">
       <Header scrolled={scrolled} />
+
+      {/* Quick Contact Floating Buttons */}
+      <QuickContactButtons />
 
       {/* Back Button */}
       <div className="pd5-property-details-back-container">
